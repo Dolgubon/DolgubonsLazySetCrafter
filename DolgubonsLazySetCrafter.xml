@@ -26,6 +26,7 @@
 		<TopLevelControl name="DolgubonSetCrafterWindow" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true" >	
 			<Dimensions x="800" y="650" />
 			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="300" offsetY="-100"/>
+			<OnMoveStop>DolgubonSetCrafter.onWindowMove(self) </OnMoveStop>
 		    <Controls>
 		    	
 		    	<!--Setting up the window -->

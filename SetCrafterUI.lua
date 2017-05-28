@@ -335,6 +335,13 @@ function DolgubonSetCrafter.setupLocalizedLabels()
 end
 
 
+
+function DolgubonSetCrafter.initializeWindowPosition()
+	DolgubonSetCrafterWindow:ClearAnchors()
+	
+	DolgubonSetCrafterWindow:SetAnchor(TOPLEFT,GuiRoot, TOPLEFT,DolgubonSetCrafter.savedVars.xPos, DolgubonSetCrafter.savedVars.yPos )
+end
+
 -- UI setup directing function
 function DolgubonSetCrafter.initializeFunctions.setupUI()
 	langStrings = DolgubonSetCrafter.localizedStrings
@@ -347,6 +354,7 @@ function DolgubonSetCrafter.initializeFunctions.setupUI()
 	DolgubonSetCrafter.manager = DolgubonScroll:New(CraftingQueueScroll) -- check
 	DolgubonSetCrafter.manager:RefreshData() -- Show the scroll
 	DolgubonSetCrafter.debugFunctions()
+	DolgubonSetCrafter.initializeWindowPosition()
 end
 
 
@@ -374,51 +382,11 @@ function DolgubonSetCrafter.resetChoices()
 	DolgubonSetCrafterWindowInputBox:SetText("")
 end
 
-local function extract(station) 
-
-
-		--[[for i = 1, 41 do
-			local numMats = GetSmithingPatternNextMaterialQuantity(pattern,i,lastNumMats,1)
-			if numMats == lastNumMats then lastNumMats = 1 numMats = GetSmithingPatternNextMaterialQuantity(pattern,i,lastNumMats,1) end
-			DolgubonSetCrafter.savedVars[station][pattern][i] = GetSmithingPatternNextMaterialQuantity(pattern,i,1,1)
-		end
-		local lastNumMats = 1]]
-
+function DolgubonSetCrafter.onWindowMove(window)
+	
+	DolgubonSetCrafter.savedVars.xPos = window:GetLeft()
+	DolgubonSetCrafter.savedVars.yPos = window:GetTop()
 end
-
---This function is called whenever a crafting station is visited
-function DolgubonSetCrafter.setupForStation(event, station)
-	if true then return end
-	-- If you're at a consumable station, then ignore the event
-	if station == CRAFTING_TYPE_BLACKSMITHING or station == CRAFTING_TYPE_CLOTHIER or station == CRAFTING_TYPE_WOODWORKING then
-		if true then extract(station) end
-		DolgubonSetCrafterWindow:SetHidden(false)
-		--- Clothing has no weapons, so if it's clothing, hide the weapon trait
-		DolgubonSetCrafter.resetChoices()
-		if station == CRAFTING_TYPE_CLOTHIER then
-			Dolgubons_Set_Crafter_Weapon_Trait:SetHidden(true)
-		else
-			Dolgubons_Set_Crafter_Weapon_Trait:SetHidden(false)
-		end
-		
-		-- Call the prepare for station function of the pattern buttons
-		-- The prepare for station function hides or shows the button depending on the index and station
-		for k , v in pairs(DolgubonSetCrafter.patternButtons) do
-			v:PrepareForStation(station)
-		end
-
-		for k, comboBox in pairs(DolgubonSetCrafter.ComboBox) do
-			comboBox:SelectFirstItem()
-		end
-
-		
-	end
-end
-
-
-
-function DolgubonSetCrafter.setPiecesDefault() end
-
 
 --esoui/art/journal/gamepad/gp_journalcheck.dds
 --esoui/art/buttons/decline_up.dds

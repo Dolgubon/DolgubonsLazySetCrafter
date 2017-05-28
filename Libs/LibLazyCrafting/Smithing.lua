@@ -593,6 +593,8 @@ LibLazyCrafting.craftInteractionTables[CRAFTING_TYPE_CLOTHIER]["check"] = functi
 
 -- Language free!!!!
 
+-- For brevity sake, sets are simply listed as 3 item IDs with the number of traits needed.	
+-- The name of the set is then added in on initialization using the API.
 SetIndexes =
 {		--   Axe,  Robe,     Bow
 	{{43529  , 43549 , [6] = 43543  },0},

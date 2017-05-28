@@ -5,30 +5,29 @@
 -- Created by Dolgubon (Joseph Heinzle)
 -----------------------------------
 --
+------------------------------------
+-- Namespace and variable initialization
 DolgubonSetCrafter = DolgubonSetCrafter or {}
 DolgubonSetCrafter.initializeFunctions = DolgubonSetCrafter.initializeFunctions or {}
 
 DolgubonSetCrafter.default = {
-	["queue"] = {}
-
+	["queue"] = {},
+	["xPos"] = 0,
+	["yPos"] = 0,
+}
+DolgubonSetCrafter.defaultCharacter = 
+{
+	["OpenAtCraftStation"] = true,
+	["autocraft"] = true,
 }
 
-DolgubonSetCrafter.windowWidth = 1000
-DolgubonSetCrafter.windowHeight = 600
 
 DolgubonSetCrafter.version = 3
 DolgubonSetCrafter.name = "DolgubonsLazySetCrafter"
 
 
-
-
-local savedVars = {}
-
-
 local out = DolgubonSetCrafter.out
 
-
-local championOn = false
 
 --Takes in a number, determines if it's a simple integer with no exponents
 local function isInteger(text)
@@ -63,7 +62,8 @@ function DolgubonSetCrafter:Initialize()
 	LAM:RegisterOptionControls("DolgubonsWritCrafter", DolgubonSetCrafter.settings["options"])]]
 	
 
-	DolgubonSetCrafter.savedVars = ZO_SavedVars:NewAccountWide("dolgubonslazysetcrafter", DolgubonSetCrafter.version, nil, DolgubonSetCrafter.default,nil)
+	DolgubonSetCrafter.savedVars = ZO_SavedVars:NewAccountWide("dolgubonslazysetcrafter", DolgubonSetCrafter.version, nil, DolgubonSetCrafter.default)
+	DolgubonSetCrafter.charSavedVars = ZO_SavedVars:NewCharacterIdSettings("dolgubonslazysetcrafter",DolgubonSetCrafter.version, nil, DolgubonSetCrafter.defaultCharacter)
 	
 	LLC = LibStub:GetLibrary("LibLazyCrafting")
 	if DolgubonSetCrafter.savedVars.debug then
@@ -71,7 +71,7 @@ function DolgubonSetCrafter:Initialize()
 	end
 
 	for k, v in pairs(DolgubonSetCrafter.initializeFunctions) do
-		
+
 		if v then
 			v()
 		else
@@ -101,8 +101,11 @@ function DolgubonSetCrafter.OnAddOnLoaded(event, addonName)
 	end
 end 
 
-EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name, EVENT_CRAFTING_STATION_INTERACT, function(event, station) if station <3 or station >5 then closeWindow(false) end end)
-EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name, EVENT_END_CRAFTING_STATION_INTERACT, function(event, station) if station <3 or station >5 then closeWindow(true) end end)
+EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name, EVENT_CRAFTING_STATION_INTERACT, 
+	function(event, station) if station <3 or station >5 then if DolgubonSetCrafter.charSavedVars.OpenAtCraftStation then closeWindow(false) end end end)
+
+EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name, EVENT_END_CRAFTING_STATION_INTERACT, 
+	function(event, station) if station <3 or station >5 then closeWindow(true) end end)
 EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name, EVENT_ADD_ON_LOADED, DolgubonSetCrafter.OnAddOnLoaded)
 --EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name, EVENT_CRAFT_COMPLETED , d)
 

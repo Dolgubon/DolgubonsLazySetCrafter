@@ -6,16 +6,16 @@ local panel =
      displayName = "|c8080FF Dolgubon's Lazy Set Crafter|r",
      author = "@Dolgubon"
 }
-test = true
+
 local options =
 {
 	{
 		type = "checkbox",
 		name = "ShowAtStation",
 		tooltip ="Always show the Set Crafter UI at crafting stations",
-		getFunc = function() return test end,
+		getFunc = function() return DolgubonSetCrafter.charSavedVars.OpenAtCraftStation end,
 		setFunc = function(value) 
-			test = value
+			DolgubonSetCrafter.charSavedVars.OpenAtCraftStation = value
 		end,
 	},
 }
