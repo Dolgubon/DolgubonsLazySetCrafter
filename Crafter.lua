@@ -19,9 +19,7 @@ local LazyCrafter
 local LibLazyCrafting = LibStub:GetLibrary("LibLazyCrafting")
 local out = DolgubonSetCrafter.out
 
-local function findPreviouslyCraftedItem()
-
-end
+local validityFunctions 
 
 local shortVersions =
 {
@@ -36,6 +34,9 @@ local shortVersions =
 
 }
 
+----------------------------------------------------
+-- HELPER FUNCTIONS
+
 local function StripColorAndWhitespace(text)
 
 	text = string.gsub(text, "|c[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]", "")
@@ -46,21 +47,64 @@ end
 local function shortenNames(requestTable)
 
 	for k,v in pairs(requestTable) do
-		for i = 1, #shortVersions do
+		if type(v)=="table" then
+			for i = 1, #shortVersions do
 
-			v = StripColorAndWhitespace(v)
+				v[2] = StripColorAndWhitespace(v[2])
 
-			if shortVersions[i][1] == v then
+				if shortVersions[i][1] == v[2] then
 
-				requestTable[k] = shortVersions[i][2]
+					v[2] = shortVersions[i][2]
+				end
 			end
 		end
 	end
+end
 
-	local colour = "|cFFFFFF"
-	if not IsSmithingStyleKnown(requestTable["styleIndex"]) then colour = "|c808080" end
-	requestTable["Style"] = colour..requestTable["Style"].."|r"
+local function getNumTraitsKnown(station, pattern, trait) -- and if the trait is known
+	local count = 0
+	local traitKnown =false
+	for i =1 ,9 do 
+		local _,_,known = GetSmithingResearchLineTraitInfo(station, pattern - 1, i)
+		local index = GetSmithingResearchLineTraitInfo(station, pattern, i)
+		if known then
+			count = count + 1
+		end
+		
+		if index == trait then
+			_,_, traitKnown = GetSmithingResearchLineTraitInfo(station, pattern, i)
+			
+		end
+	end
+	return count, traitKnown
+end
 
+local function isTraitKnown(station, pattern, trait, setIndex) -- more of a router than anything. Calls getNumTraitsKnown to do the work
+	
+	trait = trait - 1
+	local known, number
+	if station ==CRAFTING_TYPE_WOODWORKING and pattern>1 then
+		if pattern == 2 then
+			number, known = getNumTraitsKnown(station, 6, trait)
+		else
+			number, known = getNumTraitsKnown(station, pattern -1, trait)
+		end
+	else
+		number, known = getNumTraitsKnown(station, pattern, trait)
+	end
+	if trait == 0 then known = true end
+	return known, number>= GetSetIndexes()[setIndex][3]
+end
+
+-- uses the info in validityFunctions to recheck and see if attributes are an impediment to crafting.
+local function applyValidityFunctions(requestTable) 
+	for k, v in pairs(validityFunctions) do
+		local params = {}
+		for i = 2, #v  do
+			params[#params + 1] = requestTable["CraftRequestTable"][v[i]]
+		end
+		requestTable[k][3] = v[1](unpack(params) )
+	end
 end
 
 -- Finds the material index based on the level
@@ -103,7 +147,6 @@ local function getPatternIndex(patternButton,weight)
 			
 		end
 	else
-
 		-- It is armour
 		if weight == 1 then
 			-- It is heavy armour
@@ -128,7 +171,7 @@ end
 local function addPatternToQueue(patternButton,i)
 	
 	local requestTable = {}
-	requestTable["Pattern"] = patternButton.tooltip
+	
 	local pattern, station  = 0, 0
 	local trait = 0
 
@@ -138,59 +181,67 @@ local function addPatternToQueue(patternButton,i)
 			if DolgubonSetCrafter.armourTypes[i].toggleValue then
 
 				
-				requestTable["Weight"] = DolgubonSetCrafter.armourTypes[i].tooltip
+				requestTable["Weight"] = {1,DolgubonSetCrafter.armourTypes[i].tooltip}
 
 				pattern, station = getPatternIndex(patternButton,i)
 			end
 
 		end
-		requestTable["Trait"] = DolgubonSetCrafter.ComboBox.Armour.selected[2]
+		requestTable["Trait"] = DolgubonSetCrafter.ComboBox.Armour.selected
 		trait = DolgubonSetCrafter.ComboBox.Armour.selected[1]
 	elseif i== 21 then
 		requestTable["Weight"] = " "
-		requestTable["Trait"] = DolgubonSetCrafter.ComboBox.Armour.selected[2]
+		requestTable["Trait"] = DolgubonSetCrafter.ComboBox.Armour.selected
 		pattern, station = getPatternIndex(patternButton)
 		trait = DolgubonSetCrafter.ComboBox.Armour.selected[1]	
 	else
 		requestTable["Weight"] = ""
-		requestTable["Trait"] = DolgubonSetCrafter.ComboBox.Weapon.selected[2]
+		requestTable["Trait"] = DolgubonSetCrafter.ComboBox.Weapon.selected
 		pattern, station = getPatternIndex(patternButton)
 		trait = DolgubonSetCrafter.ComboBox.Weapon.selected[1]
 	end
-
-	requestTable["Level"] = DolgubonSetCrafterWindowInputBox:GetText()
-	if requestTable["Level"]=="" then requestTable["Level"]=nil out(DolgubonSetCrafterWindowInputBox.selectPrompt) return end
+	requestTable["Pattern"] = {pattern,patternButton.tooltip}
+	requestTable["Level"] = {tonumber(DolgubonSetCrafterWindowInputBox:GetText()),DolgubonSetCrafterWindowInputBox:GetText()}
+	if requestTable["Level"][2]=="" then requestTable["Level"][1]=nil out(DolgubonSetCrafterWindowInputBox.selectPrompt) return end
 	for k, combobox in pairs(DolgubonSetCrafter.ComboBox) do
-		if combobox.invalidSelection(requestTable["Weight"]) then
+		if combobox.invalidSelection(requestTable["Weight"]) and not DolgubonSetCrafter.savedVars.autofill then
 			out(combobox.selectPrompt)
 			return
 		end
 	end
 
+	
 	local isCP = not DolgubonSetCrafterWindowInputToggleChampion.toggleValue
-	requestTable["Style"] 		= DolgubonSetCrafter.ComboBox.Style.selected[2]
-	requestTable["styleIndex"]  = DolgubonSetCrafter.ComboBox.Style.selected[1]
+	requestTable["Style"] 		= DolgubonSetCrafter.ComboBox.Style.selected
+	
 	local styleIndex 			= DolgubonSetCrafter.ComboBox.Style.selected[1]
-	requestTable["Set"]			= DolgubonSetCrafter.ComboBox.Set.selected[2]
+	requestTable["Set"]			= DolgubonSetCrafter.ComboBox.Set.selected
+	
+
 	local setIndex 				= DolgubonSetCrafter.ComboBox.Set.selected[1]
-	requestTable["Quality"]		= DolgubonSetCrafter.ComboBox.Quality.selected[2]
+	requestTable["Quality"]		= DolgubonSetCrafter.ComboBox.Quality.selected
+	
 	local quality 				= DolgubonSetCrafter.ComboBox.Quality.selected[1]
-	requestTable["Reference"]	= math.random()
+	requestTable["Reference"]	= DolgubonSetCrafter.savedVars.counter
+	DolgubonSetCrafter.savedVars.counter = DolgubonSetCrafter.savedVars.counter + 1
 	-- Some names are just so long, we need to shorten it
 	shortenNames(requestTable)
 
-	if pattern and isCP ~= nil and requestTable["Level"] and styleIndex and trait and station and setIndex and quality and requestTable["Reference"] then
-		LazyCrafter:CraftSmithingItemByLevel(pattern, isCP,tonumber(requestTable["Level"]),styleIndex,trait, false, station,  setIndex, quality, true, requestTable["Reference"]  ) 
-		local CraftRequestTable = {pattern, isCP,tonumber(requestTable["Level"]),styleIndex,trait, false, station,  setIndex, quality, true, requestTable["Reference"]}
+	if pattern and isCP ~= nil and requestTable["Level"][1] and styleIndex and trait and station and setIndex and quality and requestTable["Reference"] then
+		local CraftRequestTable = {pattern, isCP,tonumber(requestTable["Level"][1]),styleIndex,trait, false, station,  setIndex, quality, true, requestTable["Reference"]}
+		LazyCrafter:CraftSmithingItemByLevel(unpack(CraftRequestTable))
+		
 		--LLC_CraftSmithingItemByLevel(self, patternIndex, isCP , level, styleIndex, traitIndex, useUniversalStyleItem, stationOverride, setIndex, quality, autocraft)
 		if not DolgubonSetCrafterWindowInputToggleChampion.toggleValue then
-			requestTable["Level"] = "CP"..requestTable["Level"]
+			requestTable["Level"][2] = "CP"..requestTable["Level"][2]
 		end
 		requestTable["CraftRequestTable"] = CraftRequestTable
+		applyValidityFunctions(requestTable)
 		return requestTable
 	end
-
 end
+
+
 
 function DolgubonSetCrafter.compileMatRequirements()
 	out("")
@@ -225,7 +276,7 @@ function DolgubonSetCrafter.removeFromScroll(reference)
 		end
 	end
 	LazyCrafter:cancelItemByReference(reference)
-	table.sort(queue, function(a,b) if a~=nil and b~=nil then return a["Style"]>b["Style"] else return b==nil end end)
+	table.sort(queue, function(a,b) if a~=nil and b~=nil then return a["Reference"]>b["Reference"] else return b==nil end end)
 	DolgubonSetCrafter.updateList()
 	
 end
@@ -246,19 +297,22 @@ end
 
 function DolgubonSetCrafter.initializeFunctions.initializeCrafting()
 	queue = DolgubonSetCrafter.savedVars.queue
-	for k, v in pairs(queue) do
-		v["Style"] =  StripColorAndWhitespace(v["Style"])
-		local colour = "|cFFFFFF"
-		if not IsSmithingStyleKnown(v["styleIndex"]) then colour = "|c808080" end
-		v["Style"] = colour..v["Style"].."|r"
-	end
 
 	LazyCrafter = LibLazyCrafting:AddRequestingAddon(DolgubonSetCrafter.name, false, LLCCraftCompleteHandler)	
 	DolgubonSetCrafter.LazyCrafter = LazyCrafter
 	for k, v in pairs(queue) do 
 		LazyCrafter:CraftSmithingItemByLevel(unpack(v["CraftRequestTable"]))
+		applyValidityFunctions(v)
 	end
 end
+
+validityFunctions = --stuff that's not here will automatically recieve a value of true.
+{
+	["Trait"] = {function(...) local a = isTraitKnown(...) return a end , 7, 1,5, 8},
+	["Set"] = {function(...)local _,a = isTraitKnown(...) return a end , 7,1,5,8},
+	["Style"] = {IsSmithingStyleKnown , 4},
+}
+
 
 
 --[[@Dolgubon: label: offsetX -10 -> offsetX -160, toggleCp: offsetX -100 -> offsetX -85, box: 

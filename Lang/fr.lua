@@ -22,6 +22,8 @@ DolgubonSetCrafter.localizedStrings.UIStrings.addToQueue          = "Ajouter a l
 DolgubonSetCrafter.localizedStrings.UIStrings.queueHeader         = "File D'attente D'artisanat"
 DolgubonSetCrafter.localizedStrings.UIStrings.clearQueue          = "Effacer la Liste"
 DolgubonSetCrafter.localizedStrings.UIStrings.resetToDefault      = "Effacer Selections"
+DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughKnowledge  = "You do not have enough knowledge for this attribute"
+
 
 
 

@@ -55,6 +55,7 @@ local function LLC_CraftEnchantingGlyphItemID(self, potencyItemID, essenceItemID
 		["autocraft"] = autocraft,
 		["Requester"] = self.addonName,
 		["reference"] = reference,
+		["station"] = CRAFTING_TYPE_ENCHANTING,
 	}
 	)
 

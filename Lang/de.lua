@@ -22,8 +22,7 @@ DolgubonSetCrafter.localizedStrings.UIStrings.addToQueue          = "|c26CD00Aus
 DolgubonSetCrafter.localizedStrings.UIStrings.queueHeader         = "Warteschlange der herzustellenden Gegenstände"
 DolgubonSetCrafter.localizedStrings.UIStrings.clearQueue          = "|cFF0000Lösche Warteschlange|r"
 DolgubonSetCrafter.localizedStrings.UIStrings.resetToDefault      = "|cFFD800Auswahl zurücksetzen|r"
-
-
+DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughKnowledge  = "Dein Wissen reicht nicht aus für dieses attribute"
 
 DolgubonSetCrafter.localizedStrings.weaponNames = 
 {

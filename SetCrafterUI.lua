@@ -19,6 +19,7 @@ DolgubonSetCrafter.scroll = DolgubonScroll
 local updateList = function() end
 local debugSelections = {}
 local langStrings
+local autofillFunctions ={}
 --------------------------
 -- Setup Functions
 
@@ -187,6 +188,14 @@ local function makeDropdownSelections(comboBoxContainer, tableInfo , text , x, y
 				comboBox.m_comboBox:SelectItem(itemEntry)
 			end
 			debugSelections[#debugSelections+1] = function() comboBoxContainer:SelectDebug() end
+			function comboBoxContainer:SelectAutoFill()
+				if self.name~="Style" and comboBoxContainer.invalidSelection(requestTable["Weight"]) and DolgubonSetCrafter.savedVars.autofill then
+					comboBox.m_comboBox:SelectItem(itemEntry)
+				end
+			end
+			debugSelections[#debugSelections+1] = function() comboBoxContainer:SelectDebug() end
+
+			autofillFunctions[#autofillFunctions + 1] = function() comboBoxContainer:SelectAutoFill() end
 		end
 	end
 
@@ -210,6 +219,9 @@ function DolgubonSetCrafter.setupComboBoxes()
 	DolgubonSetCrafter.ComboBox.Weapon 		= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Weapon_Trait", DolgubonSetCrafterWindowComboboxes, "ComboboxTemplate")
 	DolgubonSetCrafter.ComboBox.Quality		= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Quality", DolgubonSetCrafterWindowComboboxes, "ComboboxTemplate")
 	DolgubonSetCrafter.ComboBox.Set			= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Set", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
+	for k, v in pairs(DolgubonSetCrafter.ComboBox) do
+		v.name = k
+	end
 	local UIStrings = langStrings.UIStrings
 	--Three calls to make dropdown selections, as well as further setup the comboboxes.
 	makeDropdownSelections( DolgubonSetCrafter.ComboBox.Style  	   	, DolgubonSetCrafter.styleNames   , UIStrings.style 		, -130, 80, 2)
@@ -273,13 +285,15 @@ function DolgubonScroll:SetupEntry(control, data)
 	for k , v in pairs (data[1]) do
 		control[k] = GetControl(control, k)
 		if control[k] then
-			if k =="Set" then control[k]:SetText(string.sub(v,1,17)) end
-			control[k]:SetText(v)
+			control[k]:SetText(v[2])
+			control[k]:SetColor(1,1,0)
+			control[k]:ApplyColour(v[3])
 		end
 	end
 
 	button = control:GetNamedChild( "RemoveButton")
-	function button:onClickety () DolgubonSetCrafter.removeFromScroll(data[1].Reference) updateList() end
+
+	function button:onClickety ()DolgubonSetCrafter.removeFromScroll(data[1].Reference) updateList() end
 	--function control:onClicked () DolgubonsGuildBlacklistWindowInputBox:SetText(data.name) end
 	
 	ZO_SortFilterList.SetupRow(self, control, data)
@@ -322,6 +336,13 @@ function DolgubonSetCrafter.debugFunctions()
 		end
 	end
 end
+function DolgubonSetCrafter.autofillFunctions()
+	--if DolgubonSetCrafter.savedVars.autofill then
+		for k, v in pairs(autofillFunctions) do
+			v()
+		end
+	--end
+end
 
 function DolgubonSetCrafter.setupLocalizedLabels()
 	DolgubonSetCrafterWindowPatternInput:SetText 	(langStrings.UIStrings.patternHeader)
@@ -360,9 +381,9 @@ end
 
 updateList = function () DolgubonSetCrafter.manager:RefreshData()
 	if #queue == 0 then 
-		CraftingQueueScrollLabel:SetText(DolgubonSetCrafter.localizedStrings.UIStrings.queueHeader)
+		CraftingQueueScrollCounter:SetText()
 	else
-		CraftingQueueScrollLabel:SetText(DolgubonSetCrafter.localizedStrings.UIStrings.queueHeader.." - "..#queue)
+		CraftingQueueScrollCounter:SetText(" - "..#queue)
 	end
  end
 DolgubonSetCrafter.updateList = updateList

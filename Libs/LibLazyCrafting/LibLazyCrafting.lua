@@ -253,12 +253,7 @@ end
 local function LLC_CancelItem(self, station, position)
 	if position == nil then
 		if station == nil then
-			for i = 1, #craftingQueue[self.addonName] do
-				for j = 1, #craftingQueue[self.addonName][i] do
-					table.remove(craftingQueue[self.addonName][i], j)
-					
-				end
-			end
+			craftingQueue[self.addonName] = {{},{},{},{},{},{},}
 		else
 			for j = 1, #craftingQueue[self.addonName][station] do
 				table.remove(craftingQueue[self.addonName][i], j)
@@ -303,6 +298,14 @@ LibLazyCrafting.functionTable.craftItem = LLC_CraftItem
 
 LibLazyCrafting.functionTable.CraftAllItems = LLC_CraftAllItems
 LibLazyCrafting.functionTable.findItemByReference =  LLC_FindItemByReference
+
+local function LLC_GetMatRequirements(self, reference)
+	local requests = LLC_FindItemByReference(self, reference)
+	for i = 1, #requests do
+		LibLazyCrafting.craftInteractionTables[requests[i].station]["materialRequirements"](requests[i])
+	end
+
+end
 
 function LibLazyCrafting:Init()
 
@@ -445,7 +448,7 @@ end
 -- Additionally, the craft complete event is called BEFORE the end crafting station interaction event
 -- So this function will check if the interaction is still going on, and call the endinteraction function if needed
 -- which bypasses the event Manager, so that it is called first.
-timetest = 10
+
 local function CraftComplete(event, station)
 	local LLCResult = nil
 	for k,v in pairs(LibLazyCrafting.craftInteractionTables) do

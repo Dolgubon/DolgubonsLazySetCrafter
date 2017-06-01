@@ -20,6 +20,8 @@ DolgubonSetCrafter.localizedStrings.UIStrings.addToQueue          = "Add to Queu
 DolgubonSetCrafter.localizedStrings.UIStrings.queueHeader         = "Crafting Queue"
 DolgubonSetCrafter.localizedStrings.UIStrings.clearQueue          = "Clear Queue"
 DolgubonSetCrafter.localizedStrings.UIStrings.resetToDefault      = "Clear Selections"
+DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughKnowledge  = "You do not have enough knowledge to make this attribute"
+DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughMats       = "You do not have enough materials to make this attribute"
 
 
 
@@ -83,3 +85,5 @@ And it's resizeable because
 
 
 --NEW ADDON: Dolgubon's Lazy Set Crafter! Make sets of gear easily and quickly, at ANY quality!! Check out tinyurl.com/SetCrafter for more info!
+
+--/Script BeginGroupElection(0, "Press F to start... well... something" ,nil)

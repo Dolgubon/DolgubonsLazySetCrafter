@@ -14,6 +14,7 @@ DolgubonSetCrafter.default = {
 	["queue"] = {},
 	["xPos"] = 0,
 	["yPos"] = 0,
+	["counter"] = 0,
 }
 DolgubonSetCrafter.defaultCharacter = 
 {
@@ -69,15 +70,10 @@ function DolgubonSetCrafter:Initialize()
 	if DolgubonSetCrafter.savedVars.debug then
 		DolgubonSetCrafterWindow:SetHidden(false)
 	end
+	DolgubonSetCrafter.initializeFunctions.initializeSettingsMenu()
+	DolgubonSetCrafter.initializeFunctions.initializeCrafting()
+	DolgubonSetCrafter.initializeFunctions.setupUI()
 
-	for k, v in pairs(DolgubonSetCrafter.initializeFunctions) do
-
-		if v then
-			v()
-		else
-			d(k.." was not loaded")
-		end
-	end
 	DolgubonSetCrafter.initializeFeedbackWindow()
 end
 
