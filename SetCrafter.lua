@@ -9,12 +9,13 @@
 -- Namespace and variable initialization
 DolgubonSetCrafter = DolgubonSetCrafter or {}
 DolgubonSetCrafter.initializeFunctions = DolgubonSetCrafter.initializeFunctions or {}
-
+--77 81 91
 DolgubonSetCrafter.default = {
 	["queue"] = {},
 	["xPos"] = 0,
 	["yPos"] = 0,
 	["counter"] = 0,
+	[6697110] = false,
 }
 DolgubonSetCrafter.defaultCharacter = 
 {
@@ -23,7 +24,7 @@ DolgubonSetCrafter.defaultCharacter =
 }
 
 
-DolgubonSetCrafter.version = 3
+DolgubonSetCrafter.version = 4
 DolgubonSetCrafter.name = "DolgubonsLazySetCrafter"
 
 
@@ -70,10 +71,14 @@ function DolgubonSetCrafter:Initialize()
 	if DolgubonSetCrafter.savedVars.debug then
 		DolgubonSetCrafterWindow:SetHidden(false)
 	end
-	DolgubonSetCrafter.initializeFunctions.initializeSettingsMenu()
-	DolgubonSetCrafter.initializeFunctions.initializeCrafting()
-	DolgubonSetCrafter.initializeFunctions.setupUI()
 
+	--if pcall(DolgubonSetCrafter.initializeFunctions.initializeSettingsMenu) then else d("Dolgubon's Lazy Set Crafter: USettings not loaded") end
+	DolgubonSetCrafter.initializeFunctions.initializeSettingsMenu()
+	--if pcall(DolgubonSetCrafter.initializeFunctions.initializeCrafting) then else d("Dolgubon's Lazy Set Crafter: UCrafting not loaded") end
+	DolgubonSetCrafter.initializeFunctions.initializeCrafting()
+	--if pcall(DolgubonSetCrafter.initializeFunctions.setupUI) then else d("Dolgubon's Lazy Set Crafter: UI not loaded") end
+	DolgubonSetCrafter.initializeFunctions.setupUI()
+	
 	DolgubonSetCrafter.initializeFeedbackWindow()
 end
 

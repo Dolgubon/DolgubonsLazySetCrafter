@@ -1,30 +1,30 @@
------------------------------------------------------------------------------------
--- Library Name: LibLazyCrafting (LLC)
--- Creator: Dolgubon (Joseph Heinzle)
--- Library Ideal: Allow addons to craft anything, anywhere
--- Library Creation Date: December, 2016
--- Publication Date: Febuary 5, 2017
---
--- File Name: LibLazyCrafting.lua
--- File Description: Contains the main functions of LLC, uncluding the queue and initialization functions
--- Load Order Requirements: Before all other library files
---
------------------------------------------------------------------------------------
+--[[
+Author: Dolgubon
+Filename: LibLazyCrafting.lua
+Version: 0.1
+
+This is a work in progress.
+]]--
+
+------------------
+--NOTES
+-- Should Legendary upgrading be attempted? Is the risk worth it?
+-- How to structure requests, and internal tables
+-- What would addon developers want, to be able to interact with the library?
 
 -- Initialize libraries
 
 local function dbug(...)
-	--DolgubonDebugRunningDebugString(...)
+	DolgubonDebugRunningDebugString(...)
 end
 local libLoaded
-local LIB_NAME, VERSION = "LibLazyCrafting", 1.5
+local LIB_NAME, VERSION = "LibLazyCrafting", 0.3
 local LibLazyCrafting, oldminor = LibStub:NewLibrary(LIB_NAME, VERSION)
 if not LibLazyCrafting then return end
-local LLC = LibLazyCrafting
 
-LibLazyCrafting.craftInteractionTables =
+LibLazyCrafting.craftInteractionTables = 
 {
-	["example"] =
+	["example"] = 
 	{
 		["check"] = function(station) if station == 123 then return false end end,
 		["function"] = function(station) --[[craftStuff()]] end,
@@ -33,30 +33,10 @@ LibLazyCrafting.craftInteractionTables =
 	}
 }
 
-LibLazyCrafting.isCurrentlyCrafting = {false, "", ""}
-LLC.widgets = LLC.widgets or {}
-local widgets = LLC.widgets
-
---METHOD: REGISTER WIDGET--
---each widget has its version checked before loading,
---so we only have the most recent one in memory
---Usage:
---	widgetType = "string"; the type of widget being registered
---	widgetVersion = integer; the widget's version number
---	From LibAddonMenu
-
-function LibLazyCrafting:RegisterWidget(widgetType, widgetVersion)
-	if widgets[widgetType] and widgets[widgetType] >= widgetVersion then
-		return false
-	else
-		widgets[widgetType] = widgetVersion
-		return true
-	end
-end
 
 
 -- Index starts at 0 because that's how many upgrades are needed.
-local qualityIndexes =
+local qualityIndexes = 
 {
 	[0] = "White",
 	[1] = "Green",
@@ -77,14 +57,14 @@ local qualityIndexes =
 -- Thus, all that's needed to find the oldest request is cycle through each addon, and check only their first request.
 -- Unless a user has hundreds of addons using this library (unlikely) it shouldn't be a big strain. (shouldn't anyway)
 -- Not sure how to handle multiple stations for furniture. needs more research for that.
-craftingQueue =
+craftingQueue = 
 {
 	--["GenericTesting"] = {}, -- This is for say, calling from chat.
 	["ExampleAddon"] = -- This contains examples of all the crafting requests. It is removed upon initialization. Most values are random/default.
 	{
 		["autocraft"] = false, -- if true, then timestamps will be applied when the addon calls LLC_craft()
 		[CRAFTING_TYPE_CLOTHIER] = {},
-		[CRAFTING_TYPE_WOODWORKING] =
+		[CRAFTING_TYPE_WOODWORKING] = 
 		{
 			{["type"] = "smithing",
 			["pattern"] =0,
@@ -99,7 +79,7 @@ craftingQueue =
 			["useUniversalStyleItem"] = false,
 			["timestamp"] = 1111113223232323231, },
 		},
-		[CRAFTING_TYPE_BLACKSMITHING] =
+		[CRAFTING_TYPE_BLACKSMITHING] = 
 		{
 			{["type"] = "improvement",
 			["Requester"] = "", -- ADDON NAME
@@ -112,7 +92,7 @@ craftingQueue =
 			["FinalQuality"] = 0,
 			["timestamp"] = 111222323232323232322,}
 		},
-		[CRAFTING_TYPE_ENCHANTING] =
+		[CRAFTING_TYPE_ENCHANTING] = 
 		{
 			{["essenceItemID"] = 0,
 			["aspectItemID"] = 0,
@@ -122,10 +102,10 @@ craftingQueue =
 			["Requester"] = "",
 		}
 		},
-		[CRAFTING_TYPE_ALCHEMY] =
-		{
+		[CRAFTING_TYPE_ALCHEMY] = 
+		{	
 			{["SolvenItemID"] = 0,
-			["Reagents"] =
+			["Reagents"] = 
 			{
 				[1] = 0,
 				[2] = 0,
@@ -136,7 +116,7 @@ craftingQueue =
 			["autocraft"] = true,
 		}
 		},
-		[CRAFTING_TYPE_PROVISIONING] =
+		[CRAFTING_TYPE_PROVISIONING] = 
 		{
 			{["RecipeID"] = 0,
 			["timestamp"] = 111232323232323111,
@@ -146,8 +126,6 @@ craftingQueue =
 	},
 }
 craftingQueue["ExampleAddon"] = nil
-
-LibLazyCrafting.craftingQueue = craftingQueue
 
 local craftResultFunctions = {[""]=function() end}
 
@@ -169,8 +147,8 @@ function GetItemIDFromLink(itemLink) return tonumber(string.match(itemLink,"|H%d
 
 -- Mostly a queue function, but kind of a helper function too
 local function isItemCraftable(request, station)
-	if LibLazyCrafting.craftInteractionTables[station]["isItemCraftable"] then
-		return LibLazyCrafting.craftInteractionTables[station]["isItemCraftable"](station, request)
+	if LibLazyCrafting.craftInteractionTables[station]["isItemCraftable"] then 
+		return LibLazyCrafting.craftInteractionTables[station]["isItemCraftable"](station, request) 
 	end
 
 	if station ==CRAFTING_TYPE_ENCHANTING or station == CRAFTING_TYPE_PROVISIONING or station == CRAFTING_TYPE_ALCHEMY then
@@ -192,7 +170,7 @@ function findItemLocationById(itemID)
 		end
 	end
 	if GetItemId(BAG_VIRTUAL, itemID) ~=0 then
-
+		
 		return BAG_VIRTUAL, itemID
 
 	end
@@ -202,100 +180,13 @@ end
 
 LibLazyCrafting.functionTable.findItemLocationById = findItemLocationById
 
--- Return current backpack inventory.
-function LibLazyCrafting.backpackInventory()
-	local r = {}
-	local bagId = BAG_BACKPACK
-	local maxSlotId = GetBagSize(bagId)
-	local total = 0 -- to help with debugging: did ANYTHING grow?
-	for slotIndex = 0, maxSlotId do
-		r[slotIndex] = GetSlotStackSize(bagId, slotIndex)
-		total = total + r[slotIndex]
-	end
-	return r
-end
-
--- Return the first slot index of a stack of items that grew.
--- Return nil if no stacks grew.
---
--- prevSlotsContaining and newSlotsContaining are expected to be
--- results from backpackInventory().
-function LibLazyCrafting.findIncreasedSlotIndex(prevInventory, currInventory)
-	local maxSlotId = math.max(#prevInventory, #currInventory)
-	for slotIndex = 0, maxSlotId do
-		local prev = prevInventory[slotIndex]
-		local curr = currInventory[slotIndex]
-
-						-- Previously nil slot now non-nil
-						-- (can happen when #curr > #prev)
-		if curr and not prev then return slotIndex end
-
-						-- This stack increased.
-		if prev < curr then return slotIndex end
-	end
-	return nil
-end
-
-function LibLazyCrafting.tableShallowCopy(t)
-	local a = {}
-	for k, v in pairs(t) do
-		a[k] = v
-	end
-	return a
-end
--- clear a table in-place. Allows functions to clear out tables passed as a parameter.
-local function tableClear(t)
-	for k,_ in ipairs(t) do
-		t[k] = nil
-	end
-end
--- Common code called by Alchemy and Provisioning crafting complete handlers.
-function LibLazyCrafting.stackableCraftingComplete(event, station, lastCheck, craftingType, currentCraftAttempt)
-	dbug("EVENT:CraftComplete")
-	if not (currentCraftAttempt and currentCraftAttempt.addon) then return end
-	local currSlots = LibLazyCrafting.backpackInventory()
-	local grewSlotIndex = LibLazyCrafting.findIncreasedSlotIndex(currentCraftAttempt.prevSlots, currSlots)
-	if grewSlotIndex then
-		dbug("RESULT:StackableMade")
-		if currentCraftAttempt["timesToMake"] < 2 then
-			dbug("ACTION:RemoveQueueItem")
-			craftingQueue[currentCraftAttempt.addon][craftingType][currentCraftAttempt.position] = nil
-			LibLazyCrafting.sortCraftQueue()
-			local resultTable =
-			{
-				["bag"] = BAG_BACKPACK,
-				["slot"] = grewSlotIndex,
-				['link'] = currentCraftAttempt.link,
-				['uniqueId'] = GetItemUniqueId(BAG_BACKPACK, currentCraftAttempt.slot),
-				["quantity"] = 1,
-				["reference"] = currentCraftAttempt.reference,
-			}
-			currentCraftAttempt.callback(LLC_CRAFT_SUCCESS, craftingType, resultTable)
-			tableClear(currentCraftAttempt)
-		else
-			-- Loop to craft multiple copies
-			local earliest = craftingQueue[currentCraftAttempt.addon][craftingType][currentCraftAttempt.position]
-			earliest.timesToMake = earliest.timesToMake - 1
-			currentCraftAttempt.timesToMake = earliest.timesToMake
-			if GetCraftingInteractionType()==0 then zo_callLater(function() LibLazyCrafting.stackableCraftingComplete(event, station, true, craftingType, currentCraftAttempt) end,100) end
-		end
-	elseif lastCheck then
-		-- give up on finding it.
-		tableClear(currentCraftAttempt)
-	else
-		-- further search
-		-- search again later
-		if GetCraftingInteractionType()==0 then zo_callLater(function() LibLazyCrafting.stackableCraftingComplete(event, station, true, craftingType, currentCraftAttempt) end,100) end
-	end
-end
-
 
 -------------------------------------
 -- QUEUE FUNCTIONS
 
 local function sortCraftQueue()
-	for name, requests in pairs(craftingQueue) do
-		for i = 1, 6 do
+	for name, requests in pairs(craftingQueue) do 
+		for i = 1, 6 do 
 			table.sort(requests[i], function(a, b) if a and b then return a["timestamp"]<b["timestamp"] else return a end end)
 		end
 	end
@@ -344,14 +235,14 @@ LibLazyCrafting.findEarliestRequest = findEarliestRequest
 local function LLC_CraftAllItems(self)
 	for i = 1, #craftingQueue[self.addonName] do
 		for j = 1, #craftingQueue[self.addonName][i] do
-			craftingQueue[self.addonName][i][j]["autocraft"] = true
+			craftingQueue[self.addonName][i][j]["autocraft"] = true 
 		end
 	end
 end
 
 local function LLC_CraftItem(self, station, position)
 	if position == nil then
-		for i = 1, #craftingQueue[self.addonName][station] do
+		for i = 1, #craftingQueue[self.addonName][station] do 
 			craftingQueue[self.addonName][station][i]["autocraft"] = true
 		end
 	else
@@ -366,25 +257,25 @@ local function LLC_CancelItem(self, station, position)
 		else
 			for j = 1, #craftingQueue[self.addonName][station] do
 				table.remove(craftingQueue[self.addonName][i], j)
-
+				
 			end
 		end
 	else
 		table.remove(craftingQueue[self.addonName][i], j)
-
+		
 	end
-
+	
 end
 local function LLC_CancelItemByReference(self, reference)
 	for i = 1, #craftingQueue[self.addonName] do
 		for j = 1, #craftingQueue[self.addonName][i] do
 			if craftingQueue[self.addonName][i][j] and craftingQueue[self.addonName][i][j].reference==reference then
 				table.remove(craftingQueue[self.addonName][i], j)
-
+				
 			end
 		end
 	end
-
+	
 end
 
 local function LLC_FindItemByReference(self, reference)
@@ -421,7 +312,7 @@ function LibLazyCrafting:Init()
 	-- Call this to register the addon with the library.
 	-- Really this is mostly arbitrary, I just want to force an addon to give me their name ;p. But it's an easy way, and only needs to be done once.
 	-- Returns a table with all the functions, as well as the addon's personal queue.
-	-- nilable:boolean autocraft will cause the library to automatically craft anything in the queue when at a crafting station.
+	-- nilable:boolean autocraft will cause the library to automatically craft anything in the queue when at a crafting station. 
 	function LibLazyCrafting:AddRequestingAddon(addonName, autocraft, functionCallback)
 		-- Add the 'open functions' here.
 		local LLCAddonInteractionTable = {}
@@ -431,7 +322,7 @@ function LibLazyCrafting:Init()
 		craftingQueue[addonName] = { {}, {}, {}, {}, {}, {},} -- Initialize the addon's personal queue. The tables are empty, station specific queues.
 
 		-- Ensures that any request will have an addon name attached to it, if needed.
-		LLCAddonInteractionTable["addonName"] = addonName
+		LLCAddonInteractionTable["addonName"] = addonName 
 		-- The crafting queue is added. Consider hiding this.
 		-- Pro: It hides it, prevents addon people from messing with the queue. More OOP. Don't have to deal with devs messing other addons up
 		-- Cons: Prevents them from messing with it. Maybe no scroll menus! It's up to them if they want to manually add something, too.
@@ -440,7 +331,7 @@ function LibLazyCrafting:Init()
 
 		-- Add all the functions to the interaction table!!
 		-- On the other hand, then addon devs can mess up the functions?
-
+		
 		for functionName, functionBody in pairs(LibLazyCrafting.functionTable) do
 			LLCAddonInteractionTable[functionName] = functionBody
 		end
@@ -449,21 +340,12 @@ function LibLazyCrafting:Init()
 
 		LLCAddonInteractionTable.autocraft = autocraft
 
-		-- Give add-on authors a way to check for required version beyond
-		-- "I hope LibStub returns what I asked for!"
-		LLCAddonInteractionTable["version"] = VERSION
-
 		return LLCAddonInteractionTable
-	end
-
-	-- Allows addons to see if the library is currently crafting anything, a quick overview of what it is making, and what addon is asking for it
-	function LibLazyCrafting:IsPerformingCraftProcess()
-		return unpack(LibLazyCrafting.isCurrentlyCrafting)
 	end
 
 	-- Same as the normal crafting function, with a few extra parameters.
 	-- However, doesn't craft it, just adds it to the queue. (TODO: Maybe change this? But do we want auto craft?)
-	-- StationOverride
+	-- StationOverride 
 	-- test: /script LLC_CraftSmithingItem(1, 1, 7, 2, 1, false, 1, 0, 0 )
 	-- test: /script LLC_CraftSmithingItem(1, 1, 7, 2, 1, false, 5, 0, 0)
 
@@ -481,7 +363,7 @@ function LibLazyCrafting:Init()
 				waitingOnSmithingCraftComplete = {}
 				waitingOnSmithingCraftComplete["slotID"] = FindFirstEmptySlotInBag(BAG_BACKPACK)
 				waitingOnSmithingCraftComplete["itemLink"] = GetSmithingPatternResultLink(patternIndex, materialIndex, materialQuantity, styleIndex, traitIndex, 0)
-				waitingOnSmithingCraftComplete["craftFunction"] =
+				waitingOnSmithingCraftComplete["craftFunction"] = 
 				function()
 					CraftSmithingItem(patternIndex, materialIndex, materialQuantity, styleIndex, traitIndex, useUniversalStyleItem)
 				end
@@ -497,6 +379,23 @@ function LibLazyCrafting:Init()
 		else
 			if IsPerformingCraftProcess() then d("Already Crafting") else d("Item cannot be crafted here") end
 		end
+	end
+
+
+	function LLC_CraftAlchemyItem(SolventNameOrIndex, IngredientNameOrIndexOne, IngredientNameOrIndexTwo, IngredientNameOrIndexThree)
+	end
+
+	function LLC_GetQueue(Station)
+	end
+
+	function LLC_RemoveQueueItem(index)
+	end
+
+	function LLC_ClearQueue()
+	end
+
+	--- Could be infeasible
+	function LLC_GetSmithingResultLink(patternIndex, materialIndex, materialQuantity, styleIndex, traitIndex, useUniversalStyleItem, linkstyle, stationOverride, setIndex, quality)
 	end
 
 
@@ -544,32 +443,23 @@ local function endInteraction(event, station)
 	end
 end
 
--- Called when a crafting request is done.
+-- Called when a crafting request is done. 
 -- Note that this function is called both when you finish crafting and when you leave the station
 -- Additionally, the craft complete event is called BEFORE the end crafting station interaction event
 -- So this function will check if the interaction is still going on, and call the endinteraction function if needed
 -- which bypasses the event Manager, so that it is called first.
 
 local function CraftComplete(event, station)
-	LibLazyCrafting.isCurrentlyCrafting = {false, "", ""}
-	--d("Event:completion")
 	local LLCResult = nil
 	for k,v in pairs(LibLazyCrafting.craftInteractionTables) do
 		if v["check"](station) then
 			if GetCraftingInteractionType()==0 then
-				--d("Calling exit complete, why???")
 				endInteraction(EVENT_END_CRAFTING_STATION_INTERACT, station)
 				zo_callLater(function() v["complete"](station) end, timetest)
 			else
-				--d("calling complete")
-				if WritCrafter and WritCrafter.savedVarsAccountWide.masterDebugDelay then
-					zo_callLater(function()
-					v["complete"](station)
-					v["function"](station) end, 500)
-				else
-					v["complete"](station)
-					v["function"](station)
-				end
+
+				v["complete"](station)
+				v["function"](station) 
 			end
 		end
 	end

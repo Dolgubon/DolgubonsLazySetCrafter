@@ -9,7 +9,7 @@
 -- Most of these functions are meant to be called by the main file
 -- A good portion are setup functions, called by the initialization function
 -- 
-
+--local original = d local function d() original(pcall(function() error("There's a d() at this line!") end )) end
 DolgubonSetCrafter = DolgubonSetCrafter or {}
 DolgubonSetCrafter.initializeFunctions = DolgubonSetCrafter.initializeFunctions or {}
 
@@ -49,7 +49,20 @@ local function setupPatternButtonOneTable(table,nameTable, initialX, initialY, p
 		local index = #positionToSave + 1
 		positionToSave[index] = WINDOW_MANAGER:CreateControlFromVirtual("DolgubonsSetCrafterPatternInput"..v, 
 			DolgubonSetCrafterWindowPatternInput, "PieceButtonTemplate")
-
+		--[[	-- container to easily reference the labels
+			local toonNameDisplays = {}
+			-- The next item to anchor to
+			local anchorLabel = StonedDis
+			for i = 1, 5 do
+				-- Create the virtual control
+				local currentDisplay = WINDOW_MANAGER:CreateControlFromVirtual(StonedDis:GetName()..i, StonedDis, "DisplayTemplate")
+				-- Set the anchor of the new control
+				currentDisplay:SetAnchor(TOPLEFT ,anchorLabel , TOPLEFT ,0,0)
+				-- The next control will be anchored to this new control
+				anchorLabel = currentDisplay
+				-- Add the control to the table
+				toonNameDisplays[#toonNameDisplays] = currentDisplay
+			end]]
 		-- Easy reference
 		local button = positionToSave[index]
 		button.tooltip = nameTable[k]
@@ -109,13 +122,19 @@ function DolgubonSetCrafter.setupPatternButtons()
 	local function setOtherArmourTypesToZero(index)
 		for i = 1, #DolgubonSetCrafter.armourTypes do
 			if index ~= i then
-				DolgubonSetCrafter.armourTypes[i]:toggleOff()
+				DolgubonSetCrafter.armourTypes[i]:toggleOff(true)
 			end
 		end
 	end
 
 	for i = 1, #DolgubonSetCrafter.armourTypes do
 		local button = DolgubonSetCrafter.armourTypes[i]
+		local original = button.toggleOff
+		function button:toggleOff(activate)
+			if activate then 
+				original(button)
+			end
+		end
 		function button:toggleOn()
 			self.toggleValue = true
 			self:SetNormalTexture(self.onTexture)
@@ -143,6 +162,7 @@ local out = DolgubonSetCrafter.out
 --Creates one dropdown box
 local function makeDropdownSelections(comboBoxContainer, tableInfo , text , x, y, comboBoxLocation, isArmourCombobox)
 	local comboBox = comboBoxContainer:GetChild(comboBoxLocation)
+	-- if location is 1 then get child number 2 and if location is 2 get child number 1
 	comboBoxContainer:GetChild((comboBoxLocation+2)%2+1):SetText(text..":")
 	if not comboBox.m_comboBox then 
 		comboBox.m_comboBox =comboBox.dropdown
@@ -158,12 +178,25 @@ local function makeDropdownSelections(comboBoxContainer, tableInfo , text , x, y
 		comboBox.m_comboBox.selectedName = selectedInfo[2]
 		comboBox.m_comboBox:HideDropdownInternal()
 		comboBoxContainer.selected = selectedInfo
-		comboBoxContainer.invalidSelection = function(weight) 
-			if isArmourCombobox==nil then return selectedInfo[1]==-1  
-			elseif weight =="" then if isArmourCombobox then return false else  return selectedInfo[1]==-1 end
-			elseif not isArmourCombobox then return false
-			else return selectedInfo[1]==-1
-			end
+		comboBoxContainer.invalidSelection = function(weight)
+			
+			if isArmourCombobox==nil then return selectedInfo[1]==-1
+			elseif weight =="" then
+				
+				if isArmourCombobox then
+					
+					return false 
+				else
+					
+					return selectedInfo[1]==-1 
+				end
+			elseif not isArmourCombobox then -- Armour piece is selected
+				
+				return false
+			else 
+				
+				return selectedInfo[1]==-1
+			end	
 		end
 	end
 
@@ -233,18 +266,13 @@ end
 
 -- Most of this is done in the XML, all that's left is to create the toggle and add to the editbox handler
 function DolgubonSetCrafter.setupLevelSelector()
-	local onTextChangedHandler = DolgubonSetCrafterWindowInputBox:GetHandler("OnTextChanged")
-	DolgubonSetCrafterWindowInputBox:SetHandler("OnTextChanged", 
-	function(...)
-	  	onTextChangedHandler(...)
-	  	DolgubonSetCrafter.onTextChanged()
-	end)
-
+	DolgubonSetCrafterWindowInputBox:SetTextType(2) -- Set it so it takes only numbers
 	createToggle( DolgubonSetCrafterWindowInputToggleChampion , [[esoui\art\treeicons\achievements_indexicon_champion_up.dds]] , [[esoui\art\treeicons\achievements_indexicon_champion_down.dds]], false)
 	DolgubonSetCrafterWindowInputToggleChampion.onToggleOff =function() DolgubonSetCrafterWindowInputCPLabel:SetHidden(false) end
 	DolgubonSetCrafterWindowInputToggleChampion.onToggleOn =function() DolgubonSetCrafterWindowInputCPLabel:SetHidden(true) end
 	DolgubonSetCrafterWindowInputBox.selectPrompt = zo_strformat(langStrings.UIStrings.selectPrompt,langStrings.UIStrings.level)
 	debugSelections[#debugSelections+1] = function() DolgubonSetCrafterWindowInputBox:SetText("10") end
+	debugSelections[#debugSelections+1] = DolgubonSetCrafterWindowInputToggleChampion.ToggleOff
 end
 
 
@@ -255,6 +283,7 @@ function DolgubonScroll:New(control)
 	local SorterKeys =
 	{
 		name = {},
+		Reference = {},
 	}
 	
  	self.masterList = {}
@@ -262,9 +291,9 @@ function DolgubonScroll:New(control)
  	ZO_ScrollList_AddDataType(self.list, 1, "CraftingRequestTemplate", 30, function(control, data) self:SetupEntry(control, data) end)
  	ZO_ScrollList_EnableHighlight(self.list, "ZO_ThinListHighlight")
 	
-	self.currentSortKey = "name"
+	self.currentSortKey = "Reference"
 	self.currentSortOrder = ZO_SORT_ORDER_UP
- 	self.sortFunction = function(listEntry1, listEntry2) return ZO_TableOrderingFunction(listEntry1.data, listEntry2.data, self.currentSortKey, SorterKeys, self.currentSortOrder) end
+ 	self.sortFunction = function(listEntry1, listEntry2) return ZO_TableOrderingFunction(listEntry1.data[1], listEntry2.data[1], "Reference", SorterKeys, self.currentSortOrder) end
 	
 	return self
 	
@@ -285,15 +314,20 @@ function DolgubonScroll:SetupEntry(control, data)
 	for k , v in pairs (data[1]) do
 		control[k] = GetControl(control, k)
 		if control[k] then
-			control[k]:SetText(v[2])
-			control[k]:SetColor(1,1,0)
-			control[k]:ApplyColour(v[3])
+			if type(v)=="table" then
+				control[k]:SetText(v[2])
+				control[k]:SetColor(1,1,0)
+
+				control[k]:ApplyColour(v[3])
+			else
+				control[k]:SetText(v)
+			end
 		end
 	end
 
 	button = control:GetNamedChild( "RemoveButton")
 
-	function button:onClickety ()DolgubonSetCrafter.removeFromScroll(data[1].Reference) updateList() end
+	function button:onClickety ()   DolgubonSetCrafter.removeFromScroll(data[1].Reference)  end
 	--function control:onClicked () DolgubonsGuildBlacklistWindowInputBox:SetText(data.name) end
 	
 	ZO_SortFilterList.SetupRow(self, control, data)
@@ -564,6 +598,9 @@ CP160 Twice Born Star Robe
 |H1:item:44241:308:50:0:0:0:0:0:0:0:0:0:0:0:0:1:0:0:0:10000:0|h|h
 |H1:item:43544:308:50:0:0:0:0:0:0:0:0:0:0:0:0:1:0:0:0:10000:0|h|h
 |H1:item:43545:308:50:0:0:0:0:0:0:0:0:0:0:0:0:1:0:0:0:10000:0|h|h
+
+
+<Label name="$(parent)Name" font="ZoFontGameShadow" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
 ]]
 
 -- Check out ZO_StatsDropdownRow

@@ -1,48 +1,14 @@
------------------------------------------------------------------------------------
--- Library Name: LibLazyCrafting
--- Creator: Dolgubon (Joseph Heinzle)
--- Library Ideal: Allow addons to craft anything, anywhere
--- Library Creation Date: December, 2016
--- Publication Date: Febuary 5, 2017
---
--- File Name: Smithing.lua
--- File Description: Contains the functions for Smithing (Blacksmithing, Clothing, Woodworking)
--- Load Order Requirements: After LibLazyCrafting.lua
--- 
------------------------------------------------------------------------------------
-
-
---GetLastCraftingResultItemLink(number resultIndex, number LinkStyle linkStyle)
---/script d(GetLastCraftingResultItemInfo(1))
-
---if tonumber(requestTable[station][i]["timestamp"]) < earliest["timestamp"] then
---user:/AddOns/DolgubonsLazySetCrafter/Libs/LibLazyCrafting/LibLazyCrafting.lua:300: operator < is not supported for string < number
--- 	stack traceback:
- --   user:/AddOns/DolgubonsLazySetCrafter/Libs/LibLazyCrafting/LibLazyCrafting.lua:300: in function 'findEarliestRequest'
- --   user:/AddOns/DolgubonsLazyWritCreator/libs/LibLazyCrafting/Smithing.lua:423: in function 'LLC_SmithingCraftInteraction'
- --   user:/AddOns/DolgubonsLazySetCrafter/Libs/LibLazyCrafting/LibLazyCrafting.lua:523: in function 'CraftInteract'
-
 local LibLazyCrafting = LibStub("LibLazyCrafting")
-
-local widgetType = 'smithing'
-local widgetVersion = 1
-if not LibLazyCrafting:RegisterWidget(widgetType, widgetVersion) then return  end
-
-local function dbug(...)
-	if DolgubonGlobalDebugOutput then
-		DolgubonGlobalDebugOutput(...)
-	end
-end
-
-local craftingQueue = LibLazyCrafting.craftingQueue
-
-local SetIndexes
-
 local sortCraftQueue = LibLazyCrafting.sortCraftQueue
 SetIndexes ={}
 local abc = 1
 local MaterialitemIDTable = {}
 local improvementChances = {}
+local function dbug(...)
+	if DolgubonGlobalDebugOutput then
+		DolgubonGlobalDebugOutput(...)
+	end
+end
 
 -- This is filled out after crafting. It's so we can make sure that:
 -- A: The item was crafted and
@@ -470,7 +436,6 @@ local function LLC_SmithingCraftInteraction( station)
 			parameters[1] = parameters[1] + setPatternOffset[station]	
 		end
 			dbug("CALL:ZOCraftSmithing")
-			LibLazyCrafting.isCurrentlyCrafting = {true, "smithing", earliest["Requester"]}
 			CraftSmithingItem(unpack(parameters))
 
 			currentCraftAttempt = copy(earliest)
@@ -481,7 +446,7 @@ local function LLC_SmithingCraftInteraction( station)
 			table.remove(parameters,6 )
 
 			currentCraftAttempt.link = GetSmithingPatternResultLink(unpack(parameters))
-			--d("Making reference #"..tostring(currentCraftAttempt.reference).." link: "..currentCraftAttempt.link)
+
 		elseif earliest.type =="improvement" then
 			local parameters = {}
 			local skillIndex = station + 1 - math.floor(station/6)
@@ -511,7 +476,6 @@ local function LLC_SmithingCraftInteraction( station)
 				d("Not enough improvement mats")
 				return end
 			dbug("CALL:ZOImprovement")
-			LibLazyCrafting.isCurrentlyCrafting = {true, "improve", earliest["Requester"]}
 			ImproveSmithingItem(earliest.ItemBagID,earliest.ItemSlotID, numBooster)
 			currentCraftAttempt = copy(earliest)
 			currentCraftAttempt.position = position
@@ -565,24 +529,19 @@ end
 
 local function SmithingCraftCompleteFunction(station)
 	dbug("EVENT:CraftComplete")
-	--d("complete at "..GetTimeStamp())
+
 	if currentCraftAttempt.type == "smithing" then
 		if WasItemCrafted() then
 			
 			dbug("ACTION:RemoveRequest")
 			
-			--d("Item found")
+
 			table.remove(craftingQueue[currentCraftAttempt.Requester][station],currentCraftAttempt.position )
 			if currentCraftAttempt.quality>1 then
-				--d("Improving #".. tostring(currentCraftAttempt.reference))
 				LLC_ImproveSmithingItem({["addonName"]=currentCraftAttempt.Requester}, BAG_BACKPACK, currentCraftAttempt.slot, currentCraftAttempt.quality, currentCraftAttempt.autocraft, currentCraftAttempt.reference)
 			else
-				local errorFound, err =  pcall(function()LibLazyCrafting.craftResultFunctions[currentCraftAttempt.Requester](LLC_CRAFT_SUCCESS, station, 
-					{["bag"] = BAG_BACKPACK,["slot"] = currentCraftAttempt.slot,["reference"] = currentCraftAttempt.reference} )end)
-					if not errorFound then
-						d("Callback to LLC resulted in an error. Please contact the author of "..currentCraftAttempt.Requester)
-						d(err)
-					end
+				LibLazyCrafting.craftResultFunctions[currentCraftAttempt.Requester](LLC_CRAFT_SUCCESS, station, 
+					{["bag"] = BAG_BACKPACK,["slot"] = currentCraftAttempt.slot,["reference"] = currentCraftAttempt.reference} )
 			end
 			currentCraftAttempt = {}
 			sortCraftQueue()
@@ -599,12 +558,9 @@ local function SmithingCraftCompleteFunction(station)
 		currentCraftAttempt = {}
 		sortCraftQueue()
 	else
-
 		return
 	end
 end
-
-
 
 local function compileRequirements(request, station)-- Ingot/style mat/trait mat/improvement mat
 	local requirements = {}
@@ -613,7 +569,9 @@ local function compileRequirements(request, station)-- Ingot/style mat/trait mat
 	requirements[GetItemIDFromLink( GetSmithingTraitItemLink(request.trait, 0))] = 1
 	if request.quality==1 then return requirements end
 	
+
 end
+
 
 LibLazyCrafting.craftInteractionTables[CRAFTING_TYPE_BLACKSMITHING] =
 {
@@ -704,18 +662,10 @@ SetIndexes =
 	{{121551 , 121571, [6] = 121558 },3},
 	{{122251 , 122271, [6] = 122258 },6},
 	{{121901 , 121921, [6] = 121908 },8},
-	{{131070 , 131090, [6] = 131077 },6},
-	{{130370 , 130390, [6] = 130377 },2},
-	{{130720 , 130740, [6] = 130727 },4},
-
 }
-
-
-
 
 for i = 1,#SetIndexes do 
 	local _, a = GetItemLinkSetInfo(getItemLinkFromItemId(SetIndexes[i][1][1]),false)
-
 	table.insert(SetIndexes[i],1,a)
 end
 
@@ -726,7 +676,7 @@ function GetSetIndexes()
 end
 
 -- IDs for stuff like Sanded Ruby Ash, Iron Ingots, etc.
-local MaterialitemIDTable = 
+MaterialitemIDTable = 
 {
 	[CRAFTING_TYPE_BLACKSMITHING] = 
 	{
@@ -769,7 +719,7 @@ local MaterialitemIDTable =
 	},
 }
 
-local improvementChances = 
+improvementChances = 
 {
 	[1] = {5, 7,10,20},
 	[2] = {4,5,7,14},

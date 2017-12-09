@@ -113,7 +113,7 @@
 								self:toggle()
 							</OnClicked>
 				    	</Button>
-						<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText">
+						<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" textType="number">
 
 							<OnInitialized>
 								ZO_EditDefaultText_Initialize(self, "")
@@ -215,6 +215,7 @@
 					if isKnown then
 						original(self,0.4627451300621,0.73725491762161,0.76470595598221)
 					elseif isKnown==nil then
+						self.SetColor = original return
 					else
 						original(self,1,0.75,0.75,0.75)
 					end
@@ -243,6 +244,9 @@
 			<OnMouseExit>
 				--BlacklistExitRow(self)
 			</OnMouseExit>
+			<OnClicked>
+				-- Show only the mat requirements for this particular request. On second click, go back to total
+			</OnClicked>
 			<Dimensions x="850" y="30" />
 			<Controls>
 				<Button name="$(parent)RemoveButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
@@ -255,9 +259,9 @@
 				</Button>
 				<Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
 				
-				<Label name="$(parent)Pattern" inherits="QueueRowLabelTemplate">
+				<Label name="$(parent)Pattern" inherits="QueueRowLabelTemplate" color="76BCC3">
 					<Dimensions x="90" y="48" />
-					<Anchor point="LEFT" relativeTo="$(parent)" offsetX="0" />
+					<Anchor point="LEFT" relativeTo="$(parent)" offsetX="0" color="000000" />
 				</Label>
 				<Label name="$(parent)Weight" inherits="QueueRowLabelTemplate">
 					<Dimensions x="70" y="48" />
@@ -282,6 +286,15 @@
 				<Label name="$(parent)Quality" inherits="QueueRowLabelTemplate">
 					<Dimensions x="90" y="48" />
 					<Anchor point="LEFT" relativeTo="$(parent)Set" offsetX="140" />
+				</Label>
+				<Label name="$(parent)Reference" inherits="QueueRowLabelTemplate">
+					<Dimensions x="30" y="48" />
+					<Anchor point="LEFT" relativeTo="$(parent)Set" offsetX="200" />
+					<OnInitialized>
+						if not DolgubonSetCrafter.savedVars.debug then
+							self:SetHidden(true)
+						end
+					</OnInitialized>
 				</Label>
 				
 			</Controls>

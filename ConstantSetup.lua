@@ -34,36 +34,20 @@ DolgubonSetCrafter.weaponTraits[#DolgubonSetCrafter.weaponTraits + 1] = {[1] = I
 --------------------------------------
 --- STYLES
 	
-local bretonFlavour = GetItemLinkFlavorText(GetSmithingStyleItemLink(2 , 0))
-local FlavourText = GetItemLinkFlavorText(GetSmithingStyleItemLink(3 , 0)) -- actually redguard
 
-local excludedStyles =
-{ -- Unique(10) Bandit(18) Maormer (32), Reach Winter (37) Tsaesci(38), Redoran(48), Hlaalu (49), Telvanni(51), Worm Cult(55), others are unused styles
-	10, 18, 32, 37, 38, 48, 49, 51, 55
-}
 
-local function isStyleExcluded(index)
-	for i = 1, #excludedStyles do
-		if index == excludedStyles[i] then
-			return true
-		end
-	end
-	if index >59 then  return true end -- it is an 'Unused ##' style
-	return false
-end
 
---setup Style Table
 
 local styles = {}
-for i = 1, GetNumSmithingStyleItems() do
-	if GetString("SI_ITEMSTYLE", i)~="" then
-		if not isStyleExcluded(i) then
-			
-			styles[#styles + 1] = {i+1 ,GetString("SI_ITEMSTYLE", i),}
-		end
-	end
+for i = 1, GetNumValidItemStyles() do
+	local styleItemIndex = GetValidItemStyleId(i)
+	local  itemName = GetItemStyleName(styleItemIndex)
+	local styleItem = GetSmithingStyleItemInfo(styleItemIndex)
+
+	table.insert(styles,{styleItemIndex,itemName, styleItem, GetItemStyleMaterialLink(styleItemIndex, 0 )})
+
 end
-table.sort(styles, function (a,b) return a[2]<b[2] end)
+table.sort(styles, function (a,b) return a[2]<b[2] end)--GetItemStyleMaterialLink(number itemStyleId, number LinkStyle linkStyle)
 -- Add Colours based on knowledge 
 for i = 1, #styles do
 	local colour = "|cFFFFFF"
