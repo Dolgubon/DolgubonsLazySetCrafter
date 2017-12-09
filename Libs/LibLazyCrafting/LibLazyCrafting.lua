@@ -17,10 +17,13 @@ local function dbug(...)
 	--DolgubonDebugRunningDebugString(...)
 end
 local libLoaded
-local LIB_NAME, VERSION = "LibLazyCrafting", 1.5
+local LIB_NAME, VERSION = "LibLazyCrafting", 1.6
 local LibLazyCrafting, oldminor = LibStub:NewLibrary(LIB_NAME, VERSION)
 if not LibLazyCrafting then return end
 local LLC = LibLazyCrafting
+
+LLC.name, LLC.version = LIB_NAME, VERSION
+
 
 LibLazyCrafting.craftInteractionTables =
 {

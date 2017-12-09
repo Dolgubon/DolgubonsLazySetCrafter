@@ -25,7 +25,7 @@
 local LibLazyCrafting = LibStub("LibLazyCrafting")
 
 local widgetType = 'smithing'
-local widgetVersion = 1
+local widgetVersion = 1.1
 if not LibLazyCrafting:RegisterWidget(widgetType, widgetVersion) then return  end
 
 local function dbug(...)
@@ -562,6 +562,26 @@ local function WasItemImproved(currentCraftAttempt)
 	return GetItemLinkQuality(GetItemLink(currentCraftAttempt.ItemBagID,currentCraftAttempt.ItemSlotID))==currentCraftAttempt.quality
 
 end
+local backupPosition
+
+local function smithingCompleteNewItemHandler(station)
+	
+	dbug("ACTION:RemoveRequest")
+	
+	--d("Item found")
+	table.remove(craftingQueue[currentCraftAttempt.Requester][station],currentCraftAttempt.position )
+	if currentCraftAttempt.quality>1 then
+		--d("Improving #".. tostring(currentCraftAttempt.reference))
+		LLC_ImproveSmithingItem({["addonName"]=currentCraftAttempt.Requester}, BAG_BACKPACK, currentCraftAttempt.slot, currentCraftAttempt.quality, currentCraftAttempt.autocraft, currentCraftAttempt.reference)
+	else
+		local errorFound, err =  pcall(function()LibLazyCrafting.craftResultFunctions[currentCraftAttempt.Requester](LLC_CRAFT_SUCCESS, station, 
+			{["bag"] = BAG_BACKPACK,["slot"] = currentCraftAttempt.slot,["reference"] = currentCraftAttempt.reference} )end)
+		if not errorFound then
+			d("Callback to LLC resulted in an error. Please contact the author of "..currentCraftAttempt.Requester)
+			d(err)
+		end
+	end
+end
 
 local function SmithingCraftCompleteFunction(station)
 	dbug("EVENT:CraftComplete")
@@ -569,25 +589,18 @@ local function SmithingCraftCompleteFunction(station)
 	if currentCraftAttempt.type == "smithing" then
 		if WasItemCrafted() then
 			
-			dbug("ACTION:RemoveRequest")
-			
-			--d("Item found")
-			table.remove(craftingQueue[currentCraftAttempt.Requester][station],currentCraftAttempt.position )
-			if currentCraftAttempt.quality>1 then
-				--d("Improving #".. tostring(currentCraftAttempt.reference))
-				LLC_ImproveSmithingItem({["addonName"]=currentCraftAttempt.Requester}, BAG_BACKPACK, currentCraftAttempt.slot, currentCraftAttempt.quality, currentCraftAttempt.autocraft, currentCraftAttempt.reference)
-			else
-				local errorFound, err =  pcall(function()LibLazyCrafting.craftResultFunctions[currentCraftAttempt.Requester](LLC_CRAFT_SUCCESS, station, 
-					{["bag"] = BAG_BACKPACK,["slot"] = currentCraftAttempt.slot,["reference"] = currentCraftAttempt.reference} )end)
-					if not errorFound then
-						d("Callback to LLC resulted in an error. Please contact the author of "..currentCraftAttempt.Requester)
-						d(err)
-					end
+			smithingCompleteNewItemHandler(station)
+		else
+			if backupPosition then
+				currentCraftAttempt.slot = backupPosition
+				if WasItemCrafted() then
+					smithingCompleteNewItemHandler(station)
+				end
 			end
-			currentCraftAttempt = {}
-			sortCraftQueue()
-
 		end
+		currentCraftAttempt = {}
+		sortCraftQueue()
+		backupPosition = nil
 	elseif currentCraftAttempt.type == "improvement" then
 
 		if WasItemImproved(currentCraftAttempt) then
@@ -598,12 +611,23 @@ local function SmithingCraftCompleteFunction(station)
 		end
 		currentCraftAttempt = {}
 		sortCraftQueue()
+		backupPosition = nil
 	else
 
 		return
 	end
 end
 
+local function slotUpdateHandler(event, bag, slot, isNew, itemSoundCategory, inventoryUpdateReason, stackCountChange)
+
+	if not isNew then return end
+	if stackCountChange ~= 1 then return end
+	if LibLazyCrafting.IsPerformingCraftProcess() then
+		backupPosition = slot
+	end
+end
+
+EVENT_MANAGER:RegisterForEvent(LibLazyCrafting.name, EVENT_INVENTORY_SINGLE_SLOT_UPDATE, slotUpdateHandler)
 
 
 local function compileRequirements(request, station)-- Ingot/style mat/trait mat/improvement mat
