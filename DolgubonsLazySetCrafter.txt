@@ -4,10 +4,10 @@
 ; States and/or other countries. All rights reserved.
 ; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
 
-## Title: Dolgubon's Lazy Set Crafter v1.0.22
+## Title: Dolgubon's Lazy Set Crafter v1.1.0
 ## APIVersion: 100021
 ## Author: Dolgubon
-## Version: 1.0.22
+## Version: 1.1.0
 ## SavedVariables: dolgubonslazysetcrafter
 ## OptionalDependsOn: pChat 
 
@@ -38,6 +38,7 @@ libs\LibAddonMenu-2.0\controls\slider.lua
 libs\LibAddonMenu-2.0\controls\texture.lua
 
 ; Load the UI elements
+Templates.xml
 DolgubonsLazySetCrafter.xml
 
 ; Localization files - Default (en) first

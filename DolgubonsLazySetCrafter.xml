@@ -7,32 +7,17 @@
 
 <GuiXml> 
 	<Controls>
-		<Button name="PieceButtonTemplate"  virtual="true" alpha="1" clickSound="Book_Acquired" topmost="true" ><!--inherits="ToggleButton">-->
-			<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"  />
-			<Dimensions x="48" y="48" />
-			<Textures mouseOver="esoui/art/characterwindow/gearslot_over.dds"/>
-			<OnMouseEnter>
-				InitializeTooltip(InformationTooltip, self, BOTTOM, 0, -5)
-				SetTooltipText(InformationTooltip, self.tooltip)
-				
-			</OnMouseEnter>
-			<OnMouseExit>
-				ClearTooltip(InformationTooltip)
-			</OnMouseExit>
-			<OnClicked>
-				self:toggle()
-			</OnClicked>
-		</Button>
 		<TopLevelControl name="DolgubonSetCrafterWindow" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true" >	
-			<Dimensions x="800" y="650" />
+			<Dimensions x="1050" y="650" />
 			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="300" offsetY="-100"/>
 			<OnMoveStop>DolgubonSetCrafter.onWindowMove(self) </OnMoveStop>
+
 		    <Controls>
 		    	
 		    	<!--Setting up the window -->
 		    	<Backdrop name="$(parent)Backdrop"  alpha="1" inherits="ZO_DefaultBackdrop" centerColor="666666">
 		    		<Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
-		    		<Dimensions x="800" y="650" />
+		    		<Dimensions x="1050" y="650" />
 		    	</Backdrop>
 		    	<Button name="$(parent)Close" alpha="1" clickSound="Book_Acquired" topmost="true">
 		    		<Textures normal="/esoui/art/hud/radialicon_cancel_up.dds" mouseOver="/esoui/art/hud/radialicon_cancel_over.dds" />
@@ -43,17 +28,18 @@
 					</OnClicked>
 		    	</Button>
 		    	<Label name="$(parent)Title" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Dolgubon's Lazy Set Crafter">
-        			<Anchor point="TOP" relativeTo="$(parent)Backdrop" relativePoint="TOP" offsetX="0" offsetY="10" />
+        			<Anchor point="TOP" relativeTo="$(parent)PatternInput" relativePoint="TOP" offsetX="-125" offsetY="10" />
     			</Label>
 		    	<Label name="$(parent)Output" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="">
-        			<Anchor point="CENTER" relativeTo="$(parent)Backdrop" relativePoint="TOP" offsetX="20" offsetY="80" />
+        			<Anchor point="CENTER" relativeTo="$(parent)PatternInput" relativePoint="TOP" offsetX="-125" offsetY="80" />
     			</Label>
     			<!----------------------------------------------------------------->
     			<!-- Creating XML controls for Input/-->
     			<!-- Creating the holder for the pieces Input/-->
 		    	<Label name="$(parent)PatternInput" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="PATTERN_HEADER">
 
-        			<Anchor point="CENTER" relativeTo="$(parent)Backdrop" relativePoint="TOP" offsetX="0" offsetY="55" />
+        			<Anchor point="LEFT" relativeTo="$(parent)Backdrop" relativePoint="TOPLEFT" offsetX="0" offsetY="55" />
+        			<Anchor point="RIGHT" relativeTo="$(parent)Backdrop" relativePoint="TOPRIGHT" offsetX="-250" offsetY="55" />
     			</Label>
     			<!-- Creating the holder for the comboboxes/-->
     			<Label name="$(parent)Comboboxes" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Attributes">
@@ -99,6 +85,28 @@
 						</Control>
 					</Controls>
 				</Control>
+				
+				<Control name="$(parent)MaterialList" alpha="1"  mouseEnabled="true">
+					<Dimensions x="250" y="650" />
+					<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" offsetY="40" />
+					<Controls>
+						<Label name="$(parent)Label" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Material Requirements">
+							<Anchor point="TOP" relativeTo="$(parent)Backdrop" relativePoint="TOP" offsetX="0" offsetY="10" />
+						</Label>
+						<Label name="$(parent)Counter" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="">
+							<Anchor point="LEFT" relativeTo="$(parent)Label" relativePoint="RIGHT" offsetX="0" offsetY="" />
+						</Label>
+						<Control name="$(parent)List" inherits="ZO_ScrollList" mouseEnabled="true">
+							<Anchor point="BOTTOM" relativeTo="$(parent)" offsetY="-10" offsetX="10" relativePoint="BOTTOM"/>
+							<Dimensions x="250" y="600" />
+						</Control>
+						<Texture name="$(parent)Divider" textureFile="esoui/art/miscellaneous/verticaldivider_64.dds" tier="HIGH">
+							<Dimensions x="4" y="650"/>
+							<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetY="-25" offsetX="-10" />
+						</Texture>
+					</Controls>
+
+				</Control>
 
     			<!-- Creating the input box -->
     			<Backdrop name="$(parent)Input" tier="HIGH" inherits="ZO_EditBackdrop">
@@ -119,6 +127,9 @@
 								ZO_EditDefaultText_Initialize(self, "")
 
 							</OnInitialized>
+							<OnTextChanged>
+								
+							</OnTextChanged>
 						</EditBox>
 						<Label name="$(parent)CPLabel"  height="25" alpha="1" text="CP" color="FFFFFF" font="ZoFontGameLargeBold">
 							<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)" offsetX="-15"/>
@@ -160,164 +171,5 @@
 		    	</Button>
 			</Controls>
 		</TopLevelControl>
-
-
-		<Label name="ScrollComboboxTemplate" virtual="true" mouseEnabled="true">
-			<Dimensions x="250" y="30" />
-			<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="20" />
-			<Controls>
-				
-				<Label name="$(parent)Name" font="ZoFontGame" verticalAlignment="CENTER">
-					<Dimensions x="250" y="48" />
-					<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-100" offsetY="0" />
-				</Label>
-				<Control name="$(parent)ComboBox" inherits="ZO_StatsDropdownRow"><!--ZO_ScrollableComboBox-->
-					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="30" offsetY="0" />
-					<Dimensions x="200" y="30" />
-				</Control>
-			</Controls>
-		</Label>
-		<Label name="ComboboxTemplate" virtual="true" mouseEnabled="true">
-			<Dimensions x="250" y="30" />
-			<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="20" />
-			<Controls>
-				
-				<Label name="$(parent)Name" font="ZoFontGame" verticalAlignment="CENTER">
-					<Dimensions x="250" y="48" />
-					<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-100" offsetY="0" />
-				</Label>
-				<Control name="$(parent)ComboBox" inherits="ZO_ComboBox">
-					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="30" offsetY="0" />
-					<Dimensions x="200" y="30" />
-				</Control>
-			</Controls>
-		</Label>
-
-		<Button name="PatternTemplate" mouseEnabled="true" virtual="true" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
-			
-			<Dimensions x="40" y="40" />
-			
-			<OnClicked>
-				self:toggle()
-			</OnClicked>
-			<Textures mouseOver="esoui/art/cadwell/checkboxicon_unchecked.dds"/>
-			<Controls>
-				<Label name="$(parent)Label" font="ZoFontGame" verticalAlignment="CENTER" >
-					<Dimensions x="250" y="30" />
-					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="50" offsetY="0" />
-				</Label>
-			</Controls>
-		</Button>
-		<Label name="QueueRowLabelTemplate" font="ZoFontGame" verticalAlignment="CENTER" virtual="true" mouseEnabled="true">
-			<OnInitialized>
-				local original = self.SetColor
-				self.ApplyColour = function(self, isKnown)
-					if isKnown then
-						original(self,0.4627451300621,0.73725491762161,0.76470595598221)
-					elseif isKnown==nil then
-						self.SetColor = original return
-					else
-						original(self,1,0.75,0.75,0.75)
-					end
-					self.isKnown = isKnown
-					--d(self:GetParent().data[1].Pattern)
-				end
-				
-				self.SetColor = function(self,...)  end
-				self.tooltip = DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughKnowledge
-			</OnInitialized>
-			<OnMouseEnter>
-				if self.isKnown == false then
-					InitializeTooltip(InformationTooltip, self, BOTTOM, 0, -5)
-					SetTooltipText(InformationTooltip, self.tooltip)
-				end
-			</OnMouseEnter>
-			<OnMouseExit>
-				ClearTooltip(InformationTooltip)
-			</OnMouseExit>
-		</Label>
-		
-		<Button name="CraftingRequestTemplate" virtual="true" mouseEnabled="true" >
-			<OnMouseEnter>
-				--BlacklistHoverRow(self)
-			</OnMouseEnter>
-			<OnMouseExit>
-				--BlacklistExitRow(self)
-			</OnMouseExit>
-			<OnClicked>
-				-- Show only the mat requirements for this particular request. On second click, go back to total
-			</OnClicked>
-			<Dimensions x="850" y="30" />
-			<Controls>
-				<Button name="$(parent)RemoveButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
-					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-20" offsetY="0" />
-					<Dimensions x="44" y="44" />
-					<Textures normal="/esoui/art/hud/radialicon_cancel_up.dds" mouseOver="/esoui/art/hud/radialicon_cancel_over.dds" />
-					<OnClicked>
-						self:onClickety()
-					</OnClicked>
-				</Button>
-				<Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
-				
-				<Label name="$(parent)Pattern" inherits="QueueRowLabelTemplate" color="76BCC3">
-					<Dimensions x="90" y="48" />
-					<Anchor point="LEFT" relativeTo="$(parent)" offsetX="0" color="000000" />
-				</Label>
-				<Label name="$(parent)Weight" inherits="QueueRowLabelTemplate">
-					<Dimensions x="70" y="48" />
-					<Anchor point="LEFT" relativeTo="$(parent)Pattern" offsetX="90" />
-				</Label>
-				<Label name="$(parent)Level" inherits="QueueRowLabelTemplate">
-					<Dimensions x="50" y="48" />
-					<Anchor point="LEFT" relativeTo="$(parent)Weight" offsetX="70" />
-				</Label>
-				<Label name="$(parent)Style" inherits="QueueRowLabelTemplate">
-					<Dimensions x="150" y="48" />
-					<Anchor point="LEFT" relativeTo="$(parent)Level" offsetX="50" />
-				</Label>
-				<Label name="$(parent)Trait" inherits="QueueRowLabelTemplate">
-					<Dimensions x="110" y="48" />
-					<Anchor point="LEFT" relativeTo="$(parent)Style" offsetX="150" />
-				</Label>
-				<Label name="$(parent)Set" inherits="QueueRowLabelTemplate">
-					<Dimensions x="140" y="48" />
-					<Anchor point="LEFT" relativeTo="$(parent)Trait" offsetX="110" />
-				</Label>
-				<Label name="$(parent)Quality" inherits="QueueRowLabelTemplate">
-					<Dimensions x="90" y="48" />
-					<Anchor point="LEFT" relativeTo="$(parent)Set" offsetX="140" />
-				</Label>
-				<Label name="$(parent)Reference" inherits="QueueRowLabelTemplate">
-					<Dimensions x="30" y="48" />
-					<Anchor point="LEFT" relativeTo="$(parent)Set" offsetX="200" />
-					<OnInitialized>
-						if not DolgubonSetCrafter.savedVars.debug then
-							self:SetHidden(true)
-						end
-					</OnInitialized>
-				</Label>
-				
-			</Controls>
-		</Button>
-		<Button name="MaterialRequirementTemplate" mouseEnabled="true" virtual="true" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
-			
-			<Dimensions x="100" y="40" />
-			
-			<Controls>
-				<Label name="$(parent)Link" font="ZoFontGame" verticalAlignment="CENTER" mouseEnabled="true" >
-					<Dimensions x="250" y="30" />
-					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="50" offsetY="0" />
-				</Label>
-				<Label name="$(parent)Required" font="ZoFontGame" verticalAlignment="CENTER" >
-					<Dimensions x="250" y="30" />
-					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="50" offsetY="0" />
-				</Label>
-				<Label name="$(parent)Current" font="ZoFontGame" verticalAlignment="CENTER" >
-					<Dimensions x="250" y="30" />
-					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="50" offsetY="0" />
-				</Label>
-			</Controls>
-		</Button>
-
 	</Controls>
 </GuiXml>

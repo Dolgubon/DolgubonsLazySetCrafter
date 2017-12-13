@@ -21,6 +21,7 @@ DolgubonSetCrafter.localizedStrings.UIStrings.queueHeader         = "Очере�
 DolgubonSetCrafter.localizedStrings.UIStrings.clearQueue          = "Очистить очередь"
 DolgubonSetCrafter.localizedStrings.UIStrings.resetToDefault      = "Сбросить выбранное"
 DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughKnowledge  = "You do not have enough knowledge for this attribute"
+DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughSpecificMat= "You do not have enough of this material to craft all items"
 
 
 

@@ -22,7 +22,8 @@ DolgubonSetCrafter.localizedStrings.UIStrings.addToQueue          = "|c26CD00Aus
 DolgubonSetCrafter.localizedStrings.UIStrings.queueHeader         = "Warteschlange der herzustellenden Gegenstände"
 DolgubonSetCrafter.localizedStrings.UIStrings.clearQueue          = "|cFF0000Lösche Warteschlange|r"
 DolgubonSetCrafter.localizedStrings.UIStrings.resetToDefault      = "|cFFD800Auswahl zurücksetzen|r"
-DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughKnowledge  = "Dein Wissen reicht nicht aus für dieses attribute"
+DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughKnowledge  = "Dein Wissen reicht für diese Eigenschaft nicht aus"
+DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughSpecificMat= "You do not have enough of this material to craft all items"
 
 DolgubonSetCrafter.localizedStrings.weaponNames = 
 {

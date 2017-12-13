@@ -23,6 +23,7 @@ DolgubonSetCrafter.localizedStrings.UIStrings.queueHeader         = "File D'atte
 DolgubonSetCrafter.localizedStrings.UIStrings.clearQueue          = "Effacer la Liste"
 DolgubonSetCrafter.localizedStrings.UIStrings.resetToDefault      = "Effacer Selections"
 DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughKnowledge  = "You do not have enough knowledge for this attribute"
+DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughSpecificMat= "You do not have enough of this material to craft all items"
 
 
 

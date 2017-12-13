@@ -19,7 +19,7 @@ local LibLazyCrafting = LibStub("LibLazyCrafting")
 local sortCraftQueue = LibLazyCrafting.sortCraftQueue
 
 local widgetType = 'provisioning'
-local widgetVersion = 1.2
+local widgetVersion = 1.3
 if not LibLazyCrafting:RegisterWidget(widgetType, widgetVersion) then return false end
 
 local function dbug(...)
@@ -92,11 +92,12 @@ end
 
 LibLazyCrafting.craftInteractionTables[CRAFTING_TYPE_PROVISIONING] =
 {
-    ["check"] = function(station) return station == CRAFTING_TYPE_PROVISIONING end,
+    ["station"] = CRAFTING_TYPE_PROVISIONING,
+    ["check"] = function(self, station) return station == self.station end,
     ['function'] = LLC_ProvisioningCraftInteraction,
     ["complete"] = LLC_ProvisioningCraftingComplete,
-    ["endInteraction"] = function(station) --[[endInteraction()]] end,
-    ["isItemCraftable"] = function(station) if station == CRAFTING_TYPE_PROVISIONING then return true else return false end end,
+    ["endInteraction"] = function(self, station) --[[endInteraction()]] end,
+    ["isItemCraftable"] = function(self, station) if station == CRAFTING_TYPE_PROVISIONING then return true else return false end end,
 }
 
 LibLazyCrafting.functionTable.CraftProvisioningItemByRecipeId = LLC_CraftProvisioningItemByRecipeId

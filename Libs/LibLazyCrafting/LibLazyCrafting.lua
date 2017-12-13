@@ -17,7 +17,7 @@ local function dbug(...)
 	--DolgubonDebugRunningDebugString(...)
 end
 local libLoaded
-local LIB_NAME, VERSION = "LibLazyCrafting", 1.6
+local LIB_NAME, VERSION = "LibLazyCrafting", 1.7
 local LibLazyCrafting, oldminor = LibStub:NewLibrary(LIB_NAME, VERSION)
 if not LibLazyCrafting then return end
 local LLC = LibLazyCrafting
@@ -29,10 +29,10 @@ LibLazyCrafting.craftInteractionTables =
 {
 	["example"] =
 	{
-		["check"] = function(station) if station == 123 then return false end end,
+		["check"] = function(self, station) if station == 123 then return false end end,
 		["function"] = function(station) --[[craftStuff()]] end,
 		["complete"] = function(station) --[[handleCraftCompletion()]] end,
-		["endInteract"] = function(station) --[[endInteraction()]] end,
+		["endInteract"] = function(self, station) --[[endInteraction()]] end,
 	}
 }
 
@@ -68,12 +68,6 @@ local qualityIndexes =
 	[4] = "Gold",
 }
 
-
-
---GetItemLinkSetInfo(string itemLink, boolean equipped)
---GetItemLinkInfo(string itemLink)
---GetItemId(number bagId, number slotIndex)
---|H1:item:72129:369:50:26845:370:50:0:0:0:0:0:0:0:0:0:15:1:1:0:17:0|h|h
 
 -- Crafting request Queue. Split by addon. Further split by station. Each request has a timestamp for when it was requested.
 -- Due to how requests are added, each addon's requests withing station should be sorted by oldest to newest. We'll assume that. (maybe check once in a while)
@@ -148,6 +142,7 @@ craftingQueue =
 		},
 	},
 }
+-- Remove the examples, don't want to actualy make them :D
 craftingQueue["ExampleAddon"] = nil
 
 LibLazyCrafting.craftingQueue = craftingQueue
@@ -172,8 +167,8 @@ function GetItemIDFromLink(itemLink) return tonumber(string.match(itemLink,"|H%d
 
 -- Mostly a queue function, but kind of a helper function too
 local function isItemCraftable(request, station)
-	if LibLazyCrafting.craftInteractionTables[station]["isItemCraftable"] then
-		return LibLazyCrafting.craftInteractionTables[station]["isItemCraftable"](station, request)
+	if LibLazyCrafting.craftInteractionTables[station].isItemCraftable then
+		return LibLazyCrafting.craftInteractionTables[station]:isItemCraftable(station, request)
 	end
 
 	if station ==CRAFTING_TYPE_ENCHANTING or station == CRAFTING_TYPE_PROVISIONING or station == CRAFTING_TYPE_ALCHEMY then
@@ -253,6 +248,7 @@ local function tableClear(t)
 	end
 end
 -- Common code called by Alchemy and Provisioning crafting complete handlers.
+
 function LibLazyCrafting.stackableCraftingComplete(event, station, lastCheck, craftingType, currentCraftAttempt)
 	dbug("EVENT:CraftComplete")
 	if not (currentCraftAttempt and currentCraftAttempt.addon) then return end
@@ -411,13 +407,13 @@ LibLazyCrafting.functionTable.craftItem = LLC_CraftItem
 LibLazyCrafting.functionTable.CraftAllItems = LLC_CraftAllItems
 LibLazyCrafting.functionTable.findItemByReference =  LLC_FindItemByReference
 
-local function LLC_GetMatRequirements(self, reference)
-	local requests = LLC_FindItemByReference(self, reference)
-	for i = 1, #requests do
-		LibLazyCrafting.craftInteractionTables[requests[i].station]["materialRequirements"](requests[i])
-	end
+local function LLC_GetMatRequirements(self, requestTable)
+
+	return LibLazyCrafting.craftInteractionTables[requestTable.station]:materialRequirements( requestTable)
 
 end
+
+LibLazyCrafting.functionTable.getMatRequirements =  LLC_GetMatRequirements
 
 function LibLazyCrafting:Init()
 
@@ -436,9 +432,7 @@ function LibLazyCrafting:Init()
 		-- Ensures that any request will have an addon name attached to it, if needed.
 		LLCAddonInteractionTable["addonName"] = addonName
 		-- The crafting queue is added. Consider hiding this.
-		-- Pro: It hides it, prevents addon people from messing with the queue. More OOP. Don't have to deal with devs messing other addons up
-		-- Cons: Prevents them from messing with it. Maybe no scroll menus! It's up to them if they want to manually add something, too.
-		-- But can easily add 'if type(timestamp) ~= number then ignore end.' On the other hand, addons can mess with the timestamps, and change priority
+
 		LLCAddonInteractionTable["personalQueue"]  = craftingQueue[addonName]
 
 		-- Add all the functions to the interaction table!!
@@ -464,18 +458,12 @@ function LibLazyCrafting:Init()
 		return unpack(LibLazyCrafting.isCurrentlyCrafting)
 	end
 
-	-- Same as the normal crafting function, with a few extra parameters.
-	-- However, doesn't craft it, just adds it to the queue. (TODO: Maybe change this? But do we want auto craft?)
-	-- StationOverride
-	-- test: /script LLC_CraftSmithingItem(1, 1, 7, 2, 1, false, 1, 0, 0 )
-	-- test: /script LLC_CraftSmithingItem(1, 1, 7, 2, 1, false, 5, 0, 0)
-
 	-- Probably has to be completely rewritten TODO
 	function LLC_CraftQueue()
 
 		local station = GetCraftingInteractionType()
 		if station == 0 then d("You must be at a crafting station") return end
-		d(craftingQueue[station][1])
+
 		if canCraftItemHere(station, craftingQueue[station][1]["setIndex"]) and not IsPerformingCraftProcess() then
 			local craftThis = craftingQueue[station][1]
 			if not craftThis then d("Nothing queued") return end
@@ -520,32 +508,27 @@ function LibLazyCrafting:Init()
 	LLC_INSUFFICIENT_SKILL  = "not enough skill" -- extra result: what skills are missing; both if not enough traits, not enough styles, or trait unknown
 
 	LLC_Global = LibLazyCrafting:AddRequestingAddon("LLC_Global",true, function(event, station, result)
-		d("1 "..GetItemLink(result.bag,result.slot).." crafted at slot "..tostring(result.slot).." with reference "..result.reference) end)
+		d(GetItemLink(result.bag,result.slot).." crafted at slot "..tostring(result.slot).." with reference "..result.reference) end)
 
 	--craftingQueue["ExampleAddon"] = nil
 end
 
+------------------------------------------------------
+-- CRAFT EVENT HANDLERS
 
 -- Called when a crafting station is opened. Should then craft anything needed in the queue
 local function CraftInteract(event, station)
 
 	for k,v in pairs(LibLazyCrafting.craftInteractionTables) do
-		if v["check"](station) then
-			v["function"](station)
+		if v:check( station) then
+			
+			v["function"]( station)
 		end
 	end
 end
 
 LibLazyCrafting.craftInteract = CraftInteract
 
-local function endInteraction(event, station)
-	for k,v in pairs(LibLazyCrafting.craftInteractionTables) do
-		if v["check"](station) then
-			v["endInteraction"](station)
-
-		end
-	end
-end
 
 -- Called when a crafting request is done.
 -- Note that this function is called both when you finish crafting and when you leave the station
@@ -554,35 +537,23 @@ end
 -- which bypasses the event Manager, so that it is called first.
 
 local function CraftComplete(event, station)
-	LibLazyCrafting.isCurrentlyCrafting = {false, "", ""}
+	
 	--d("Event:completion")
 	local LLCResult = nil
 	for k,v in pairs(LibLazyCrafting.craftInteractionTables) do
-		if v["check"](station) then
-			if GetCraftingInteractionType()==0 then
-				--d("Calling exit complete, why???")
-				endInteraction(EVENT_END_CRAFTING_STATION_INTERACT, station)
-				zo_callLater(function() v["complete"](station) end, timetest)
+		if v:check( station) then
+			if GetCraftingInteractionType()==0 then -- This is called when the user exits the crafting station while the game is crafting
+
+				endInteraction(self, EVENT_END_CRAFTING_STATION_INTERACT, station)
+				zo_callLater(function() v["complete"]( station) LibLazyCrafting.isCurrentlyCrafting = {false, "", ""} end, timetest)
 			else
-				--d("calling complete")
-				if WritCrafter and WritCrafter.savedVarsAccountWide.masterDebugDelay then
-					zo_callLater(function()
-					v["complete"](station)
-					v["function"](station) end, 500)
-				else
-					v["complete"](station)
-					v["function"](station)
-				end
+				v["complete"]( station)
+				LibLazyCrafting.isCurrentlyCrafting = {false, "", ""}
+				v["function"]( station)
 			end
 		end
 	end
-	--for k, v in pairs(craftResultFunctions) do
-	--	v(event, station, LLCResult)
-	--end
 end
-
-
-
 
 local function OnAddonLoaded()
 	if not libLoaded then
@@ -592,39 +563,8 @@ local function OnAddonLoaded()
 		EVENT_MANAGER:UnregisterForEvent(LIB_NAME, EVENT_ADD_ON_LOADED)
 		EVENT_MANAGER:RegisterForEvent(LIB_NAME, EVENT_CRAFTING_STATION_INTERACT,CraftInteract)
 		EVENT_MANAGER:RegisterForEvent(LIB_NAME, EVENT_CRAFT_COMPLETED, CraftComplete)
-		--EVENT_MANAGER:RegisterForEvent(LIB_NAME, EVENT_END_CRAFTING_STATION_INTERACT, endInteraction)
+		
 	end
 end
 
 EVENT_MANAGER:RegisterForEvent(LIB_NAME, EVENT_ADD_ON_LOADED, OnAddonLoaded)
-
-
-
-
-
---[[
-function ActivityManager:QueueActivity(activity)
-    local queue, lookup = self.queue, self.lookup
-    local key = activity:GetKey()
-    if(lookup[key]) then return false end
-    queue[#queue + 1] = activity
-    lookup[key] = activity
-    table.sort(queue, ByPriority)
-    return true
-end
-
-function ActivityManager:RemoveActivity(activity)
-    self.lookup[activity:GetKey()] = nil
-    for i = 1, #self.queue do
-        if(self.queue[i]:GetKey() == activity:GetKey()) then
-            table.remove(self.queue, i)
-            break
-        end
-    end
-end
-
-
-
-
-
-]]

@@ -6,6 +6,7 @@ DolgubonSetCrafter.localizedStrings = {}
 
 DolgubonSetCrafter.localizedStrings.UIStrings = {}
 DolgubonSetCrafter.localizedStrings.UIStrings.patternHeader       = "Select Pieces"
+DolgubonSetCrafter.localizedStrings.UIStrings.pattern             = "Piece"
 DolgubonSetCrafter.localizedStrings.UIStrings.comboboxHeader      = "Attributes"
 DolgubonSetCrafter.localizedStrings.UIStrings.comboboxDefault     = "Select <<1>>"
 DolgubonSetCrafter.localizedStrings.UIStrings.selectPrompt        = "Please select a <<1>>"
@@ -22,6 +23,8 @@ DolgubonSetCrafter.localizedStrings.UIStrings.clearQueue          = "Clear Queue
 DolgubonSetCrafter.localizedStrings.UIStrings.resetToDefault      = "Clear Selections"
 DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughKnowledge  = "You do not have enough knowledge to make this attribute"
 DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughMats       = "You do not have enough materials to make this attribute"
+DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughSpecificMat= "You do not have enough of this material to craft all items"
+
 
 
 

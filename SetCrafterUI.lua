@@ -14,9 +14,16 @@ DolgubonSetCrafter = DolgubonSetCrafter or {}
 DolgubonSetCrafter.initializeFunctions = DolgubonSetCrafter.initializeFunctions or {}
 
 local createToggle = DolgubonSetCrafter.createToggle
+
 local DolgubonScroll = ZO_SortFilterList:Subclass()
 DolgubonSetCrafter.scroll = DolgubonScroll
+
+local MaterialScroll = ZO_SortFilterList:Subclass()
+DolgubonSetCrafter.MaterialScroll = MaterialScroll
+DolgubonSetCrafter.materialList = DolgubonSetCrafter.materialList or {}
+
 local updateList = function() end
+local updateMaterials = function() end
 local debugSelections = {}
 local langStrings
 local autofillFunctions ={}
@@ -294,10 +301,55 @@ function DolgubonScroll:New(control)
 	self.currentSortKey = "Reference"
 	self.currentSortOrder = ZO_SORT_ORDER_UP
  	self.sortFunction = function(listEntry1, listEntry2) return ZO_TableOrderingFunction(listEntry1.data[1], listEntry2.data[1], "Reference", SorterKeys, self.currentSortOrder) end
-	
+	self.data = queue
 	return self
 	
 end
+
+function MaterialScroll:New(control)
+
+	ZO_SortFilterList.InitializeSortFilterList(self, control)
+	
+	local SorterKeys =
+	{
+		name = {},
+		Amount = {},
+	}
+	
+ 	self.masterList = {}
+	
+ 	ZO_ScrollList_AddDataType(self.list, 1, "SetCrafterMaterialTemplate", 30, function(control, data) self:SetupEntry(control, data) end)
+ 	ZO_ScrollList_EnableHighlight(self.list, "ZO_ThinListHighlight")
+	
+	self.currentSortKey = "Reference"
+	self.currentSortOrder = ZO_SORT_ORDER_DOWN
+ 	self.sortFunction = function(listEntry1, listEntry2) return ZO_TableOrderingFunction(listEntry1.data[1], listEntry2.data[1], "Amount", SorterKeys, self.currentSortOrder) end
+	self.data = DolgubonSetCrafter.materialList
+	return self
+	
+end
+
+function MaterialScroll:SetupEntry(control, data)
+
+	control.data = data
+	for k , v in pairs(data[1]) do
+		control[k] = GetControl(control, k)
+
+		if control[k] then
+			if type(v)=="table" then
+				control[k]:SetText(v[2])
+				control[k]:SetColor(1,1,0)
+
+				control[k]:ApplyColour(v[3])
+			else
+				control[k]:SetText(v)
+			end
+		end
+	end
+	
+	ZO_SortFilterList.SetupRow(self, control, data)
+end
+
 local function removeFauxRequest(reference)
 	for i = 1, #queue do 
 
@@ -313,6 +365,7 @@ function DolgubonScroll:SetupEntry(control, data)
 	control.data = data
 	for k , v in pairs (data[1]) do
 		control[k] = GetControl(control, k)
+
 		if control[k] then
 			if type(v)=="table" then
 				control[k]:SetText(v[2])
@@ -338,7 +391,8 @@ end
 function DolgubonScroll:BuildMasterList()
 	self.masterList = {}
 
-	for k, v in pairs(queue) do 
+	for k, v in pairs(self.data) do 
+
 		table.insert(self.masterList, {
 			v
 		})
@@ -356,12 +410,15 @@ end
 function DolgubonScroll:FilterScrollList()
 	local scrollData = ZO_ScrollList_GetDataList(self.list)
 	ZO_ClearNumericallyIndexedTable(scrollData)
-
 	for i = 1, #self.masterList do
 		local data = self.masterList[i]
 		table.insert(scrollData, ZO_ScrollList_CreateDataEntry(1, data))
 	end
 end
+
+MaterialScroll.BuildMasterList = DolgubonScroll.BuildMasterList
+MaterialScroll.SortScrollList = DolgubonScroll.SortScrollList
+MaterialScroll.FilterScrollList = DolgubonScroll.FilterScrollList
 
 function DolgubonSetCrafter.debugFunctions()
 	if DolgubonSetCrafter.savedVars.debug then
@@ -406,14 +463,23 @@ function DolgubonSetCrafter.initializeFunctions.setupUI()
 	DolgubonSetCrafter.setupPatternButtons() -- check
 	DolgubonSetCrafter.setupComboBoxes() -- check
 	DolgubonSetCrafter.setupLevelSelector() --check
+
 	DolgubonSetCrafter.manager = DolgubonScroll:New(CraftingQueueScroll) -- check
 	DolgubonSetCrafter.manager:RefreshData() -- Show the scroll
+	
+	
+	DolgubonSetCrafter.materialManager = MaterialScroll:New(DolgubonSetCrafterWindowMaterialList)
+	DolgubonSetCrafter.materialManager:RefreshData()
+
 	DolgubonSetCrafter.debugFunctions()
 	DolgubonSetCrafter.initializeWindowPosition()
 end
 
 
-updateList = function () DolgubonSetCrafter.manager:RefreshData()
+
+updateList = function () 
+	DolgubonSetCrafter.manager:RefreshData()
+	DolgubonSetCrafter.materialManager:RefreshData()
 	if #queue == 0 then 
 		CraftingQueueScrollCounter:SetText()
 	else

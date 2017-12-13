@@ -25,6 +25,9 @@ local craftedItems = {}
 local function removeFromScroll()
 end
 
+local function getItemLinkFromItemId(itemId) local name = GetItemLinkName(ZO_LinkHandler_CreateLink("Test Trash", nil, ITEM_LINK_TYPE,itemId, 0, 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 10000, 0)) 
+	return ZO_LinkHandler_CreateLinkWithoutBrackets(zo_strformat("<<t:1>>",name), nil, ITEM_LINK_TYPE,itemId, 0, 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 10000, 0) end
+
 local LazyCrafter
 
 local LibLazyCrafting = LibStub:GetLibrary("LibLazyCrafting")
@@ -117,6 +120,9 @@ function getNumTraitsKnown(station, pattern, trait) -- and if the trait is known
 	local count = 0
 	local traitKnown =false
 	for i =1 ,9 do 
+		if station == CRAFTING_TYPE_CLOTHIER then
+			if pattern > 1 then pattern = pattern - 1 end
+		end
 		local traitIndex,_,known = GetSmithingResearchLineTraitInfo(station, pattern, i)
 		
 		if known then
@@ -124,10 +130,11 @@ function getNumTraitsKnown(station, pattern, trait) -- and if the trait is known
 		end
 		
 		if traitIndex == trait then
-			_,_, traitKnown = GetSmithingResearchLineTraitInfo(station, pattern, i)
+			traitKnown = known
 			
 		end
 	end
+	
 	return count, traitKnown
 end
 
@@ -163,12 +170,13 @@ function isStyleKnownForPattern(styleIndex, station, pattern)
 	return isKnown == 1
 end
 
-validityFunctions = --stuff that's not here will automatically recieve a value of true.
+local validityFunctions = --stuff that's not here will automatically recieve a value of true.
 { -- Second value is the required parameters from the craftrequesttable needed to determine ability to craft
 	["Trait"] = {function(...) local a = isTraitKnown(...) return a end , {7, 1,5, 8}},
 	["Set"] = {function(...)local _,a = isTraitKnown(...) return a end , {7,1,5,8}},
 	["Style"] = {isStyleKnownForPattern , {4, 7, 1}},
 }
+
 
 
 -- uses the info in validityFunctions to recheck and see if attributes are an impediment to crafting.
@@ -251,6 +259,25 @@ local function getPatternIndex(patternButton,weight)
 	end
 end
 
+local function addRequirements(returnedTable, addAmounts)
+	DolgubonSetCrafter.materialList = DolgubonSetCrafter.materialList or {}
+	local parity = -1
+	if addAmounts then parity = 1 end
+
+
+	local requirements = LazyCrafter:getMatRequirements(returnedTable)
+	
+	for itemId, amount in pairs(requirements) do
+		
+		if DolgubonSetCrafter.materialList[itemId] then
+			DolgubonSetCrafter.materialList[itemId]["Amount"] = DolgubonSetCrafter.materialList[itemId]["Amount"] + amount*parity
+		else
+			DolgubonSetCrafter.materialList[itemId] = {["Name"] = getItemLinkFromItemId(itemId) ,["Amount"] = amount*parity}
+		end
+		if DolgubonSetCrafter.materialList[itemId]["Amount"] <= 0 then DolgubonSetCrafter.materialList[itemId] = nil end
+	end
+end
+
 
 local function addPatternToQueue(patternButton,i)
 	local function shallowTwoItemCopy(t)
@@ -299,7 +326,7 @@ local function addPatternToQueue(patternButton,i)
 
 	
 	local isCP = not DolgubonSetCrafterWindowInputToggleChampion.toggleValue
-	requestTable["Style"] 		= shallowTwoItemCopy(comboBoxes.Style.selected)
+	requestTable["Style"] 	 	= shallowTwoItemCopy(comboBoxes.Style.selected)
 	
 	local styleIndex 			= comboBoxes.Style.selected[1]
 	requestTable["Set"]			= shallowTwoItemCopy(comboBoxes.Set.selected)
@@ -316,7 +343,7 @@ local function addPatternToQueue(patternButton,i)
 
 	if pattern and isCP ~= nil and requestTable["Level"][1] and styleIndex and trait and station and setIndex and quality and requestTable["Reference"] then
 		local CraftRequestTable = {pattern, isCP,tonumber(requestTable["Level"][1]),styleIndex,trait, false, station,  setIndex, quality, true, requestTable["Reference"]}
-		LazyCrafter:CraftSmithingItemByLevel(unpack(CraftRequestTable))
+		local returnedTable = LazyCrafter:CraftSmithingItemByLevel(unpack(CraftRequestTable))
 		
 		--LLC_CraftSmithingItemByLevel(self, patternIndex, isCP , level, styleIndex, traitIndex, useUniversalStyleItem, stationOverride, setIndex, quality, autocraft)
 		if not DolgubonSetCrafterWindowInputToggleChampion.toggleValue then
@@ -324,6 +351,8 @@ local function addPatternToQueue(patternButton,i)
 		end
 		requestTable["CraftRequestTable"] = CraftRequestTable
 		applyValidityFunctions(requestTable)
+
+		addRequirements(returnedTable, true)
 
 		if #LazyCrafter:findItemByReference(requestTable["Reference"]) == 0 then
 			d("Was not added")
@@ -337,14 +366,19 @@ end
 
 function DolgubonSetCrafter.compileMatRequirements()
 	out("")
+	local patternButtonSelected = false
 	for i = 1, #DolgubonSetCrafter.patternButtons do
 		--d(DolgubonSetCrafter.patternButtons[i].tooltip..DolgubonSetCrafter.patternButtons[i].selectedIndex)
 		if DolgubonSetCrafter.patternButtons[i].toggleValue then
+			patternButtonSelected = true
 			local request =addPatternToQueue(DolgubonSetCrafter.patternButtons[i],i)
 			if request then
 				queue[#queue+1] = request
 			end
 		end
+	end
+	if not patternButtonSelected then
+		out(zo_strformat(DolgubonSetCrafter.localizedStrings.UIStrings.selectPrompt,DolgubonSetCrafter.localizedStrings.UIStrings.pattern))
 	end
 end
 
@@ -362,12 +396,16 @@ end
 
 function DolgubonSetCrafter.removeFromScroll(reference)
 
+	local requestTable = LazyCrafter:findItemByReference(reference)[1]
+
+	if requestTable then addRequirements(requestTable, false) end
+
 	local removalFunction
 	if type(reference) == "table" then
 		removalFunction = reference.onClickety
 		reference = reference.Reference
 	end
-	if GetDisplayName() =="@Dolgubon" then  d(reference) end
+	
 
 	for k, v in pairs(queue) do
 		if v.Reference == reference then
@@ -408,7 +446,8 @@ function DolgubonSetCrafter.initializeFunctions.initializeCrafting()
 	DolgubonSetCrafter.LazyCrafter = LazyCrafter
 	for k, v in pairs(queue) do 
 		if not v.doNotKeep then
-			LazyCrafter:CraftSmithingItemByLevel(unpack(v["CraftRequestTable"]))
+			local returnedTable = LazyCrafter:CraftSmithingItemByLevel(unpack(v["CraftRequestTable"]))
+			addRequirements(returnedTable, true)
 			if pcall(function()applyValidityFunctions(v)end) then else d("Request could not be displayed. However, you should still be able to craft it.") end
 		else
 			table.remove(queue, k)
