@@ -1,4 +1,4 @@
-## Version: 1.7
+## Version: 1.9
 
 Smithing.lua
 LibLazyCrafting.lua

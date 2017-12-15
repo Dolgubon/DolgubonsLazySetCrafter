@@ -266,7 +266,7 @@ local function addRequirements(returnedTable, addAmounts)
 
 
 	local requirements = LazyCrafter:getMatRequirements(returnedTable)
-	
+
 	for itemId, amount in pairs(requirements) do
 		
 		if DolgubonSetCrafter.materialList[itemId] then
@@ -351,9 +351,9 @@ local function addPatternToQueue(patternButton,i)
 		end
 		requestTable["CraftRequestTable"] = CraftRequestTable
 		applyValidityFunctions(requestTable)
-
-		addRequirements(returnedTable, true)
-
+		if returnedTable then
+			addRequirements(returnedTable, true)
+		end
 		if #LazyCrafter:findItemByReference(requestTable["Reference"]) == 0 then
 			d("Was not added")
 			zo_calLater(function() d("Attempt to add again")addPatternToQueue(patternButton, i) end, 1000)
@@ -394,11 +394,13 @@ function DolgubonSetCrafter.craftConfirm()
 	DolgubonSetCrafterConfirm:SetHidden(false)
 end
 
-function DolgubonSetCrafter.removeFromScroll(reference)
+function DolgubonSetCrafter.removeFromScroll(reference, resultTable)
 
-	local requestTable = LazyCrafter:findItemByReference(reference)[1]
+	local requestTable = LazyCrafter:findItemByReference(reference)[1] or resultTable
 
-	if requestTable then addRequirements(requestTable, false) end
+	if requestTable then 
+		addRequirements(requestTable, false)
+	end
 
 	local removalFunction
 	if type(reference) == "table" then
@@ -422,12 +424,17 @@ function DolgubonSetCrafter.removeFromScroll(reference)
 	DolgubonSetCrafter.updateList()
 	
 end
-SetCrafterResults = {}
-local function LLCCraftCompleteHandler(event, station, resultTable)
-	SetCrafterResults[#SetCrafterResults + 1] = {["event"] = event, ["reference"] = resultTable["reference"]}
-	if event ~=LLC_CRAFT_SUCCESS then return end
-	DolgubonSetCrafter.removeFromScroll(resultTable["reference"])
 
+local function LLCCraftCompleteHandler(event, station, resultTable)	
+	if event ==LLC_CRAFT_SUCCESS then 
+		if resultTable.type == "improvement" then resultTable.station = GetRearchLineInfoFromRetraitItem(BAG_BACKPACK, resultTable.ItemSlotID) end
+		DolgubonSetCrafter.removeFromScroll(resultTable.reference, resultTable)
+	elseif event == LLC_INITIAL_CRAFT_SUCCESS then
+
+		resultTable.quality = 1
+		addRequirements(resultTable , false)
+		DolgubonSetCrafter.updateList()
+	end
 end
 
 function DolgubonSetCrafter.clearQueue()

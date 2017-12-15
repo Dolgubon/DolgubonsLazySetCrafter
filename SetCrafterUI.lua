@@ -178,7 +178,7 @@ local function makeDropdownSelections(comboBoxContainer, tableInfo , text , x, y
 	end
 	--Function called when an option is selected
 	function comboBox:setSelected(comboBox, selectedInfo)
-		guildID=guildNum
+
 		--out(selectedInfo[2].." selected.")
 		selectedInfo[2] =zo_strformat("<<t:1>>",selectedInfo[2])
 		comboBox.m_comboBox.selectedIndex = selectedInfo[1]
@@ -223,7 +223,8 @@ local function makeDropdownSelections(comboBoxContainer, tableInfo , text , x, y
 		local itemEntry = ZO_ComboBox:CreateItemEntry(zo_strformat("<<t:1>>",tableInfo[i][2]), function() comboBox:setSelected(comboBox, tableInfo[i])end )
 		
 		comboBox.m_comboBox:AddItem(itemEntry)
-		if i == 1 then
+
+		if i == 1 or tableInfo[i][2] == "|cFFFFFFAncient Elf|r" then
 			function comboBoxContainer:SelectDebug()
 				comboBox.m_comboBox:SelectItem(itemEntry)
 			end

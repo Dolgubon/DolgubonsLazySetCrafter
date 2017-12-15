@@ -59,14 +59,14 @@ DolgubonSetCrafter.styleNames = styles
 ------------------------------------
 -------- QUALITY
 
-local qualityColours = {"FFFFFF","1aff1a","1a75ff","e600e6","ffff33"}
-
-
 --Setup quality table
 DolgubonSetCrafter.quality = {}
 
 for i = 1, 5 do
-	DolgubonSetCrafter.quality[i] = {[1] = i, [2] = "|c"..qualityColours[i]..GetString(SI_ITEMQUALITY0 + i).."|r"}
+	local qualityColor = ZO_ColorDef:New(GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, i))
+    
+    DolgubonSetCrafter.quality[i] = {[1] = i, [2] = qualityColor:Colorize(GetString(SI_ITEMQUALITY0 + i))  } 
+	
 end
 
 --------------------------------------

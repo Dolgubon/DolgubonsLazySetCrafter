@@ -15,7 +15,7 @@ local LibLazyCrafting = LibStub("LibLazyCrafting")
 local sortCraftQueue = LibLazyCrafting.sortCraftQueue
 
 local widgetType = 'enchanting'
-local widgetVersion = 1.2
+local widgetVersion = 1.4
 if not LibLazyCrafting:RegisterWidget(widgetType, widgetVersion) then return false end
 
 local function dbug(...)
@@ -76,7 +76,7 @@ local function LLC_CraftEnchantingGlyphItemID(self, potencyItemID, essenceItemID
 	}
 	)
 
-	sortCraftQueue()
+	--sortCraftQueue()
 	if GetCraftingInteractionType()==CRAFTING_TYPE_ENCHANTING then 
 		LibLazyCrafting.craftInteract(event, CRAFTING_TYPE_ENCHANTING) 
 	end
@@ -108,6 +108,7 @@ local currentCraftAttempt =
 local function LLC_EnchantingCraftinteraction(event, station)
 	dbug("FUNCTION:LLCEnchantCraft")
 	local earliest, addon , position = LibLazyCrafting.findEarliestRequest(CRAFTING_TYPE_ENCHANTING)
+	if not earliest then  LibLazyCrafting.SendCraftEvent( LLC_NO_FURTHER_CRAFT_POSSIBLE,  station) end
 	if earliest and not IsPerformingCraftProcess() then
 		local locations = 
 		{
@@ -150,8 +151,8 @@ local function LLC_EnchantingCraftingComplete(event, station, lastCheck)
 	then
 		-- We found it!
 		dbug("ACTION:RemoveQueueItem")
-		craftingQueue[currentCraftAttempt.addon][CRAFTING_TYPE_ENCHANTING][currentCraftAttempt.position] = nil
-		sortCraftQueue()
+		table.remove(craftingQueue[currentCraftAttempt.addon][CRAFTING_TYPE_ENCHANTING] , currentCraftAttempt.position )
+		--sortCraftQueue()
 		local resultTable = 
 		{
 			["bag"] = BAG_BACKPACK,
@@ -161,7 +162,8 @@ local function LLC_EnchantingCraftingComplete(event, station, lastCheck)
 			["quantity"] = 1,
 			["reference"] = currentCraftAttempt.reference,
 		}
-		currentCraftAttempt.callback(LLC_CRAFT_SUCCESS, CRAFTING_TYPE_ENCHANTING, resultTable)
+		
+		LibLazyCrafting.SendCraftEvent( LLC_CRAFT_SUCCESS ,  station, currentCraftAttempt.addon , resultTable )
 		currentCraftAttempt = {}
 
 	elseif lastCheck then
