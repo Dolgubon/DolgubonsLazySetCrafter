@@ -23,13 +23,28 @@ function DolgubonSetCrafter.createToggle(control, onTexture, offTexture, onOverT
 		self.toggleValue = true
 		self:SetNormalTexture(self.onTexture)
 		if onOverTexture then self:SetMouseOverTexture(self.onOverTexture) end
+		control:onToggleOn()
+		control:onToggle(true)
 	end
 
 	function control:toggleOff()
 		self.toggleValue = false
 		self:SetNormalTexture(self.offTexture)
 		if offOverTexture then self:SetMouseOverTexture(self.offOverTexture) end
+		control:onToggleOff()
+		control:onToggle(false)
 	end
+
+	function control:setState(newState)
+		if newState == self.toggleValue then
+			return 
+		elseif newState then
+			control:toggleOn()
+		else
+			control:toggleOff()
+		end
+	end
+
 
 	-- Meant to be overwritten, if needed
 	function control:onToggleOn()
@@ -39,16 +54,18 @@ function DolgubonSetCrafter.createToggle(control, onTexture, offTexture, onOverT
 	function control:onToggleOff()
 	end
 
+	function control:onToggle(newToggleState)
+	end
 
 	-- The actual toggle function. The idea is to place it in the OnClicked in the XML, but it could be called elsewhere
 	function control:toggle()
 		-- Sets the toggle value to the other value
 		if self.toggleValue then
 			control:toggleOff()
-			control:onToggleOff()
+			
 		else
 			control:toggleOn()
-			control:onToggleOn()
+			
 		end
 	end
 

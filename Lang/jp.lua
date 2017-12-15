@@ -23,6 +23,13 @@ DolgubonSetCrafter.localizedStrings.UIStrings.resetToDefault      = "Clear Selec
 DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughKnowledge  = "You do not have enough knowledge for this attribute"
 DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughSpecificMat= "You do not have enough of this material to craft all items"
 
+DolgubonSetCrafter.localizedStrings.SettingStrings = {}
+
+DolgubonSetCrafter.localizedStrings.SettingStrings.showAtStation 				= "Show at Station"
+DolgubonSetCrafter.localizedStrings.SettingStrings.showAtStationTooltip			= "Always show the Set Crafter UI at crafting stations"
+DolgubonSetCrafter.localizedStrings.SettingStrings.saveLastChoice				= "Save Choices"
+DolgubonSetCrafter.localizedStrings.SettingStrings.saveLastChoiceTooltip		= "Save the last selected choices"
+
 
 
 DolgubonSetCrafter.localizedStrings.weaponNames = 

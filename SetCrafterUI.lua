@@ -167,7 +167,8 @@ local out = DolgubonSetCrafter.out
 --/script d(Dolgubons_Set_Crafter_Style:GetNamedChild( Dolgubons_Set_Crafter_Style:GetChild(1):GetName() ) )
 
 --Creates one dropdown box
-local function makeDropdownSelections(comboBoxContainer, tableInfo , text , x, y, comboBoxLocation, isArmourCombobox)
+local function makeDropdownSelections(comboBoxContainer, tableInfo , text , x, y, comboBoxLocation, selectionTypes, isArmourCombobox)
+	if selectionTypes == "armourTrait" then isArmourCombobox = true elseif selectionTypes == "weaponTrait" then isArmourCombobox = false end
 	local comboBox = comboBoxContainer:GetChild(comboBoxLocation)
 	-- if location is 1 then get child number 2 and if location is 2 get child number 1
 	comboBoxContainer:GetChild((comboBoxLocation+2)%2+1):SetText(text..":")
@@ -178,7 +179,9 @@ local function makeDropdownSelections(comboBoxContainer, tableInfo , text , x, y
 	end
 	--Function called when an option is selected
 	function comboBox:setSelected(comboBox, selectedInfo)
-
+		if selectedInfo[1] ~= -1 then
+			DolgubonSetCrafter.savedVars[selectionTypes] = selectedInfo[1]
+		end
 		--out(selectedInfo[2].." selected.")
 		selectedInfo[2] =zo_strformat("<<t:1>>",selectedInfo[2])
 		comboBox.m_comboBox.selectedIndex = selectedInfo[1]
@@ -218,6 +221,9 @@ local function makeDropdownSelections(comboBoxContainer, tableInfo , text , x, y
 	function comboBoxContainer:SelectFirstItem()
 		comboBox.m_comboBox:SelectItem(comboBox.itemEntryDefault) 
 	end
+	
+	comboBoxContainer:SelectFirstItem()
+	
 
 	for i, value in pairs(tableInfo) do
 		local itemEntry = ZO_ComboBox:CreateItemEntry(zo_strformat("<<t:1>>",tableInfo[i][2]), function() comboBox:setSelected(comboBox, tableInfo[i])end )
@@ -238,9 +244,13 @@ local function makeDropdownSelections(comboBoxContainer, tableInfo , text , x, y
 
 			autofillFunctions[#autofillFunctions + 1] = function() comboBoxContainer:SelectAutoFill() end
 		end
+		
+		if tableInfo[i][1] == DolgubonSetCrafter.savedVars[selectionTypes] and DolgubonSetCrafter.savedVars.saveLastChoice then
+			comboBox.m_comboBox:SelectItem(itemEntry)
+		end
 	end
 
-	comboBoxContainer:SelectFirstItem()
+	
 	--set size + position
 	comboBoxContainer:SetAnchor(CENTER,  DolgubonSetCrafterWindowComboboxes,CENTER, x,y)
 
@@ -265,20 +275,39 @@ function DolgubonSetCrafter.setupComboBoxes()
 	end
 	local UIStrings = langStrings.UIStrings
 	--Three calls to make dropdown selections, as well as further setup the comboboxes.
-	makeDropdownSelections( DolgubonSetCrafter.ComboBox.Style  	   	, DolgubonSetCrafter.styleNames   , UIStrings.style 		, -130, 80, 2)
-	makeDropdownSelections( DolgubonSetCrafter.ComboBox.Armour 		, DolgubonSetCrafter.armourTraits , UIStrings.armourTrait 	, -130, 120, 1, true)
-	makeDropdownSelections( DolgubonSetCrafter.ComboBox.Quality	   	, DolgubonSetCrafter.quality 	  , UIStrings.quality 		, 270 , 80, 1)
-	makeDropdownSelections( DolgubonSetCrafter.ComboBox.Weapon 		, DolgubonSetCrafter.weaponTraits , UIStrings.weaponTrait 	, 270 , 120, 1, false)
-	makeDropdownSelections( DolgubonSetCrafter.ComboBox.Set  	   	, DolgubonSetCrafter.setIndexes   , UIStrings.gearSet 		, 270, 40, 2)
+	makeDropdownSelections( DolgubonSetCrafter.ComboBox.Style  	   	, DolgubonSetCrafter.styleNames   , UIStrings.style 		, -130, 80, 2, "style")
+	makeDropdownSelections( DolgubonSetCrafter.ComboBox.Armour 		, DolgubonSetCrafter.armourTraits , UIStrings.armourTrait 	, -130, 120, 1, "armourTrait")
+	makeDropdownSelections( DolgubonSetCrafter.ComboBox.Quality	   	, DolgubonSetCrafter.quality 	  , UIStrings.quality 		, 270 , 80, 1, "quality")
+	makeDropdownSelections( DolgubonSetCrafter.ComboBox.Weapon 		, DolgubonSetCrafter.weaponTraits , UIStrings.weaponTrait 	, 270 , 120, 1, "weaponTrait")
+	makeDropdownSelections( DolgubonSetCrafter.ComboBox.Set  	   	, DolgubonSetCrafter.setIndexes   , UIStrings.gearSet 		, 270, 40, 2, "set")
 end
 
 -- Most of this is done in the XML, all that's left is to create the toggle and add to the editbox handler
 function DolgubonSetCrafter.setupLevelSelector()
 	DolgubonSetCrafterWindowInputBox:SetTextType(2) -- Set it so it takes only numbers
 	createToggle( DolgubonSetCrafterWindowInputToggleChampion , [[esoui\art\treeicons\achievements_indexicon_champion_up.dds]] , [[esoui\art\treeicons\achievements_indexicon_champion_down.dds]], false)
-	DolgubonSetCrafterWindowInputToggleChampion.onToggleOff =function() DolgubonSetCrafterWindowInputCPLabel:SetHidden(false) end
-	DolgubonSetCrafterWindowInputToggleChampion.onToggleOn =function() DolgubonSetCrafterWindowInputCPLabel:SetHidden(true) end
+
+
+	DolgubonSetCrafterWindowInputToggleChampion.onToggle = function(self, newState) 
+		DolgubonSetCrafterWindowInputCPLabel:SetHidden(newState)
+		DolgubonSetCrafter.savedVars["champion"] = newState
+	end
+
 	DolgubonSetCrafterWindowInputBox.selectPrompt = zo_strformat(langStrings.UIStrings.selectPrompt,langStrings.UIStrings.level)
+
+	if DolgubonSetCrafter.savedVars.saveLastChoice then
+		if DolgubonSetCrafter.savedVars["level"] then
+			DolgubonSetCrafterWindowInputBox:SetText(DolgubonSetCrafter.savedVars["level"])
+		end
+		if DolgubonSetCrafter.savedVars["champion"]~=nil then
+			DolgubonSetCrafterWindowInputToggleChampion:setState(DolgubonSetCrafter.savedVars["champion"])
+		end
+	end
+
+	if DolgubonSetCrafter.savedVars["level"] and DolgubonSetCrafter.savedVars.saveLastChoice then 
+		DolgubonSetCrafterWindowInputBox:SetText(DolgubonSetCrafter.savedVars["level"])
+	end 
+
 	debugSelections[#debugSelections+1] = function() DolgubonSetCrafterWindowInputBox:SetText("10") end
 	debugSelections[#debugSelections+1] = DolgubonSetCrafterWindowInputToggleChampion.ToggleOff
 end

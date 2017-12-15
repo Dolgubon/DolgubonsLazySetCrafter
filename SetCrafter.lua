@@ -16,6 +16,7 @@ DolgubonSetCrafter.default = {
 	["yPos"] = 0,
 	["counter"] = 0,
 	[6697110] = false,
+	["saveLastChoice"] = true,
 }
 DolgubonSetCrafter.defaultCharacter = 
 {

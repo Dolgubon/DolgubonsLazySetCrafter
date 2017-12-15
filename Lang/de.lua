@@ -23,7 +23,15 @@ DolgubonSetCrafter.localizedStrings.UIStrings.queueHeader         = "Warteschlan
 DolgubonSetCrafter.localizedStrings.UIStrings.clearQueue          = "|cFF0000Lösche Warteschlange|r"
 DolgubonSetCrafter.localizedStrings.UIStrings.resetToDefault      = "|cFFD800Auswahl zurücksetzen|r"
 DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughKnowledge  = "Dein Wissen reicht für diese Eigenschaft nicht aus"
+DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughMats       = "You do not have enough materials to make this attribute"
 DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughSpecificMat= "You do not have enough of this material to craft all items"
+
+DolgubonSetCrafter.localizedStrings.SettingStrings = {}
+
+DolgubonSetCrafter.localizedStrings.SettingStrings.showAtStation 				= "Bei Handwerkstation anzeigen"
+DolgubonSetCrafter.localizedStrings.SettingStrings.showAtStationTooltip			= "Zeigt das Set Crafter Fenster beim Öffnen einer Handwerkstation automatisch an"
+DolgubonSetCrafter.localizedStrings.SettingStrings.saveLastChoice				= "Save Choices"
+DolgubonSetCrafter.localizedStrings.SettingStrings.saveLastChoiceTooltip		= "Save the last selected choices"
 
 DolgubonSetCrafter.localizedStrings.weaponNames = 
 {
