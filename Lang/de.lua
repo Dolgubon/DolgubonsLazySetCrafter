@@ -25,6 +25,7 @@ DolgubonSetCrafter.localizedStrings.UIStrings.resetToDefault      = "|cFFD800Aus
 DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughKnowledge  = "Dein Wissen reicht für diese Eigenschaft nicht aus"
 DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughMats       = "You do not have enough materials to make this attribute"
 DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughSpecificMat= "You do not have enough of this material to craft all items"
+DolgubonSetCrafter.localizedStrings.UIStrings.invalidLevel        = "Invalid Level"
 
 DolgubonSetCrafter.localizedStrings.SettingStrings = {}
 

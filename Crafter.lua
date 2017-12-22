@@ -316,7 +316,16 @@ local function addPatternToQueue(patternButton,i)
 	end
 	requestTable["Pattern"] = {pattern,patternButton.tooltip}
 	requestTable["Level"] = {tonumber(DolgubonSetCrafterWindowInputBox:GetText()),DolgubonSetCrafterWindowInputBox:GetText()}
-	if requestTable["Level"][2]=="" then requestTable["Level"][1]=nil out(DolgubonSetCrafterWindowInputBox.selectPrompt) return end
+	local isCP = not DolgubonSetCrafterWindowInputToggleChampion.toggleValue
+	-- Check that all selections are valid, i.e. valid level and not 'select trait'
+	if requestTable["Level"][2]=="" then 
+		requestTable["Level"][1]=nil 
+		out(DolgubonSetCrafterWindowInputBox.selectPrompt) 
+		return
+	elseif not LazyCrafter.isSmithingLevelValid(  isCP, requestTable["Level"][1] ) then
+		out(DolgubonSetCrafter.localizedStrings.UIStrings.invalidLevel)
+		return
+	end
 	for k, combobox in pairs(comboBoxes) do
 		if combobox.invalidSelection(requestTable["Weight"][2]) and not DolgubonSetCrafter.savedVars.autofill then
 			out(combobox.selectPrompt)
@@ -325,7 +334,7 @@ local function addPatternToQueue(patternButton,i)
 	end
 
 	
-	local isCP = not DolgubonSetCrafterWindowInputToggleChampion.toggleValue
+	
 	requestTable["Style"] 	 	= shallowTwoItemCopy(comboBoxes.Style.selected)
 	
 	local styleIndex 			= comboBoxes.Style.selected[1]

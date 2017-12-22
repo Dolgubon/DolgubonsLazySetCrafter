@@ -25,7 +25,7 @@
 local LibLazyCrafting = LibStub("LibLazyCrafting")
 
 local widgetType = 'smithing'
-local widgetVersion = 1.5
+local widgetVersion = 1.7
 if not LibLazyCrafting:RegisterWidget(widgetType, widgetVersion) then return  end
 
 local function dbug(...)
@@ -34,6 +34,7 @@ local function dbug(...)
 		DolgubonGlobalDebugOutput(...)
 	end
 end
+
 
 local craftingQueue = LibLazyCrafting.craftingQueue
 
@@ -70,7 +71,10 @@ local CraftSmithingRequestItem =
 	["useUniversalStyleItem"] = false,
 }
 
+------------------------------------------------------
+-- HELPER FUNCTIONS
 
+-- A simple shallow copy of a table.
 local function copy(t)
 	local a = {}
 	for k, v in pairs(t) do
@@ -79,6 +83,14 @@ local function copy(t)
 	return a
 end
 
+-- increments queue position and returns it, guarenteeing a unique order
+local queuePosition = 0
+local function GetSmithingQueueOrder()
+	queuePosition = queuePosition + 1
+	return queuePosition
+end
+
+-- Returns an item link from the given itemId. 
 local function getItemLinkFromItemId(itemId) local name = GetItemLinkName(ZO_LinkHandler_CreateLink("Test Trash", nil, ITEM_LINK_TYPE,itemId, 1, 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 10000, 0)) 
 	return ZO_LinkHandler_CreateLink(zo_strformat("<<t:1>>",name), nil, ITEM_LINK_TYPE,itemId, 1, 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 10000, 0) end
 
@@ -370,7 +382,7 @@ local function LLC_CraftSmithingItem(self, patternIndex, materialIndex, material
 		["setIndex"] = setIndex,
 		["quality"] = quality,
 		["useUniversalStyleItem"] = useUniversalStyleItem,
-		["timestamp"] = GetTimeStamp(),
+		["timestamp"] = GetSmithingQueueOrder(),
 		["autocraft"] = autocraft,
 		["Requester"] = self.addonName,
 		["reference"] = reference,
@@ -387,14 +399,16 @@ end
 
 local function isValidLevel(isCP, lvl)
 	if isCP then
-		if lvl %10 ~= 0 then return  false end
-		if lvl > 160 or lvl <10 then return false  end
+		if lvl %10 ~= 0 then d("Mod") return  false end
+		if lvl > 160 or lvl <10 then d("Out of range") return false  end
 	else
 		if lvl % 2 ~=0 and lvl ~= 1 then return false end
 		if lvl <1 or lvl > 50 then return false end
 	end
 	return true
 end
+
+LibLazyCrafting.functionTable.isSmithingLevelValid = isValidLevel
 
 local function LLC_CraftSmithingItemByLevel(self, patternIndex, isCP , level, styleIndex, traitIndex, useUniversalStyleItem, stationOverride, setIndex, quality, autocraft, reference)
 	if isValidLevel( isCP ,level) then
@@ -441,7 +455,7 @@ function LLC_ImproveSmithingItem(self, BagIndex, SlotIndex, newQuality, autocraf
 	["quality"] = newQuality,
 	["reference"] = reference,
 	["station"] = station,
-	["timestamp"] = GetTimeStamp(),}
+	["timestamp"] = GetSmithingQueueOrder(),}
 	table.insert(craftingQueue[self.addonName][station], a)
 	--sortCraftQueue()
 	if not IsPerformingCraftProcess() and GetCraftingInteractionType()~=0 and not LibLazyCrafting.isCurrentlyCrafting[1] then
@@ -477,7 +491,8 @@ local currentCraftAttempt =
 	["position"] = 0,
 }
 
-
+-- Ideas to increase Queue Accuracy:
+--		previousCraftAttempt/check for currentCraftAttempt = {}
 
 
 -------------------------------------------------------
@@ -521,7 +536,7 @@ local function LLC_SmithingCraftInteraction( station)
 			currentCraftAttempt.callback = LibLazyCrafting.craftResultFunctions[addon]
 			currentCraftAttempt.slot = FindFirstEmptySlotInBag(BAG_BACKPACK)
 
-			currentCraftAttempt.timestamp = GetTimeStamp()
+			
 			table.remove(parameters,6 )
 
 			currentCraftAttempt.link = GetSmithingPatternResultLink(unpack(parameters))
@@ -532,6 +547,7 @@ local function LLC_SmithingCraftInteraction( station)
 			local currentSkill, maxSkill = GetSkillAbilityUpgradeInfo(SKILL_TYPE_TRADESKILL,skillIndex,6)
 			if earliest.quality==GetItemLinkQuality(GetItemLink(earliest.ItemBagID, earliest.ItemSlotID))then
 				dbug("ACTION:RemoveImprovementRequest")
+				d("Bad improvement Request; this shouldn't appear, but it might.")
 				local returnTable = table.remove(craftingQueue[addon][station],position )
 				returnTable.bag = BAG_BACKPACK
 				LibLazyCrafting.SendCraftEvent( LLC_CRAFT_SUCCESS ,  station,addon , returnTable )
@@ -563,7 +579,7 @@ local function LLC_SmithingCraftInteraction( station)
 			currentCraftAttempt = copy(earliest)
 			currentCraftAttempt.position = position
 			currentCraftAttempt.callback = LibLazyCrafting.craftResultFunctions[addon]
-			currentCraftAttempt.timestamp = GetTimeStamp()
+			
 			currentCraftAttempt.link = GetSmithingImprovedItemLink(earliest.ItemBagID, earliest.ItemSlotID, station)
 		end
 		
@@ -615,25 +631,43 @@ local function WasItemImproved(currentCraftAttempt)
 end
 local backupPosition
 
+local function removedRequest(station, timestamp)
+	for addon, requestTable in pairs(craftingQueue) do
+		for i = 1, #requestTable[station] do
+			if requestTable[station][i]["timestamp"] == timestamp then
+				return addon, i
+			end
+		end
+	end
+	d("Request to remove not found")
+	return nil, 0
+end
+
 local function smithingCompleteNewItemHandler(station)
 
 	dbug("ACTION:RemoveRequest")
 
 	--d("Item found")
-	local removedRequest =  table.remove(craftingQueue[currentCraftAttempt.Requester][station],currentCraftAttempt.position )
+	local addonName, position = removedRequest(station, currentCraftAttempt.timestamp)
+	local removedRequest
+	if addonName then
+		removedRequest =  table.remove(craftingQueue[addonName][station],position )
+		if currentCraftAttempt.quality>1 then
+			--d("Improving #".. tostring(currentCraftAttempt.reference))
+			removedRequest.bag = BAG_BACKPACK
+			removedRequest.slot = currentCraftAttempt.slot
+			LibLazyCrafting.SendCraftEvent(LLC_INITIAL_CRAFT_SUCCESS, station, currentCraftAttempt.Requester, removedRequest)
+			LLC_ImproveSmithingItem({["addonName"]=currentCraftAttempt.Requester}, BAG_BACKPACK, currentCraftAttempt.slot, currentCraftAttempt.quality, currentCraftAttempt.autocraft, currentCraftAttempt.reference)
+		else
+			removedRequest.bag = BAG_BACKPACK
+			removedRequest.slot = currentCraftAttempt.slot
 
-	if currentCraftAttempt.quality>1 then
-		--d("Improving #".. tostring(currentCraftAttempt.reference))
-		removedRequest.bag = BAG_BACKPACK
-		removedRequest.slot = currentCraftAttempt.slot
-		LibLazyCrafting.SendCraftEvent(LLC_INITIAL_CRAFT_SUCCESS, station, currentCraftAttempt.Requester, removedRequest)
-		LLC_ImproveSmithingItem({["addonName"]=currentCraftAttempt.Requester}, BAG_BACKPACK, currentCraftAttempt.slot, currentCraftAttempt.quality, currentCraftAttempt.autocraft, currentCraftAttempt.reference)
+			LibLazyCrafting.SendCraftEvent(LLC_CRAFT_SUCCESS, station, currentCraftAttempt.Requester, removedRequest )
+		end
 	else
-		removedRequest.bag = BAG_BACKPACK
-		removedRequest.slot = currentCraftAttempt.slot
-
-		LibLazyCrafting.SendCraftEvent(LLC_CRAFT_SUCCESS, station, currentCraftAttempt.Requester, removedRequest )
+		d("Bad craft remove")
 	end
+
 end
 
 
@@ -643,11 +677,9 @@ local function SmithingCraftCompleteFunction(station)
 
 	--d("complete at "..GetTimeStamp())
 	--d(GetItemLink(BAG_BACKPACK, currentCraftAttempt.slot))
-	
 	if currentCraftAttempt.type == "smithing" and hasNewItemBeenMade then 
 		hasNewItemBeenMade = false
 		if WasItemCrafted() then
-			
 			smithingCompleteNewItemHandler(station)
 		else
 			
@@ -668,10 +700,17 @@ local function SmithingCraftCompleteFunction(station)
 	elseif currentCraftAttempt.type == "improvement" then
 
 		if WasItemImproved(currentCraftAttempt) then
-			local returnTable = table.remove(craftingQueue[currentCraftAttempt.Requester][station],currentCraftAttempt.position )
-			returnTable.bag = BAG_BACKPACK
+			local returnTable
+			local addonName, position = removedRequest(station, currentCraftAttempt.timestamp)
+			if addonName then
+				returnTable =  table.remove(craftingQueue[addonName][station],position)
+				
+				returnTable.bag = BAG_BACKPACK
 
-			LibLazyCrafting.SendCraftEvent( LLC_CRAFT_SUCCESS,  station,currentCraftAttempt.Requester, returnTable )
+				LibLazyCrafting.SendCraftEvent( LLC_CRAFT_SUCCESS,  station,currentCraftAttempt.Requester, returnTable )
+			else
+				d("Bad request position")
+			end
 		end
 		currentCraftAttempt = {}
 		--sortCraftQueue()
@@ -682,7 +721,7 @@ local function SmithingCraftCompleteFunction(station)
 end
 
 local function slotUpdateHandler(event, bag, slot, isNew, itemSoundCategory, inventoryUpdateReason, stackCountChange)
-
+	
 	if not isNew then return end
 	
 
@@ -699,7 +738,7 @@ local function slotUpdateHandler(event, bag, slot, isNew, itemSoundCategory, inv
 		
 	end
 end
-
+EVENT_MANAGER:UnregisterForEvent(LibLazyCrafting.name, EVENT_INVENTORY_SINGLE_SLOT_UPDATE)
 EVENT_MANAGER:RegisterForEvent(LibLazyCrafting.name, EVENT_INVENTORY_SINGLE_SLOT_UPDATE, slotUpdateHandler)
 
 
