@@ -56,20 +56,6 @@ local function setupPatternButtonOneTable(table,nameTable, initialX, initialY, p
 		local index = #positionToSave + 1
 		positionToSave[index] = WINDOW_MANAGER:CreateControlFromVirtual("DolgubonsSetCrafterPatternInput"..v, 
 			DolgubonSetCrafterWindowPatternInput, "PieceButtonTemplate")
-		--[[	-- container to easily reference the labels
-			local toonNameDisplays = {}
-			-- The next item to anchor to
-			local anchorLabel = StonedDis
-			for i = 1, 5 do
-				-- Create the virtual control
-				local currentDisplay = WINDOW_MANAGER:CreateControlFromVirtual(StonedDis:GetName()..i, StonedDis, "DisplayTemplate")
-				-- Set the anchor of the new control
-				currentDisplay:SetAnchor(TOPLEFT ,anchorLabel , TOPLEFT ,0,0)
-				-- The next control will be anchored to this new control
-				anchorLabel = currentDisplay
-				-- Add the control to the table
-				toonNameDisplays[#toonNameDisplays] = currentDisplay
-			end]]
 		-- Easy reference
 		local button = positionToSave[index]
 		button.tooltip = nameTable[k]
@@ -99,14 +85,7 @@ local function setupPatternButtonOneTable(table,nameTable, initialX, initialY, p
 		button:SetAnchor(CENTER , DolgubonSetCrafterWindowPatternInput , CENTER , initialX + index*spacingForButtons, initialY)
 		--button:SetAnchor(CENTER , DolgubonSetCrafterWindowPatternInputPerson , CENTER , 
 			--(-1)*60*((-1)^(index))*math.ceil(1 - 1/index), -160 +math.floor(index /2)*50 + math.floor(index/8)*50)
-		-- Inital text of the label; meant to be overwritten
-		
 
-		-- Called when the user enters a station. Selectively hides or shows the button if it's at a station where it's useful
-		function button:PrepareForStation(station, set)
-
-			-- Gets the name of the type of equipment, and gives that to the label.
-		end
 	end
 end
 
@@ -359,25 +338,88 @@ function MaterialScroll:New(control)
 	
 end
 
+local function formatAmountEntry(self, amountRequired, current)
+	local text
+	if current < amountRequired	 then
+		text = "|cFFBFBF"..tostring(current).."|r/"..tostring(amountRequired)
+		--self.isKnown = false
+
+	else
+		text = tostring(current).."/"..tostring(amountRequired)
+		--self.isKnown = true
+	end
+	self:SetText(text)
+end
+
 function MaterialScroll:SetupEntry(control, data)
 
 	control.data = data
+	control.isKnown = data[1]["Amount"]<= data[1]["Current"]
 	for k , v in pairs(data[1]) do
 		control[k] = GetControl(control, k)
-
 		if control[k] then
-			if type(v)=="table" then
-				control[k]:SetText(v[2])
-				control[k]:SetColor(1,1,0)
-
-				control[k]:ApplyColour(v[3])
+			if k == "Amount" then
+				formatAmountEntry(control[k], v, data[1]["Current"])
 			else
 				control[k]:SetText(v)
 			end
 		end
 	end
-	
 	ZO_SortFilterList.SetupRow(self, control, data)
+end
+
+function DolgubonSetCrafter.outputSingleMatLine(control)
+	local text
+	text = tostring(control.data[1]["Amount"]).." "
+	text = text..control.data[1]["Name"]
+	return text
+end
+
+outputTexts = {}
+
+local function OutputNextLine(eventCode,  channelType, fromName, text, isCustomerService, fromDisplayName)
+	
+	if fromDisplayName == GetDisplayName() then
+		testActualOutput = text
+		testAssume = outputTexts[1]
+		if text == outputTexts[1] then
+			table.remove(outputTexts, 1)
+			if #outputTexts>0 then
+				StartChatInput(outputTexts[1])
+			else
+				EVENT_MANAGER:UnregisterForEvent(DolgubonSetCrafter.name,EVENT_CHAT_MESSAGE_CHANNEL)
+			end
+		else
+		end
+	end
+end
+
+function DolgubonSetCrafter.outputAllMats()
+	local tempMatHolder = {}
+	for k, v in pairs(DolgubonSetCrafter.materialList) do
+		tempMatHolder[#tempMatHolder + 1] = v
+	end
+	table.sort(tempMatHolder, function(a, b) return a["Amount"]>b["Amount"]end)
+	if #tempMatHolder == 0 then return end
+	outputTexts  = {}
+	local text = "Requires: "
+	
+	for i = 1, #tempMatHolder do
+		
+		if i %4 ==1 and i > 1 then
+			
+			outputTexts[#outputTexts + 1] = text
+			text = "And: "
+		end
+		if i>1 and not (i %4 ==1 and i>1) then
+			text = text.." l "
+		end
+		text =text.. tostring(tempMatHolder[i]["Amount"]).." "..tempMatHolder[i]["Name"]
+	end
+	outputTexts[#outputTexts + 1] = text
+	StartChatInput(outputTexts[1])
+	EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name,EVENT_CHAT_MESSAGE_CHANNEL, OutputNextLine)
+	
 end
 
 local function removeFauxRequest(reference)
@@ -501,7 +543,7 @@ function DolgubonSetCrafter.initializeFunctions.setupUI()
 	DolgubonSetCrafter.materialManager = MaterialScroll:New(DolgubonSetCrafterWindowMaterialList)
 	DolgubonSetCrafter.materialManager:RefreshData()
 
-	DolgubonSetCrafter.debugFunctions()
+	--DolgubonSetCrafter.debugFunctions()
 	DolgubonSetCrafter.initializeWindowPosition()
 end
 

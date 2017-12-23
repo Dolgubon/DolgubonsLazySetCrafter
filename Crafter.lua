@@ -25,8 +25,11 @@ local craftedItems = {}
 local function removeFromScroll()
 end
 
-local function getItemLinkFromItemId(itemId) local name = GetItemLinkName(ZO_LinkHandler_CreateLink("Test Trash", nil, ITEM_LINK_TYPE,itemId, 0, 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 10000, 0)) 
-	return ZO_LinkHandler_CreateLinkWithoutBrackets(zo_strformat("<<t:1>>",name), nil, ITEM_LINK_TYPE,itemId, 0, 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 10000, 0) end
+local function getItemLinkFromItemId(itemId) local name = GetItemLinkName(ZO_LinkHandler_CreateLink("Test Trash", nil, ITEM_LINK_TYPE,itemId, 0, 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 10000, 0))
+	local link =ZO_LinkHandler_CreateLinkWithoutBrackets(zo_strformat("<<t:1>>",name), nil, ITEM_LINK_TYPE,itemId, 0, 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 10000, 0)
+	
+	return string.match(link,"|H0:item:%d+:%d:%d%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d+:%d").."|h|h"
+end
 
 local LazyCrafter
 
@@ -268,11 +271,13 @@ local function addRequirements(returnedTable, addAmounts)
 	local requirements = LazyCrafter:getMatRequirements(returnedTable)
 
 	for itemId, amount in pairs(requirements) do
-		
+		local link = getItemLinkFromItemId(itemId)
+		local bag, bank, craft = GetItemLinkStacks(link)
 		if DolgubonSetCrafter.materialList[itemId] then
 			DolgubonSetCrafter.materialList[itemId]["Amount"] = DolgubonSetCrafter.materialList[itemId]["Amount"] + amount*parity
+			DolgubonSetCrafter.materialList[itemId]["Current"] = bag + bank + craft
 		else
-			DolgubonSetCrafter.materialList[itemId] = {["Name"] = getItemLinkFromItemId(itemId) ,["Amount"] = amount*parity}
+			DolgubonSetCrafter.materialList[itemId] = {["Name"] = link ,["Amount"] = amount*parity,["Current"] = bag + bank + craft }
 		end
 		if DolgubonSetCrafter.materialList[itemId]["Amount"] <= 0 then DolgubonSetCrafter.materialList[itemId] = nil end
 	end

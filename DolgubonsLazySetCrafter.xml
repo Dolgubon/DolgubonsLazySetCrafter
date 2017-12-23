@@ -86,9 +86,9 @@
 					</Controls>
 				</Control>
 				
-				<Control name="$(parent)MaterialList" alpha="1"  mouseEnabled="true">
-					<Dimensions x="250" y="650" />
-					<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" offsetY="40" />
+				<Control name="$(parent)MaterialList" alpha="1"  mouseEnabled="false">
+					<Dimensions x="250" y="500" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-15" offsetY="40" />
 					<Controls>
 						<Label name="$(parent)Label" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Material Requirements">
 							<Anchor point="TOP" relativeTo="$(parent)Backdrop" relativePoint="TOP" offsetX="0" offsetY="10" />
@@ -98,12 +98,21 @@
 						</Label>
 						<Control name="$(parent)List" inherits="ZO_ScrollList" mouseEnabled="true">
 							<Anchor point="BOTTOM" relativeTo="$(parent)" offsetY="-10" offsetX="10" relativePoint="BOTTOM"/>
-							<Dimensions x="250" y="600" />
+							<Dimensions x="250" y="450" />
 						</Control>
 						<Texture name="$(parent)Divider" textureFile="esoui/art/miscellaneous/verticaldivider_64.dds" tier="HIGH">
 							<Dimensions x="4" y="650"/>
 							<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetY="-25" offsetX="-10" />
 						</Texture>
+						<Button name="$(parent)OutputRequirements" alpha="1" clickSound="Book_Acquired" topmost="true" text="Requirements To Chat" inherits="ZO_DefaultButton">
+		     				<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="35" />
+		      				<Dimensions x="200" y="28" />
+							<OnClicked>
+								local text = DolgubonSetCrafter.outputAllMats()
+								--StartChatInput("Requires: "..text)
+								
+							</OnClicked>
+				    	</Button>
 					</Controls>
 
 				</Control>

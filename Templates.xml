@@ -96,22 +96,26 @@
 		<Button name="SetCrafterMaterialTemplate" virtual="true" mouseEnabled="true">
 			<OnMouseEnter>
 				DolgubonSetCrafter.scroll:Row_OnMouseEnter(self)
+				if self.isKnown == false then
+					InitializeTooltip(InformationTooltip, self, BOTTOM, 0, -5)
+					SetTooltipText(InformationTooltip, self.errorTooltip)
+				end
 			</OnMouseEnter>
 			<OnMouseExit>
+				ClearTooltip(InformationTooltip)
 				DolgubonSetCrafter.scroll:Row_OnMouseExit(self)
 			</OnMouseExit>
 			<OnInitialized>
 				self.errorTooltip = DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughSpecificMat
 			</OnInitialized>
 			<OnClicked>
-				
-
+				StartChatInput("Requires: "..DolgubonSetCrafter.outputSingleMatLine(self))
 			</OnClicked>
 			<Dimensions x="850" y="30" />
 			<Controls>
 				<Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
 				
-				<Label name="$(parent)Name" inherits="QueueRowLabelTemplate" color="76BCC3" mouseEnabled="true">
+				<Label name="$(parent)Name" inherits="QueueRowLabelTemplate" color="76BCC3" mouseEnabled="false">
 					<Dimensions x="180" y="48" />
 					<Anchor point="LEFT" relativeTo="$(parent)" offsetX="0" color="000000" />
 				</Label>

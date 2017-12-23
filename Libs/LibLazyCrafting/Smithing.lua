@@ -399,8 +399,8 @@ end
 
 local function isValidLevel(isCP, lvl)
 	if isCP then
-		if lvl %10 ~= 0 then d("Mod") return  false end
-		if lvl > 160 or lvl <10 then d("Out of range") return false  end
+		if lvl %10 ~= 0 then  return  false end
+		if lvl > 160 or lvl <10 then  return false  end
 	else
 		if lvl % 2 ~=0 and lvl ~= 1 then return false end
 		if lvl <1 or lvl > 50 then return false end
