@@ -29,6 +29,14 @@ local langStrings
 local autofillFunctions ={}
 --------------------------
 -- Setup Functions
+-- These functions setup the UI at initialization
+
+-- Common UI element fields:
+-- invalidSelection -> If this function returns true, then a default or an invalid selection is selected.
+-- selected -> This is normally a table containing both the name of the item selected and the selected index
+-- selectPrompt -> If the current selection is invalid, this string will be displayed to tell the user
+-- selectDebug -> selects the first valid option, or an easy alternative if the debug mode is on. Largely redundant now with the saved selections
+
 
 local pieceNames = 
 {
@@ -49,6 +57,14 @@ local queue
  
 
 local spacingForButtons = 40
+
+-- A shortcut to output info to the user
+function DolgubonSetCrafter.out(text)
+	DolgubonSetCrafterWindowOutput:SetText(text)
+end
+
+-- Sets up pattern buttons for weaponNames, armourTypes and pieceNames
+-- Since it's only three tables, some of it is hardcoded using if statements.
 local function setupPatternButtonOneTable(table,nameTable, initialX, initialY, positionToSave)
 	for k, v in pairs (table) do
 		-- Create the pattern button
@@ -90,7 +106,8 @@ local function setupPatternButtonOneTable(table,nameTable, initialX, initialY, p
 end
 
 
--- Sets up the pattern buttons (for info on patterns, see ConstantSetup.lua)
+-- Sets up the pattern buttons and places them all in a table
+--(for the tables with info on patterns, see ConstantSetup.lua)
 function DolgubonSetCrafter.setupPatternButtons()
 
 
@@ -137,19 +154,15 @@ function DolgubonSetCrafter.setupPatternButtons()
 	end
 end
 
-
-function DolgubonSetCrafter.out(text)
-	DolgubonSetCrafterWindowOutput:SetText(text)
-end
-
 local out = DolgubonSetCrafter.out
 --/script d(Dolgubons_Set_Crafter_Style:GetNamedChild( Dolgubons_Set_Crafter_Style:GetChild(1):GetName() ) )
 
---Creates one dropdown box
+-- Creates one dropdown box using the passed information
 local function makeDropdownSelections(comboBoxContainer, tableInfo , text , x, y, comboBoxLocation, selectionTypes, isArmourCombobox)
 	if selectionTypes == "armourTrait" then isArmourCombobox = true elseif selectionTypes == "weaponTrait" then isArmourCombobox = false end
 	local comboBox = comboBoxContainer:GetChild(comboBoxLocation)
 	-- if location is 1 then get child number 2 and if location is 2 get child number 1
+	-- It was a fun exercise to not have to write an if statement
 	comboBoxContainer:GetChild((comboBoxLocation+2)%2+1):SetText(text..":")
 	if not comboBox.m_comboBox then 
 		comboBox.m_comboBox =comboBox.dropdown
@@ -161,55 +174,44 @@ local function makeDropdownSelections(comboBoxContainer, tableInfo , text , x, y
 		if selectedInfo[1] ~= -1 then
 			DolgubonSetCrafter.savedVars[selectionTypes] = selectedInfo[1]
 		end
-		--out(selectedInfo[2].." selected.")
 		selectedInfo[2] =zo_strformat("<<t:1>>",selectedInfo[2])
 		comboBox.m_comboBox.selectedIndex = selectedInfo[1]
 		comboBox.m_comboBox.selectedName = selectedInfo[2]
 		comboBox.m_comboBox:HideDropdownInternal()
 		comboBoxContainer.selected = selectedInfo
+
 		comboBoxContainer.invalidSelection = function(weight)
-			
 			if isArmourCombobox==nil then return selectedInfo[1]==-1
 			elseif weight =="" then
-				
-				if isArmourCombobox then
-					
-					return false 
-				else
-					
-					return selectedInfo[1]==-1 
-				end
+				if isArmourCombobox then return false 
+				else return selectedInfo[1]==-1 end
 			elseif not isArmourCombobox then -- Armour piece is selected
-				
 				return false
-			else 
-				
-				return selectedInfo[1]==-1
+			else return selectedInfo[1]==-1 
 			end	
 		end
 	end
-
-	--comboBox.m_comboBox.SelectFirstItem = function() Dolgubons_Guild_Blacklist_Selecter.m_comboBox:SelectItem(Dolgubons_Guild_Blacklist_Selecter.m_comboBox.allGuilds) end
-	comboBox.m_comboBox:SetSortsItems(false)
+	-- We want to keep the original order of the stuff listed. However, the style and set boxes are sorted before anyway
+	comboBox.m_comboBox:SetSortsItems(false) 
+	-- Set the default entry
 	comboBox.itemEntryDefault = ZO_ComboBox:CreateItemEntry(zo_strformat(langStrings.UIStrings.comboboxDefault,text), function() 
 		comboBox:setSelected(comboBox, {-1,zo_strformat(langStrings.UIStrings.comboboxDefault ,text)})
 			end )
 	comboBox.m_comboBox:AddItem(comboBox.itemEntryDefault)
 	comboBoxContainer.selectPrompt = zo_strformat(langStrings.UIStrings.selectPrompt,text)
 
+	-- Select the first/default item
 	function comboBoxContainer:SelectFirstItem()
 		comboBox.m_comboBox:SelectItem(comboBox.itemEntryDefault) 
 	end
-	
 	comboBoxContainer:SelectFirstItem()
-	
 
 	for i, value in pairs(tableInfo) do
 		local itemEntry = ZO_ComboBox:CreateItemEntry(zo_strformat("<<t:1>>",tableInfo[i][2]), function() comboBox:setSelected(comboBox, tableInfo[i])end )
 		
 		comboBox.m_comboBox:AddItem(itemEntry)
-
-		if i == 1 or tableInfo[i][2] == "|cFFFFFFAncient Elf|r" then
+		if i == 1 then
+			-- Debug selection
 			function comboBoxContainer:SelectDebug()
 				comboBox.m_comboBox:SelectItem(itemEntry)
 			end
@@ -266,7 +268,6 @@ function DolgubonSetCrafter.setupLevelSelector()
 	DolgubonSetCrafterWindowInputBox:SetTextType(2) -- Set it so it takes only numbers
 	createToggle( DolgubonSetCrafterWindowInputToggleChampion , [[esoui\art\treeicons\achievements_indexicon_champion_up.dds]] , [[esoui\art\treeicons\achievements_indexicon_champion_down.dds]], false)
 
-
 	DolgubonSetCrafterWindowInputToggleChampion.onToggle = function(self, newState) 
 		DolgubonSetCrafterWindowInputCPLabel:SetHidden(newState)
 		DolgubonSetCrafter.savedVars["champion"] = newState
@@ -291,7 +292,7 @@ function DolgubonSetCrafter.setupLevelSelector()
 	debugSelections[#debugSelections+1] = DolgubonSetCrafterWindowInputToggleChampion.ToggleOff
 end
 
-
+-- Create the scroll list for the queue
 function DolgubonScroll:New(control)
 
 	ZO_SortFilterList.InitializeSortFilterList(self, control)
@@ -315,6 +316,7 @@ function DolgubonScroll:New(control)
 	
 end
 
+-- Create the scroll list for the materials
 function MaterialScroll:New(control)
 
 	ZO_SortFilterList.InitializeSortFilterList(self, control)
@@ -342,11 +344,8 @@ local function formatAmountEntry(self, amountRequired, current)
 	local text
 	if current < amountRequired	 then
 		text = "|cFFBFBF"..tostring(current).."|r/"..tostring(amountRequired)
-		--self.isKnown = false
-
 	else
 		text = tostring(current).."/"..tostring(amountRequired)
-		--self.isKnown = true
 	end
 	self:SetText(text)
 end
@@ -376,10 +375,11 @@ function DolgubonSetCrafter.outputSingleMatLine(control)
 end
 
 outputTexts = {}
+--@nighn_9, 38
 
 local function OutputNextLine(eventCode,  channelType, fromName, text, isCustomerService, fromDisplayName)
 	
-	if fromDisplayName == GetDisplayName() then
+	if fromDisplayName == GetDisplayName() or channelType == CHAT_CHANNEL_WHISPER_SENT then
 		testActualOutput = text
 		testAssume = outputTexts[1]
 		if text == outputTexts[1] then
@@ -399,8 +399,9 @@ function DolgubonSetCrafter.outputAllMats()
 	for k, v in pairs(DolgubonSetCrafter.materialList) do
 		tempMatHolder[#tempMatHolder + 1] = v
 	end
-	table.sort(tempMatHolder, function(a, b) return a["Amount"]>b["Amount"]end)
 	if #tempMatHolder == 0 then return end
+	table.sort(tempMatHolder, function(a, b) return a["Amount"]>b["Amount"]end)
+	
 	outputTexts  = {}
 	local text = "Requires: "
 	
@@ -419,7 +420,56 @@ function DolgubonSetCrafter.outputAllMats()
 	outputTexts[#outputTexts + 1] = text
 	StartChatInput(outputTexts[1])
 	EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name,EVENT_CHAT_MESSAGE_CHANNEL, OutputNextLine)
+end
+
+local function MailNextLine(eventCode)
+	local receiver = DolgubonSetCrafterWindowMaterialListInputBox:GetText()
+	local subject = mailOutputTexts[#mailOutputTexts][2]
+	local body = mailOutputTexts[#mailOutputTexts][1]
+
+	zo_callLater(function()d("Sending "..subject.." to "..receiver) SendMail(receiver, subject, body) end , 100)
+
+	table.remove(mailOutputTexts)
+	if #mailOutputTexts>0 then
+		
+	else
+		EVENT_MANAGER:UnregisterForEvent(DolgubonSetCrafter.name,EVENT_MAIL_SEND_SUCCESS)
+		zo_callLater(CloseMailbox, 300)
+	end
+
+
+end
+
+function DolgubonSetCrafter.mailAllMats()
+	local tempMatHolder = {}
+	for k, v in pairs(DolgubonSetCrafter.materialList) do
+		tempMatHolder[#tempMatHolder + 1] = v
+	end
+	if #tempMatHolder == 0 then return end
+	table.sort(tempMatHolder, function(a, b) return a["Amount"]>b["Amount"]end)
 	
+	mailOutputTexts  = {}
+	local text = "Your request will require:\n"
+	
+	for i = 1, #tempMatHolder do
+		
+		if i %9 ==1 and i > 1 then
+			
+			mailOutputTexts[#mailOutputTexts + 1] = {text.."(continued in next mail)", "Material Requirements ".. (#mailOutputTexts + 1)}
+			text = "You will also require:\n"
+		end
+
+		text =text.. tostring(tempMatHolder[i]["Amount"]).." "..tempMatHolder[i]["Name"].."\n"
+	end
+	mailOutputTexts[#mailOutputTexts + 1] = {text, "Material Requirements ".. (#mailOutputTexts + 1)}
+	local receiver = DolgubonSetCrafterWindowMaterialListInputBox:GetText()
+	if #receiver < 3 then 
+		out("Invalid name")
+		return 
+	end
+	RequestOpenMailbox() -- required
+	EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name,EVENT_MAIL_SEND_SUCCESS, MailNextLine)
+	MailNextLine()
 end
 
 local function removeFauxRequest(reference)

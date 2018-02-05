@@ -87,7 +87,7 @@
 				</Control>
 				
 				<Control name="$(parent)MaterialList" alpha="1"  mouseEnabled="false">
-					<Dimensions x="250" y="500" />
+					<Dimensions x="250" y="490" />
 					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-15" offsetY="40" />
 					<Controls>
 						<Label name="$(parent)Label" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Material Requirements">
@@ -98,7 +98,7 @@
 						</Label>
 						<Control name="$(parent)List" inherits="ZO_ScrollList" mouseEnabled="true">
 							<Anchor point="BOTTOM" relativeTo="$(parent)" offsetY="-10" offsetX="10" relativePoint="BOTTOM"/>
-							<Dimensions x="250" y="450" />
+							<Dimensions x="250" y="440" />
 						</Control>
 						<Texture name="$(parent)Divider" textureFile="esoui/art/miscellaneous/verticaldivider_64.dds" tier="HIGH">
 							<Dimensions x="4" y="650"/>
@@ -109,6 +109,37 @@
 		      				<Dimensions x="200" y="28" />
 							<OnClicked>
 								local text = DolgubonSetCrafter.outputAllMats()
+								--StartChatInput("Requires: "..text)
+								
+							</OnClicked>
+				    	</Button>
+				    	<Backdrop name="$(parent)Input" tier="HIGH" inherits="ZO_EditBackdrop">
+							<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="70" />
+							<Dimensions x="200"/>
+							<Controls>
+								<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText">
+
+									<OnInitialized>
+										ZO_EditDefaultText_Initialize(self, "Enter @Userid")
+
+									</OnInitialized>
+									<OnTextChanged>
+										if self:GetText() == "" then
+											DolgubonSetCrafterWindowMaterialListInputBoxText:SetText("Enter Name")
+										else
+											DolgubonSetCrafterWindowMaterialListInputBoxText:SetText("")
+										end
+										DolgubonSetCrafter.savedVars["level"] = self:GetText()
+									</OnTextChanged>
+								</EditBox>
+							</Controls>
+						</Backdrop>
+
+				    	<Button name="$(parent)MailRequirements" alpha="1" clickSound="Book_Acquired" topmost="true" text="Requirements To Mail" inherits="ZO_DefaultButton">
+		     				<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="105" />
+		      				<Dimensions x="200" y="28" />
+							<OnClicked>
+								local text = DolgubonSetCrafter.mailAllMats()
 								--StartChatInput("Requires: "..text)
 								
 							</OnClicked>

@@ -118,7 +118,7 @@ SLASH_COMMANDS["/setcrafter"] = slashcommand
 SLASH_COMMANDS["/setcrafterdebugmode"] =
 function() 
 	DolgubonSetCrafter.savedVars.debug = not DolgubonSetCrafter.savedVars.debug 
-	d("Debug mode toggled "..tostring(DolgubonSetCrafter.savedVars.debug)) closeWindow(DolgubonSetCrafter.savedVars.debug )
+	d("Debug mode toggled "..tostring(DolgubonSetCrafter.savedVars.debug)) closeWindow(not DolgubonSetCrafter.savedVars.debug )
 	DolgubonSetCrafter.debugFunctions()
 
 end
