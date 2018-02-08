@@ -180,14 +180,19 @@ local function makeDropdownSelections(comboBoxContainer, tableInfo , text , x, y
 		comboBox.m_comboBox:HideDropdownInternal()
 		comboBoxContainer.selected = selectedInfo
 
-		comboBoxContainer.invalidSelection = function(weight)
-			if isArmourCombobox==nil then return selectedInfo[1]==-1
-			elseif weight =="" then
-				if isArmourCombobox then return false 
-				else return selectedInfo[1]==-1 end
+		comboBoxContainer.invalidSelection = function(weight, isAmour)
+
+			if isArmourCombobox==nil then return selectedInfo[1]==-1 -- Is not a trait combobox
+			elseif not isAmour then -- If there is no weight then it is a weapon, (how to deal with shields?)
+				if isArmourCombobox then 
+					return false 
+				else
+					return selectedInfo[1]==-1 
+				end
 			elseif not isArmourCombobox then -- Armour piece is selected
 				return false
-			else return selectedInfo[1]==-1 
+			else 
+				return selectedInfo[1]==-1 
 			end	
 		end
 	end

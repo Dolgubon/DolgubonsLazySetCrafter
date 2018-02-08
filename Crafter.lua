@@ -293,7 +293,7 @@ local function addPatternToQueue(patternButton,i)
 	
 	local pattern, station  = 0, 0
 	local trait = 0
-
+	local isArmour 
 	if i<9 then
 		for i = 1, 3 do 
 
@@ -308,16 +308,19 @@ local function addPatternToQueue(patternButton,i)
 		end
 		requestTable["Trait"] = shallowTwoItemCopy(comboBoxes.Armour.selected)
 		trait = comboBoxes.Armour.selected[1]
+		isArmour = true
 	elseif i== 21 then
 		requestTable["Weight"] = {nil, ""}
 		requestTable["Trait"] = shallowTwoItemCopy(comboBoxes.Armour.selected)
 		pattern, station = getPatternIndex(patternButton)
-		trait = comboBoxes.Armour.selected[1]	
+		trait = comboBoxes.Armour.selected[1]
+		isArmour = true
 	else
 		requestTable["Weight"] = {nil, ""}
 		requestTable["Trait"] = shallowTwoItemCopy(comboBoxes.Weapon.selected)
 		pattern, station = getPatternIndex(patternButton)
 		trait =comboBoxes.Weapon.selected[1]
+		isArmour = false
 	end
 	requestTable["Pattern"] = {pattern,patternButton.tooltip}
 	requestTable["Level"] = {tonumber(DolgubonSetCrafterWindowInputBox:GetText()),DolgubonSetCrafterWindowInputBox:GetText()}
@@ -331,8 +334,11 @@ local function addPatternToQueue(patternButton,i)
 		out(DolgubonSetCrafter.localizedStrings.UIStrings.invalidLevel)
 		return
 	end
+	local function isShield(requestTable)
+		return requestTable["Pattern"][1] == 6 and station == CRAFTING_TYPE_WOODWORKING
+	end
 	for k, combobox in pairs(comboBoxes) do
-		if combobox.invalidSelection(requestTable["Weight"][2]) and not DolgubonSetCrafter.savedVars.autofill then
+		if combobox.invalidSelection(requestTable["Weight"][2], isArmour) and not DolgubonSetCrafter.savedVars.autofill then
 			out(combobox.selectPrompt)
 			return
 		end
