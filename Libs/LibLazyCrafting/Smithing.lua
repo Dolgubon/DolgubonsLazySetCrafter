@@ -447,7 +447,7 @@ function LLC_ImproveSmithingItem(self, BagIndex, SlotIndex, newQuality, autocraf
 	if station == -1 then d("Cannot be improved") return end
 	if autocraft==nil then autocraft = self.autocraft end
 	local station = GetRearchLineInfoFromRetraitItem(BagIndex, SlotIndex)
-	local a = {
+	local craftingRequestTable = {
 	["type"] = "improvement",
 	["Requester"] = self.addonName, -- ADDON NAME
 	["autocraft"] = autocraft,
@@ -460,13 +460,13 @@ function LLC_ImproveSmithingItem(self, BagIndex, SlotIndex, newQuality, autocraf
 	["reference"] = reference,
 	["station"] = station,
 	["timestamp"] = GetSmithingQueueOrder(),}
-	table.insert(craftingQueue[self.addonName][station], a)
+	table.insert(craftingQueue[self.addonName][station], craftingRequestTable)
 	--sortCraftQueue()
 	if not IsPerformingCraftProcess() and GetCraftingInteractionType()~=0 and not LibLazyCrafting.isCurrentlyCrafting[1] then
 		LibLazyCrafting.craftInteractionTables[GetCraftingInteractionType()]["function"](GetCraftingInteractionType())
 
 	end
-	return a
+	return craftingRequestTable
 end
 
 LibLazyCrafting.functionTable.ImproveSmithingItem = LLC_ImproveSmithingItem

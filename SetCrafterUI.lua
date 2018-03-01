@@ -369,6 +369,26 @@ function MaterialScroll:SetupEntry(control, data)
 			end
 		end
 	end
+	local BG = GetControl(control, "BG")
+	
+	if BG then
+		BG:SetAnchorFill(control)
+		--BG.nonRecolorable = false
+		--local colour = BG.SetColor
+		--BG.SetColor = function() end
+		--BG.HideSetColor = colour
+		if not control.isKnown then
+			--BG:SetColor(1,0.5,0.5,0.2)
+			BG:SetCenterColor(1, 0.5, 0.5, 0.2)
+			BG:SetEdgeColor(0,0,0,0)
+			
+		else
+			--BG:SetColor(0.5,0.8,1,0.2)
+			BG:SetEdgeColor(0,0,0, 0)
+			BG:SetCenterColor(0.5,0.5,0.5,0.05)
+
+		end
+	end
 	ZO_SortFilterList.SetupRow(self, control, data)
 end
 

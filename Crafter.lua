@@ -25,10 +25,8 @@ local craftedItems = {}
 local function removeFromScroll()
 end
 
-local function getItemLinkFromItemId(itemId) local name = GetItemLinkName(ZO_LinkHandler_CreateLink("Test Trash", nil, ITEM_LINK_TYPE,itemId, 0, 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 10000, 0))
-	local link =ZO_LinkHandler_CreateLinkWithoutBrackets(zo_strformat("<<t:1>>",name), nil, ITEM_LINK_TYPE,itemId, 0, 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 10000, 0)
-	
-	return string.match(link,"|H0:item:%d+:%d:%d%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d+:%d").."|h|h"
+local function getItemLinkFromItemId(itemId) 
+	return string.format("|H0:item:%d:%d:50:0:0:0:0:0:0:0:0:0:0:0:0:%d:%d:0:0:%d:0|h|h", itemId, 0, ITEMSTYLE_NONE, 0, 10000) 
 end
 
 local LazyCrafter
@@ -609,24 +607,10 @@ local function slotUpdate( eventCode, bagId, slotId, isNewItem, itemSoundCategor
 end
 EVENT_MANAGER:RegisterForEvent("Set Crafter", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, slotUpdate)
 
-	--[[@Dolgubon: label: offsetX -10 -> offsetX -160, toggleCp: offsetX -100 -> offsetX -85, box: 
-IDK because of the two anchors, but that will align the label and the thingy at least.
-Also, you could put the parent element's offsetY from 40 to 55. 
-I suppose the Attributes header could also go, since the things are pretty self-explanatory? http://take.ms/GIpvU
-TEXT_TYPE_ALL
-TEXT_TYPE_ALPHABETIC
-TEXT_TYPE_ALPHABETIC_NO_FULLWIDTH_LATIN
-TEXT_TYPE_NUMERIC
-TEXT_TYPE_NUMERIC_UNSIGNED_INT
-TEXT_TYPE_PASSWORD
-myInput:SetTextType(TEXT_TYPE_NUMERIC)
-
-
-]]
-
 --[[
-Ok so if no crafting Object is given we make a reference as normal
-But if one IS given then we need to make our own
-
+@Dolgubon I'd prefer getting fedback upon craft requests or what went wrong or what succeeded at a fixed line in your addon UI, 
+bottom line like a status text. Having popups and tooltips everywhere is just annoying, and the click sound for each clicked entry etc. 
+too btw! If you do a tooltip, please put everthing in one tooltip like Scootworks showed as example. If it's an error, colorize it red 
+and/or (for the colorblinds) use an icon via zo_iconTextFormat to show it does not work.
 
 ]]
