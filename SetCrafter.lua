@@ -17,15 +17,23 @@ DolgubonSetCrafter.default = {
 	["counter"] = 0,
 	[6697110] = false,
 	["saveLastChoice"] = true,
+	["accountWideProfile"] = 
+	{
+		["OpenAtCraftStation"] = true,
+		["autocraft"] = true,
+		["closeOnExit"] = true,
+	},
 }
 DolgubonSetCrafter.defaultCharacter = 
 {
 	["OpenAtCraftStation"] = true,
 	["autocraft"] = true,
+	["closeOnExit"] = true,
+	["useCharacterSettings"] = false,
 }
 
 
-DolgubonSetCrafter.version = 4
+DolgubonSetCrafter.version = 5
 DolgubonSetCrafter.name = "DolgubonsLazySetCrafter"
 
 
@@ -55,7 +63,13 @@ function DolgubonSetCrafter.onEnter()
 	--d(DolgubonsGuildBlacklistWindowInputBox:GetText())
 end
 
-
+function DolgubonSetCrafter:GetSettings()
+	if self.charSavedVars.useCharacterSettings then
+		return self.charSavedVars
+	else
+		return self.savedvars.accountWideProfile
+	end
+end
 
 
 function DolgubonSetCrafter:Initialize()
@@ -65,11 +79,19 @@ function DolgubonSetCrafter:Initialize()
 	LAM:RegisterOptionControls("DolgubonsWritCrafter", DolgubonSetCrafter.settings["options"])]]
 	
 
-	DolgubonSetCrafter.savedVars = ZO_SavedVars:NewAccountWide("dolgubonslazysetcrafter", DolgubonSetCrafter.version, nil, DolgubonSetCrafter.default)
-	DolgubonSetCrafter.charSavedVars = ZO_SavedVars:NewCharacterIdSettings("dolgubonslazysetcrafter",DolgubonSetCrafter.version, nil, DolgubonSetCrafter.defaultCharacter)
-	
+	DolgubonSetCrafter.savedvars = ZO_SavedVars:NewAccountWide("dolgubonslazysetcrafter", 
+		DolgubonSetCrafter.version, nil, DolgubonSetCrafter.default)
+
+	DolgubonSetCrafter.charSavedVars = ZO_SavedVars:NewCharacterIdSettings("dolgubonslazysetcrafter",
+		DolgubonSetCrafter.version, nil, DolgubonSetCrafter.savedvars.accountWideProfile) 
+		-- Use the account Wide profile as the default
+
+	if DolgubonSetCrafter.charSavedVars.useCharacterSettings then
+
+	end
+
 	LLC = LibStub:GetLibrary("LibLazyCrafting")
-	if DolgubonSetCrafter.savedVars.debug then
+	if DolgubonSetCrafter.savedvars.debug then
 		DolgubonSetCrafterWindow:SetHidden(false)
 	end
 
@@ -104,10 +126,15 @@ function DolgubonSetCrafter.OnAddOnLoaded(event, addonName)
 end 
 
 EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name, EVENT_CRAFTING_STATION_INTERACT, 
-	function(event, station) if station <3 or station >5 then if DolgubonSetCrafter.charSavedVars.OpenAtCraftStation then closeWindow(false) end end end)
+	function(event, station) if station <3 or station >5 then 
+		if DolgubonSetCrafter:GetSettings().OpenAtCraftStation then 
+			closeWindow(false) 
+		end 
+	end 
+end)
 
 EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name, EVENT_END_CRAFTING_STATION_INTERACT, 
-	function(event, station) if station <3 or station >5 then closeWindow(true) end end)
+	function(event, station) if (station <3 or station >5) and DolgubonSetCrafter:GetSettings().closeOnExit then closeWindow(true) end end)
 EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name, EVENT_ADD_ON_LOADED, DolgubonSetCrafter.OnAddOnLoaded)
 --EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name, EVENT_CRAFT_COMPLETED , d)
 
@@ -117,8 +144,8 @@ SLASH_COMMANDS["/dsc"] = slashcommand
 SLASH_COMMANDS["/setcrafter"] = slashcommand
 SLASH_COMMANDS["/setcrafterdebugmode"] =
 function() 
-	DolgubonSetCrafter.savedVars.debug = not DolgubonSetCrafter.savedVars.debug 
-	d("Debug mode toggled "..tostring(DolgubonSetCrafter.savedVars.debug)) closeWindow(not DolgubonSetCrafter.savedVars.debug )
+	DolgubonSetCrafter.savedvars.debug = not DolgubonSetCrafter.savedvars.debug 
+	d("Debug mode toggled "..tostring(DolgubonSetCrafter.savedvars.debug)) closeWindow(not DolgubonSetCrafter.savedvars.debug )
 	DolgubonSetCrafter.debugFunctions()
 
 end

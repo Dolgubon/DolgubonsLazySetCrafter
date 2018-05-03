@@ -336,7 +336,7 @@ local function addPatternToQueue(patternButton,i)
 		return requestTable["Pattern"][1] == 6 and station == CRAFTING_TYPE_WOODWORKING
 	end
 	for k, combobox in pairs(comboBoxes) do
-		if combobox.invalidSelection(requestTable["Weight"][2], isArmour) and not DolgubonSetCrafter.savedVars.autofill then
+		if combobox.invalidSelection(requestTable["Weight"][2], isArmour) and not DolgubonSetCrafter.savedvars.autofill then
 			out(combobox.selectPrompt)
 			return
 		end
@@ -354,8 +354,8 @@ local function addPatternToQueue(patternButton,i)
 	requestTable["Quality"]		= shallowTwoItemCopy(comboBoxes.Quality.selected)
 	
 	local quality 				= comboBoxes.Quality.selected[1]
-	requestTable["Reference"]	= DolgubonSetCrafter.savedVars.counter
-	DolgubonSetCrafter.savedVars.counter = DolgubonSetCrafter.savedVars.counter + 1
+	requestTable["Reference"]	= DolgubonSetCrafter.savedvars.counter
+	DolgubonSetCrafter.savedvars.counter = DolgubonSetCrafter.savedvars.counter + 1
 	-- Some names are just so long, we need to shorten it
 	shortenNames(requestTable)
 
@@ -465,7 +465,7 @@ end
 
 
 function DolgubonSetCrafter.initializeFunctions.initializeCrafting()
-	queue = DolgubonSetCrafter.savedVars.queue
+	queue = DolgubonSetCrafter.savedvars.queue
 
 	LazyCrafter = LibLazyCrafting:AddRequestingAddon(DolgubonSetCrafter.name, false, LLCCraftCompleteHandler)	
 	DolgubonSetCrafter.LazyCrafter = LazyCrafter
@@ -541,9 +541,9 @@ local function AddForiegnSmithingRequest(pattern, isCP, level, styleIndex, trait
 	if pattern and isCP ~= nil and level and styleIndex and traitIndex and station and setIndex and quality then
 
 		queueTable.personalReference 					= reference
-		if reference == nil then reference = DolgubonSetCrafter.savedVars.counter end
-		queueTable.Reference 							= DolgubonSetCrafter.savedVars.counter
-		DolgubonSetCrafter.savedVars.counter 			= DolgubonSetCrafter.savedVars.counter + 1
+		if reference == nil then reference = DolgubonSetCrafter.savedvars.counter end
+		queueTable.Reference 							= DolgubonSetCrafter.savedvars.counter
+		DolgubonSetCrafter.savedvars.counter 			= DolgubonSetCrafter.savedvars.counter + 1
 		queueTable.CraftRequestTable 					= {pattern, isCP,level ,styleIndex,traitIndex, useUniversalStyleItem, station,  setIndex, quality, true, reference}
 
 		craftingObject:CraftSmithingItemByLevel(

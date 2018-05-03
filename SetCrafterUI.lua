@@ -172,7 +172,7 @@ local function makeDropdownSelections(comboBoxContainer, tableInfo , text , x, y
 	--Function called when an option is selected
 	function comboBox:setSelected(comboBox, selectedInfo)
 		if selectedInfo[1] ~= -1 then
-			DolgubonSetCrafter.savedVars[selectionTypes] = selectedInfo[1]
+			DolgubonSetCrafter.savedvars[selectionTypes] = selectedInfo[1]
 		end
 		selectedInfo[2] =zo_strformat("<<t:1>>",selectedInfo[2])
 		comboBox.m_comboBox.selectedIndex = selectedInfo[1]
@@ -222,7 +222,7 @@ local function makeDropdownSelections(comboBoxContainer, tableInfo , text , x, y
 			end
 			debugSelections[#debugSelections+1] = function() comboBoxContainer:SelectDebug() end
 			function comboBoxContainer:SelectAutoFill()
-				if self.name~="Style" and comboBoxContainer.invalidSelection(requestTable["Weight"]) and DolgubonSetCrafter.savedVars.autofill then
+				if self.name~="Style" and comboBoxContainer.invalidSelection(requestTable["Weight"]) and DolgubonSetCrafter:GetSettings().autofill then
 					comboBox.m_comboBox:SelectItem(itemEntry)
 				end
 			end
@@ -231,7 +231,7 @@ local function makeDropdownSelections(comboBoxContainer, tableInfo , text , x, y
 			autofillFunctions[#autofillFunctions + 1] = function() comboBoxContainer:SelectAutoFill() end
 		end
 		
-		if tableInfo[i][1] == DolgubonSetCrafter.savedVars[selectionTypes] and DolgubonSetCrafter.savedVars.saveLastChoice then
+		if tableInfo[i][1] == DolgubonSetCrafter:GetSettings()[selectionTypes] and DolgubonSetCrafter:GetSettings().saveLastChoice then
 			comboBox.m_comboBox:SelectItem(itemEntry)
 		end
 	end
@@ -275,22 +275,22 @@ function DolgubonSetCrafter.setupLevelSelector()
 
 	DolgubonSetCrafterWindowInputToggleChampion.onToggle = function(self, newState) 
 		DolgubonSetCrafterWindowInputCPLabel:SetHidden(newState)
-		DolgubonSetCrafter.savedVars["champion"] = newState
+		DolgubonSetCrafter:GetSettings()["champion"] = newState
 	end
 
 	DolgubonSetCrafterWindowInputBox.selectPrompt = zo_strformat(langStrings.UIStrings.selectPrompt,langStrings.UIStrings.level)
 
-	if DolgubonSetCrafter.savedVars.saveLastChoice then
-		if DolgubonSetCrafter.savedVars["level"] then
-			DolgubonSetCrafterWindowInputBox:SetText(DolgubonSetCrafter.savedVars["level"])
+	if DolgubonSetCrafter:GetSettings().saveLastChoice then
+		if DolgubonSetCrafter:GetSettings()["level"] then
+			DolgubonSetCrafterWindowInputBox:SetText(DolgubonSetCrafter:GetSettings()["level"])
 		end
-		if DolgubonSetCrafter.savedVars["champion"]~=nil then
-			DolgubonSetCrafterWindowInputToggleChampion:setState(DolgubonSetCrafter.savedVars["champion"])
+		if DolgubonSetCrafter:GetSettings()["champion"]~=nil then
+			DolgubonSetCrafterWindowInputToggleChampion:setState(DolgubonSetCrafter:GetSettings()["champion"])
 		end
 	end
 
-	if DolgubonSetCrafter.savedVars["level"] and DolgubonSetCrafter.savedVars.saveLastChoice then 
-		DolgubonSetCrafterWindowInputBox:SetText(DolgubonSetCrafter.savedVars["level"])
+	if DolgubonSetCrafter:GetSettings()["level"] and DolgubonSetCrafter:GetSettings().saveLastChoice then 
+		DolgubonSetCrafterWindowInputBox:SetText(DolgubonSetCrafter:GetSettings()["level"])
 	end 
 
 	debugSelections[#debugSelections+1] = function() DolgubonSetCrafterWindowInputBox:SetText("10") end
@@ -568,14 +568,14 @@ MaterialScroll.SortScrollList = DolgubonScroll.SortScrollList
 MaterialScroll.FilterScrollList = DolgubonScroll.FilterScrollList
 
 function DolgubonSetCrafter.debugFunctions()
-	if DolgubonSetCrafter.savedVars.debug then
+	if DolgubonSetCrafter:GetSettings().debug then
 		for k, v in pairs(debugSelections) do
 			v()
 		end
 	end
 end
 function DolgubonSetCrafter.autofillFunctions()
-	--if DolgubonSetCrafter.savedVars.autofill then
+	--if DolgubonSetCrafter:GetSettings().autofill then
 		for k, v in pairs(autofillFunctions) do
 			v()
 		end
@@ -598,13 +598,13 @@ end
 function DolgubonSetCrafter.initializeWindowPosition()
 	DolgubonSetCrafterWindow:ClearAnchors()
 	
-	DolgubonSetCrafterWindow:SetAnchor(TOPLEFT,GuiRoot, TOPLEFT,DolgubonSetCrafter.savedVars.xPos, DolgubonSetCrafter.savedVars.yPos )
+	DolgubonSetCrafterWindow:SetAnchor(TOPLEFT,GuiRoot, TOPLEFT,DolgubonSetCrafter.savedvars.xPos, DolgubonSetCrafter.savedvars.yPos )
 end
 
 -- UI setup directing function
 function DolgubonSetCrafter.initializeFunctions.setupUI()
 	langStrings = DolgubonSetCrafter.localizedStrings
-	queue = DolgubonSetCrafter.savedVars.queue -- Retreive the queue from saved variables
+	queue = DolgubonSetCrafter.savedvars.queue -- Retreive the queue from saved variables
 
 	DolgubonSetCrafter.setupLocalizedLabels()
 	DolgubonSetCrafter.setupPatternButtons() -- check
@@ -652,8 +652,8 @@ end
 
 function DolgubonSetCrafter.onWindowMove(window)
 	
-	DolgubonSetCrafter.savedVars.xPos = window:GetLeft()
-	DolgubonSetCrafter.savedVars.yPos = window:GetTop()
+	DolgubonSetCrafter.savedvars.xPos = window:GetLeft()
+	DolgubonSetCrafter.savedvars.yPos = window:GetTop()
 end
 
 --esoui/art/journal/gamepad/gp_journalcheck.dds

@@ -1,32 +1,72 @@
 local panel =  
 {
      type = "panel",
-     name = "Dolgubon's Lazy Set Crafter",
+     name = "Lazy Set Crafter",
      registerForRefresh = true,
      displayName = "|c8080FF Dolgubon's Lazy Set Crafter|r",
      author = "@Dolgubon"
 }
+local function shallowCopy (source, destination)
+	for k, v in pairs(source) do
+		destination[k] = v
+	end
+end
+
+local SettingsStrings = DolgubonSetCrafter.localizedStrings.SettingsStrings
 
 local options =
 {
 	{
+		type = "header",
+		name = function() 
+			local profile = SettingsStrings.accountWide
+			if DolgubonSetCrafter.charSavedVars.useCharacterSettings then
+				profile = SettingsStrings.characterSpecific
+			end
+			return  string.format(SettingsStrings.nowEditing, profile)  
+		end, -- or string id or function returning a string
+	},
+	{
 		type = "checkbox",
-		name = DolgubonSetCrafter.localizedStrings.SettingStrings.showAtStation,
-		tooltip =DolgubonSetCrafter.localizedStrings.SettingStrings.showAtStationTooltip,
-		getFunc = function() return DolgubonSetCrafter.charSavedVars.OpenAtCraftStation end,
+		name = SettingsStrings.showAtStation,
+		tooltip =SettingsStrings.showAtStationTooltip,
+		getFunc = function() return DolgubonSetCrafter:GetSettings().OpenAtCraftStation end,
 		setFunc = function(value) 
-			DolgubonSetCrafter.charSavedVars.OpenAtCraftStation = value
+			DolgubonSetCrafter:GetSettings().OpenAtCraftStation = value
 		end,
 	},
 	{
 		type = "checkbox",
-		name = DolgubonSetCrafter.localizedStrings.SettingStrings.saveLastChoice,
-		tooltip =DolgubonSetCrafter.localizedStrings.SettingStrings.saveLastChoiceTooltip,
-		getFunc = function() return DolgubonSetCrafter.savedVars.saveLastChoice end,
+		name = SettingsStrings.closeOnExit,
+		tooltip =SettingsStrings.closeOnExit,
+		getFunc = function() return DolgubonSetCrafter:GetSettings().closeOnExit end,
 		setFunc = function(value) 
-			DolgubonSetCrafter.savedVars.saveLastChoice = value
+			DolgubonSetCrafter:GetSettings().closeOnExit = value
 		end,
 	},
+	{
+		type = "checkbox",
+		name = SettingsStrings.saveLastChoice,
+		tooltip =SettingsStrings.saveLastChoiceTooltip,
+		getFunc = function() return DolgubonSetCrafter.savedvars.saveLastChoice end,
+		setFunc = function(value) 
+			DolgubonSetCrafter.savedvars.saveLastChoice = value
+		end,
+	},
+	{
+		type = "header",
+		name = "", -- or string id or function returning a string
+	},
+	{
+		type = "checkbox",
+		name = SettingsStrings.useCharacterSettings,
+		tooltip = SettingsStrings.useCharacterSettingsTooltip,
+		getFunc = function() return DolgubonSetCrafter.charSavedVars.useCharacterSettings end,
+		setFunc = function(value) 
+			DolgubonSetCrafter.charSavedVars.useCharacterSettings = value
+		end,
+	},
+	
 }
 
 function DolgubonSetCrafter.initializeFunctions.initializeSettingsMenu()
