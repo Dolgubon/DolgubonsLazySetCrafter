@@ -156,11 +156,12 @@
 				</Control>
 
     			<!-- Creating the input box -->
+    			<!--
     			<Backdrop name="$(parent)Input" tier="HIGH" inherits="ZO_EditBackdrop">
 					<Anchor point="BOTTOM" relativeTo="$(parent)Comboboxes" relativePoint="CENTER" offsetX="-50" offsetY="50" />
 					<Dimensions x="50"/>
 					<Controls>
-						<Button name="$(parent)ToggleChampion" alpha="1"  topmost="true" ><!--inherits="ToggleButton">-->
+						<Button name="$(parent)ToggleChampion" alpha="1"  topmost="true" ><!--inherits="ToggleButton">
 	         				<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-155" offsetY="0" />
 	          				<Dimensions x="48" y="48" />
 	          				<Textures mouseOver="esoui\art\treeicons\achievements_indexicon_champion_over.dds"/>
@@ -187,7 +188,59 @@
 							
 						</Label>
 					</Controls>
-				</Backdrop>
+				</Backdrop>-->
+				<Control name="$(parent)Input" hidden= "false" mouseEnabled="false" inherits="ZO_EditSpinner" level="999" >
+					<Dimensions x="140" y="33" />
+					<Anchor point="BOTTOM" relativeTo="$(parent)Comboboxes" relativePoint="CENTER" offsetX="0" offsetY="50" />
+					<Controls>
+						<Texture name="$(parent)BGLeft" textureFile="EsoUI/Art/Miscellaneous/spinnerBG_left.dds" override="true" >
+							<Dimensions x="0" y="0" />
+						</Texture>
+						<Texture name="$(parent)BGRight" textureFile="EsoUI/Art/Miscellaneous/spinnerBG_right.dds" override="true" >
+							<Dimensions x="0" y="0" />
+						</Texture>
+						
+						<Button name="$(parent)Decrease" override="true" >
+							<Dimensions x="32" y="32" />
+							<Anchor point="LEFT" offsetX="-15" />
+							<Textures normal="EsoUI/Art/Buttons/pointsMinus_up.dds"
+								pressed="EsoUI/Art/Buttons/pointsMinus_down.dds"
+								mouseOver="EsoUI/Art/Buttons/pointsMinus_over.dds"
+								disabled="EsoUI/Art/Buttons/pointsMinus_disabled.dds"/>
+							<OnClicked>
+								--MultiCraft_ChangeQty(-1)
+							</OnClicked>
+						</Button>
+						
+						<EditBox name="$(parent)Box" inherits="ZO_DefaultEdit" font="ZoFontHeader3" textType="NUMERIC_UNSIGNED_INT" override="true" horizontalAlignment="CENTER" text="1" >
+							<Anchor point="TOP" offsetX="-16" offsetY="4"/>
+							<Anchor point="BOTTOMRIGHT" offsetX="-30" offsetY="-5"/>
+							<OnMouseWheel>
+								--MultiCraft_ChangeQty(delta, ctrl, alt, shift)
+							</OnMouseWheel>
+						</EditBox>
+						
+						<Button name="$(parent)Increase" override="true" >
+							<Dimensions x="32" y="32" />
+							<Anchor point="RIGHT" offsetX="2" />
+							<Textures normal="EsoUI/Art/Buttons/pointsPlus_up.dds"
+								pressed="EsoUI/Art/Buttons/pointsPlus_down.dds"
+								mouseOver="EsoUI/Art/Buttons/pointsPlus_over.dds"
+								disabled="EsoUI/Art/Buttons/pointsPlus_disabled.dds"/>
+							<OnClicked>
+								--MultiCraft_ChangeQty(1)
+							</OnClicked>
+						</Button>
+						<Label name="$(parent)CPLabel"  height="25" alpha="1" text="CP" color="FFFFFF" font="ZoFontGameLargeBold">
+							<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)" offsetX="-15"/>
+
+						</Label>
+						<Label name="$(parent)LevelLabel"  height="25" alpha="1" text="Level:" color="FFFFFF" font="ZoFontGameLargeBold">
+							5<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="-280" />
+							
+						</Label>
+					</Controls>
+				</Control>
 		    	
 		    </Controls>
 		</TopLevelControl>

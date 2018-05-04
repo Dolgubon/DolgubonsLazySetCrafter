@@ -635,6 +635,34 @@ updateList = function ()
  end
 DolgubonSetCrafter.updateList = updateList
 
+function DolgubonSetCrafter.changeLvl(delta, ctrl, alt, shift)
+
+	
+	local displayedValue = MultiCraft:GetNamedChild("Display"):GetText()
+	
+	if displayedValue ~= "" then
+		local value = tonumber(displayedValue)
+		
+		if ctrl or alt or shift or IsShiftKeyDown() or IsControlKeyDown() or IsAltKeyDown() then
+			delta = delta * 10
+		end
+		
+		value = value + delta
+		
+		if value < 1 then value = 1 end
+		if value > maxCraftable then value = maxCraftable end
+		
+		MultiCraft:GetNamedChild("Display"):SetText(value)
+		sliderValue = value
+		
+	else
+		MultiCraft:GetNamedChild("Display"):SetText(1)
+		sliderValue = 1
+	end
+
+end
+
+
 
 ---------------------
 --- OTHER
