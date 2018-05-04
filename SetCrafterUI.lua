@@ -620,6 +620,7 @@ function DolgubonSetCrafter.initializeFunctions.setupUI()
 
 	--DolgubonSetCrafter.debugFunctions()
 	DolgubonSetCrafter.initializeWindowPosition()
+	DolgubonSetCrafterToggle:SetHidden(not DolgubonSetCrafter:GetSettings().showToggle )
 end
 
 

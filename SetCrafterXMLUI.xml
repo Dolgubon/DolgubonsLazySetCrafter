@@ -3,10 +3,28 @@
 -- Last Modified: December 2016
 -- 
 -- Created by Dolgubon (Joseph Heinzle)
------------------------------------>
+---------------------------------
+esoui/art/icons/housing_dwe_inc_anvila001.dds
+-->
 
 <GuiXml> 
 	<Controls>
+		<TopLevelControl name="DolgubonSetCrafterToggle" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false" >	
+			<Dimensions x="75" y="75" />
+			<Anchor point="TOPRIGHT"  relativeTo="GuiRoot" relativePoint="TOPRIGHT" offsetX="50" offsetY="50"/>
+			<Controls>
+				<Button name="$(parent)Button" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false"  >
+					<Anchor point="TOPRIGHT"  relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+					<Dimensions x="75" y="75" />
+						<Textures normal="esoui/art/icons/housing_dwe_inc_anvila001.dds"/>
+						<OnClicked>
+							DolgubonSetCrafter.close()
+						</OnClicked>
+
+				</Button>
+			</Controls>
+		</TopLevelControl>
+
 		<TopLevelControl name="DolgubonSetCrafterWindow" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true" >	
 			<Dimensions x="1050" y="650" />
 			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="300" offsetY="-100"/>

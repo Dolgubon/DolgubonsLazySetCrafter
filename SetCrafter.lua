@@ -16,6 +16,7 @@ DolgubonSetCrafter.defaultCharacter =
 	["autocraft"] = true,
 	["closeOnExit"] = true,
 	["useCharacterSettings"] = false,
+	["showToggle"] = false,
 }
 DolgubonSetCrafter.default = {
 	["queue"] = {},
@@ -125,15 +126,26 @@ function DolgubonSetCrafter.OnAddOnLoaded(event, addonName)
 end 
 
 EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name, EVENT_CRAFTING_STATION_INTERACT, 
-	function(event, station) if station <3 or station >5 then 
-		if DolgubonSetCrafter:GetSettings().OpenAtCraftStation then 
-			closeWindow(false) 
+	function(event, station) 
+		if station <3 or station >5 then 
+			if DolgubonSetCrafter:GetSettings().OpenAtCraftStation then 
+				closeWindow(false) 
+			else
+				DolgubonSetCrafterToggle:SetHidden(false )
+			end
 		end 
-	end 
-end)
+	end)
 
 EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name, EVENT_END_CRAFTING_STATION_INTERACT, 
-	function(event, station) if (station <3 or station >5) and DolgubonSetCrafter:GetSettings().closeOnExit then closeWindow(true) end end)
+	function(event, station) 
+		if (station <3 or station >5) then
+			if DolgubonSetCrafter:GetSettings().closeOnExit then closeWindow(true) 
+			end 
+			if not DolgubonSetCrafter:GetSettings().showToggle then
+				DolgubonSetCrafterToggle:SetHidden(true)
+			end
+		end
+	end)
 EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name, EVENT_ADD_ON_LOADED, DolgubonSetCrafter.OnAddOnLoaded)
 --EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name, EVENT_CRAFT_COMPLETED , d)
 

@@ -28,29 +28,11 @@ local options =
 	},
 	{
 		type = "checkbox",
-		name = SettingsStrings.showAtStation,
-		tooltip =SettingsStrings.showAtStationTooltip,
-		getFunc = function() return DolgubonSetCrafter:GetSettings().OpenAtCraftStation end,
+		name = SettingsStrings.useCharacterSettings,
+		tooltip = SettingsStrings.useCharacterSettingsTooltip,
+		getFunc = function() return DolgubonSetCrafter.charSavedVars.useCharacterSettings end,
 		setFunc = function(value) 
-			DolgubonSetCrafter:GetSettings().OpenAtCraftStation = value
-		end,
-	},
-	{
-		type = "checkbox",
-		name = SettingsStrings.closeOnExit,
-		tooltip =SettingsStrings.closeOnExit,
-		getFunc = function() return DolgubonSetCrafter:GetSettings().closeOnExit end,
-		setFunc = function(value) 
-			DolgubonSetCrafter:GetSettings().closeOnExit = value
-		end,
-	},
-	{
-		type = "checkbox",
-		name = SettingsStrings.saveLastChoice,
-		tooltip =SettingsStrings.saveLastChoiceTooltip,
-		getFunc = function() return DolgubonSetCrafter.savedvars.saveLastChoice end,
-		setFunc = function(value) 
-			DolgubonSetCrafter.savedvars.saveLastChoice = value
+			DolgubonSetCrafter.charSavedVars.useCharacterSettings = value
 		end,
 	},
 	{
@@ -61,13 +43,43 @@ local options =
 	},
 	{
 		type = "checkbox",
-		name = SettingsStrings.useCharacterSettings,
-		tooltip = SettingsStrings.useCharacterSettingsTooltip,
-		getFunc = function() return DolgubonSetCrafter.charSavedVars.useCharacterSettings end,
+		name = SettingsStrings.showAtStation,
+		tooltip =SettingsStrings.showAtStationTooltip,
+		getFunc = function() return DolgubonSetCrafter:GetSettings().OpenAtCraftStation end,
 		setFunc = function(value) 
-			DolgubonSetCrafter.charSavedVars.useCharacterSettings = value
+			DolgubonSetCrafter:GetSettings().OpenAtCraftStation = value
 		end,
 	},
+	{
+		type = "checkbox",
+		name = SettingsStrings.closeOnExit,
+		tooltip =SettingsStrings.closeOnExitTooltip,
+		getFunc = function() return DolgubonSetCrafter:GetSettings().closeOnExit end,
+		setFunc = function(value) 
+			DolgubonSetCrafter:GetSettings().closeOnExit = value
+		end,
+	},
+	{
+		type = "checkbox",
+		name = SettingsStrings.showToggleButton,
+		tooltip =SettingsStrings.showToggleButtonTooltip,
+		getFunc = function() return DolgubonSetCrafter:GetSettings().showToggle end,
+		setFunc = function(value) 
+			DolgubonSetCrafter:GetSettings().showToggle = value
+			DolgubonSetCrafterToggle:SetHidden(not value )
+		end,
+	},
+	
+	{
+		type = "checkbox",
+		name = SettingsStrings.saveLastChoice,
+		tooltip =SettingsStrings.saveLastChoiceTooltip,
+		getFunc = function() return DolgubonSetCrafter.savedvars.saveLastChoice end,
+		setFunc = function(value) 
+			DolgubonSetCrafter.savedvars.saveLastChoice = value
+		end,
+	},
+	
 	
 }
 
