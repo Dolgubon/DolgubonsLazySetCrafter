@@ -136,7 +136,7 @@
 										else
 											DolgubonSetCrafterWindowMaterialListInputBoxText:SetText("")
 										end
-										DolgubonSetCrafter.savedVars["level"] = self:GetText()
+										DolgubonSetCrafter:GetSettings()["level"] = self:GetText()
 									</OnTextChanged>
 								</EditBox>
 							</Controls>
@@ -175,7 +175,7 @@
 
 							</OnInitialized>
 							<OnTextChanged>
-								DolgubonSetCrafter.savedVars["level"] = self:GetText()
+								DolgubonSetCrafter:GetSettings()["level"] = self:GetText()
 							</OnTextChanged>
 						</EditBox>
 						<Label name="$(parent)CPLabel"  height="25" alpha="1" text="CP" color="FFFFFF" font="ZoFontGameLargeBold">

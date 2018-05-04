@@ -10,20 +10,6 @@
 DolgubonSetCrafter = DolgubonSetCrafter or {}
 DolgubonSetCrafter.initializeFunctions = DolgubonSetCrafter.initializeFunctions or {}
 --77 81 91
-DolgubonSetCrafter.default = {
-	["queue"] = {},
-	["xPos"] = 0,
-	["yPos"] = 0,
-	["counter"] = 0,
-	[6697110] = false,
-	["saveLastChoice"] = true,
-	["accountWideProfile"] = 
-	{
-		["OpenAtCraftStation"] = true,
-		["autocraft"] = true,
-		["closeOnExit"] = true,
-	},
-}
 DolgubonSetCrafter.defaultCharacter = 
 {
 	["OpenAtCraftStation"] = true,
@@ -31,6 +17,17 @@ DolgubonSetCrafter.defaultCharacter =
 	["closeOnExit"] = true,
 	["useCharacterSettings"] = false,
 }
+DolgubonSetCrafter.default = {
+	["queue"] = {},
+	["xPos"] = 0,
+	["yPos"] = 0,
+	["counter"] = 0,
+	[6697110] = false,
+	["saveLastChoice"] = true,
+	["accountWideProfile"] = DolgubonSetCrafter.defaultCharacter,
+	["notifyWiped"] = true,
+}
+
 
 
 DolgubonSetCrafter.version = 5
@@ -86,9 +83,11 @@ function DolgubonSetCrafter:Initialize()
 		DolgubonSetCrafter.version, nil, DolgubonSetCrafter.savedvars.accountWideProfile) 
 		-- Use the account Wide profile as the default
 
-	if DolgubonSetCrafter.charSavedVars.useCharacterSettings then
-
-	end
+	--[[EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name, EVENT_PLAYER_ACTIVATED, function() 
+		if DolgubonSetCrafter.savedvars.notifyWiped then 
+			d("Dolgubon's Lazy Set Crafter settings have been wiped with this update") 
+			DolgubonSetCrafter.savedvars.notifyWiped = false
+		end end)]]
 
 	LLC = LibStub:GetLibrary("LibLazyCrafting")
 	if DolgubonSetCrafter.savedvars.debug then

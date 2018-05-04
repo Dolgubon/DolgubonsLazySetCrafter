@@ -54,8 +54,10 @@ local options =
 		end,
 	},
 	{
-		type = "header",
-		name = "", -- or string id or function returning a string
+		type = "divider",
+		height = 15,
+		alpha = 0.5,
+		width = "full"
 	},
 	{
 		type = "checkbox",

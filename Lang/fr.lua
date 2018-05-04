@@ -28,10 +28,18 @@ DolgubonSetCrafter.localizedStrings.UIStrings.invalidLevel        = "Invalid Lev
 
 DolgubonSetCrafter.localizedStrings.SettingStrings = {}
 
+DolgubonSetCrafter.localizedStrings.SettingsStrings.nowEditing                   = "You are changing %s settings"
+DolgubonSetCrafter.localizedStrings.SettingsStrings.accountWide                  = "Account Wide"
+DolgubonSetCrafter.localizedStrings.SettingsStrings.characterSpecific            = "Character Specific"
+
 DolgubonSetCrafter.localizedStrings.SettingStrings.showAtStation 				= "Show at Station"
 DolgubonSetCrafter.localizedStrings.SettingStrings.showAtStationTooltip			= "Always show the Set Crafter UI at crafting stations"
 DolgubonSetCrafter.localizedStrings.SettingStrings.saveLastChoice				= "Save Choices"
 DolgubonSetCrafter.localizedStrings.SettingStrings.saveLastChoiceTooltip		= "Save the last selected choices"
+DolgubonSetCrafter.localizedStrings.SettingsStrings.closeOnExit                  = "Close on Station Exit"
+DolgubonSetCrafter.localizedStrings.SettingsStrings.closeOnExitTooltip           = "Close the Set Crafter UI when exiting a crafting station"
+DolgubonSetCrafter.localizedStrings.SettingsStrings.useCharacterSettings         = "Use character settings" 
+DolgubonSetCrafter.localizedStrings.SettingsStrings.useCharacterSettingsTooltip  = "Use character specific settings on this character only"
 
 
 

@@ -186,7 +186,7 @@
 					<Dimensions x="30" y="48" />
 					<Anchor point="LEFT" relativeTo="$(parent)Set" offsetX="200" />
 					<OnInitialized>
-						if not DolgubonSetCrafter.savedVars.debug then
+						if not DolgubonSetCrafter:GetSettings().debug then
 							self:SetHidden(true)
 						end
 					</OnInitialized>

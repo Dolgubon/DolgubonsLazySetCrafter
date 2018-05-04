@@ -4,10 +4,10 @@
 ; States and/or other countries. All rights reserved.
 ; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
 
-## Title: Dolgubon's Lazy Set Crafter v1.1.9
+## Title: Dolgubon's Lazy Set Crafter v1.1.10
 ## APIVersion: 100022
 ## Author: Dolgubon
-## Version: 1.1.9
+## Version: 1.1.10
 ## SavedVariables: dolgubonslazysetcrafter
 ## OptionalDependsOn: pChat 
 
