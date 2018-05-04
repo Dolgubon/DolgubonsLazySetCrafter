@@ -270,6 +270,7 @@ end
 
 -- Most of this is done in the XML, all that's left is to create the toggle and add to the editbox handler
 function DolgubonSetCrafter.setupLevelSelector()
+	if true then return end
 	DolgubonSetCrafterWindowInputBox:SetTextType(2) -- Set it so it takes only numbers
 	createToggle( DolgubonSetCrafterWindowInputToggleChampion , [[esoui\art\treeicons\achievements_indexicon_champion_up.dds]] , [[esoui\art\treeicons\achievements_indexicon_champion_down.dds]], false)
 
@@ -636,27 +637,32 @@ updateList = function ()
 DolgubonSetCrafter.updateList = updateList
 
 function DolgubonSetCrafter.changeLvl(delta, ctrl, alt, shift)
-
+	if delta < 0 then
+		delta = -1
+	elseif delta > 0 then
+		delta = 1
+	elseif delta == 0 then
+		return 
+	end
 	
-	local displayedValue = MultiCraft:GetNamedChild("Display"):GetText()
+	local displayedValue = DolgubonSetCrafterWindowInput:GetNamedChild("Box"):GetText()
 	
 	if displayedValue ~= "" then
 		local value = tonumber(displayedValue)
 		
-		if ctrl or alt or shift or IsShiftKeyDown() or IsControlKeyDown() or IsAltKeyDown() then
-			delta = delta * 10
-		end
-		
-		value = value + delta
+		if value == 1 then
+			if delta == -1 then
+				return
+			else
 		
 		if value < 1 then value = 1 end
 		if value > maxCraftable then value = maxCraftable end
 		
-		MultiCraft:GetNamedChild("Display"):SetText(value)
+		DolgubonSetCrafterWindowInput:GetNamedChild("Box"):SetText(value)
 		sliderValue = value
 		
 	else
-		MultiCraft:GetNamedChild("Display"):SetText(1)
+		DolgubonSetCrafterWindowInput:GetNamedChild("Box"):SetText(1)
 		sliderValue = 1
 	end
 

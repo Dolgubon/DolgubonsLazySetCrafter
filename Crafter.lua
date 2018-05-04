@@ -322,7 +322,7 @@ local function addPatternToQueue(patternButton,i)
 	end
 	requestTable["Pattern"] = {pattern,patternButton.tooltip}
 	requestTable["Level"] = {tonumber(DolgubonSetCrafterWindowInputBox:GetText()),DolgubonSetCrafterWindowInputBox:GetText()}
-	local isCP = not DolgubonSetCrafterWindowInputToggleChampion.toggleValue
+	local isCP = false
 	-- Check that all selections are valid, i.e. valid level and not 'select trait'
 	if requestTable["Level"][2]=="" then 
 		requestTable["Level"][1]=nil 
@@ -364,7 +364,7 @@ local function addPatternToQueue(patternButton,i)
 		local returnedTable = LazyCrafter:CraftSmithingItemByLevel(unpack(CraftRequestTable))
 		
 		--LLC_CraftSmithingItemByLevel(self, patternIndex, isCP , level, styleIndex, traitIndex, useUniversalStyleItem, stationOverride, setIndex, quality, autocraft)
-		if not DolgubonSetCrafterWindowInputToggleChampion.toggleValue then
+		if isCP then
 			requestTable["Level"][2] = "CP"..requestTable["Level"][2]
 		end
 		requestTable["CraftRequestTable"] = CraftRequestTable

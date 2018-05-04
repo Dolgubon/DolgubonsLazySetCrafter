@@ -191,7 +191,7 @@
 				</Backdrop>-->
 				<Control name="$(parent)Input" hidden= "false" mouseEnabled="false" inherits="ZO_EditSpinner" level="999" >
 					<Dimensions x="140" y="33" />
-					<Anchor point="BOTTOM" relativeTo="$(parent)Comboboxes" relativePoint="CENTER" offsetX="0" offsetY="50" />
+					<Anchor point="BOTTOM" relativeTo="$(parent)Comboboxes" relativePoint="CENTER" offsetX="-100" offsetY="50" />
 					<Controls>
 						<Texture name="$(parent)BGLeft" textureFile="EsoUI/Art/Miscellaneous/spinnerBG_left.dds" override="true" >
 							<Dimensions x="0" y="0" />
@@ -236,7 +236,7 @@
 
 						</Label>
 						<Label name="$(parent)LevelLabel"  height="25" alpha="1" text="Level:" color="FFFFFF" font="ZoFontGameLargeBold">
-							5<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="-280" />
+							5<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="-180" />
 							
 						</Label>
 					</Controls>

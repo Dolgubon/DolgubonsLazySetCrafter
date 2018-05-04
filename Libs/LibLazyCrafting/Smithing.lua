@@ -408,7 +408,7 @@ local function getImprovementLevel(station)
 	{
 		[1] = {2,6}, -- bs, temper expertise
 		[2] = {3,6}, -- cl, tannin expertise
-		[6] = {7,6}, -- ww, rosin experise
+		[6] = {6,6}, -- ww, rosin experise
 		[7] = {5,5} -- jw, platings expertise
 	}
 	local skillIndex   = SKILL_INDEX[station][1]
@@ -1085,6 +1085,7 @@ function compileRequirements(request, station)-- Ingot/style mat/trait mat/impro
 		local improvementLevel = getImprovementLevel(station)
 
 		for i  = 1, request.quality - 1 do
+			d(improvementLevel)
 			requirements[GetItemLinkItemId( GetSmithingImprovementItemLink(station, i, 0) )] = improvementChances[improvementLevel][i]
 		end
 
