@@ -4,9 +4,9 @@ DolgubonSetCrafter = DolgubonSetCrafter or {}
 
 DolgubonSetCrafter.lang = "de"
 
-DolgubonSetCrafter.localizedStrings = {}
+DolgubonSetCrafter.localizedStrings = DolgubonSetCrafter.localizedStrings or {}
 
-DolgubonSetCrafter.localizedStrings.UIStrings = {}
+DolgubonSetCrafter.localizedStrings.UIStrings = DolgubonSetCrafter.localizedStrings.UIStrings or {}
 DolgubonSetCrafter.localizedStrings.UIStrings.patternHeader       = "Wähle deine Gegenstände aus"
 DolgubonSetCrafter.localizedStrings.UIStrings.comboboxHeader      = "Attribute" -- same
 DolgubonSetCrafter.localizedStrings.UIStrings.comboboxDefault     = "Wähle <<1>>" 
@@ -23,24 +23,27 @@ DolgubonSetCrafter.localizedStrings.UIStrings.queueHeader         = "Warteschlan
 DolgubonSetCrafter.localizedStrings.UIStrings.clearQueue          = "|cFF0000Lösche Warteschlange|r"
 DolgubonSetCrafter.localizedStrings.UIStrings.resetToDefault      = "|cFFD800Auswahl zurücksetzen|r"
 DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughKnowledge  = "Dein Wissen reicht für diese Eigenschaft nicht aus"
-DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughMats       = "You do not have enough materials to make this attribute"
-DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughSpecificMat= "You do not have enough of this material to craft all items"
-DolgubonSetCrafter.localizedStrings.UIStrings.invalidLevel        = "Invalid Level"
+DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughMats       = "Du besitzt nicht genug Materialien, um dieses Attribut herzustellen"
+DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughSpecificMat= "Du besitzt nicht genug von diesem Material, um alle Gegenstände herzustellen"
+DolgubonSetCrafter.localizedStrings.UIStrings.invalidLevel        = "Ungültiges Level"
 
-DolgubonSetCrafter.localizedStrings.SettingStrings = {}
+DolgubonSetCrafter.localizedStrings.SettingStrings = DolgubonSetCrafter.localizedStrings.SettingStrings or {}
 
-DolgubonSetCrafter.localizedStrings.SettingsStrings.nowEditing                   = "You are changing %s settings"
-DolgubonSetCrafter.localizedStrings.SettingsStrings.accountWide                  = "Account Wide"
-DolgubonSetCrafter.localizedStrings.SettingsStrings.characterSpecific            = "Character Specific"
+DolgubonSetCrafter.localizedStrings.SettingsStrings.nowEditing                   = "Du änderst %s Einstellungen"
+DolgubonSetCrafter.localizedStrings.SettingsStrings.accountWide                  = "Gesamtes Konto"
+DolgubonSetCrafter.localizedStrings.SettingsStrings.characterSpecific            = "Charakter spezifisch"
 
 DolgubonSetCrafter.localizedStrings.SettingStrings.showAtStation 				= "Bei Handwerkstation anzeigen"
 DolgubonSetCrafter.localizedStrings.SettingStrings.showAtStationTooltip			= "Zeigt das Set Crafter Fenster beim Öffnen einer Handwerkstation automatisch an"
-DolgubonSetCrafter.localizedStrings.SettingStrings.saveLastChoice				= "Save Choices"
-DolgubonSetCrafter.localizedStrings.SettingStrings.saveLastChoiceTooltip		= "Save the last selected choices"
-DolgubonSetCrafter.localizedStrings.SettingsStrings.closeOnExit                  = "Close on Station Exit"
-DolgubonSetCrafter.localizedStrings.SettingsStrings.closeOnExitTooltip           = "Close the Set Crafter UI when exiting a crafting station"
-DolgubonSetCrafter.localizedStrings.SettingsStrings.useCharacterSettings         = "Use character settings" 
-DolgubonSetCrafter.localizedStrings.SettingsStrings.useCharacterSettingsTooltip  = "Use character specific settings on this character only"
+DolgubonSetCrafter.localizedStrings.SettingStrings.saveLastChoice				= "Auswahl sichern"
+DolgubonSetCrafter.localizedStrings.SettingStrings.saveLastChoiceTooltip		= "Sichert die zuletzt gewählte Auswahl"
+DolgubonSetCrafter.localizedStrings.SettingsStrings.closeOnExit                  = "Schließen beim Verlassen"
+DolgubonSetCrafter.localizedStrings.SettingsStrings.closeOnExitTooltip           = "Schließt die Set Crafter Benutzeroberfläche, wenn eine Handwerksstation verlassen wird"
+DolgubonSetCrafter.localizedStrings.SettingsStrings.useCharacterSettings         = "Nutze Charakter Einstellungen"
+DolgubonSetCrafter.localizedStrings.SettingsStrings.useCharacterSettingsTooltip  = "Speichert für diesen Charakter die Einstellungen spezifisch ab, nicht für das gesamte Konto."
+DolgubonSetCrafter.localizedStrings.SettingsStrings.showToggleButton              = "Umschaltknopf anzeigen"
+DolgubonSetCrafter.localizedStrings.SettingsStrings.showToggleButtonTooltip       = "Zeigt den Knopf zum Umschalten der Benutzeroberfläche des Addons immer an"
+
 
 DolgubonSetCrafter.localizedStrings.weaponNames = 
 {
@@ -56,6 +59,5 @@ DolgubonSetCrafter.localizedStrings.armourTypes =
 }
 
 
-DolgubonSetCrafter.localizedStrings.optionStrings = {}
 ZO_CreateStringId("SI_BINDING_NAME_SET_CRAFTER_OPEN", "Öffne/Schließe Set Crafter Fenster")
 DolgubonSetCrafterWindowAdd:SetDimensions(230,28)

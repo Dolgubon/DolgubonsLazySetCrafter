@@ -60,7 +60,7 @@ DolgubonSetCrafter.localizedStrings.armourTypes =
 }
 ZO_CreateStringId("SI_BINDING_NAME_SET_CRAFTER_OPEN", "Open/close the Set Crafter")
 
-DolgubonSetCrafter.localizedStrings.optionStrings = {}
+
 -- TODO List:
 -- Settings Menu - not show at craft stations
 -- Add multiple?
@@ -102,9 +102,6 @@ And it's resizeable because
             <OnResizeStop>FurC.OnResizeStop()</OnResizeStop>            
             <Controls> ... </Controls>
 </TopLevelControl>]]
-    
 
-
---NEW ADDON: Dolgubon's Lazy Set Crafter! Make sets of gear easily and quickly, at ANY quality!! Check out tinyurl.com/SetCrafter for more info!
 
 --/Script BeginGroupElection(0, "Press F to start... well... something" ,nil)

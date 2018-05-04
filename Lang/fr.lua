@@ -4,9 +4,9 @@ DolgubonSetCrafter = DolgubonSetCrafter or {}
 
 DolgubonSetCrafter.lang = "fr"
 
-DolgubonSetCrafter.localizedStrings = {}
+DolgubonSetCrafter.localizedStrings = DolgubonSetCrafter.localizedStrings or {}
 
-DolgubonSetCrafter.localizedStrings.UIStrings = {}
+DolgubonSetCrafter.localizedStrings.UIStrings = DolgubonSetCrafter.localizedStrings.UIStrings or {}
 DolgubonSetCrafter.localizedStrings.UIStrings.patternHeader       = "Selectionnez L'objet"
 DolgubonSetCrafter.localizedStrings.UIStrings.comboboxHeader      = "Ligne de Trait"
 DolgubonSetCrafter.localizedStrings.UIStrings.comboboxDefault     = "Selectionnez <<1>>"
@@ -26,7 +26,7 @@ DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughKnowledge  = "You do not 
 DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughSpecificMat= "You do not have enough of this material to craft all items"
 DolgubonSetCrafter.localizedStrings.UIStrings.invalidLevel        = "Invalid Level"
 
-DolgubonSetCrafter.localizedStrings.SettingStrings = {}
+DolgubonSetCrafter.localizedStrings.SettingStrings = DolgubonSetCrafter.localizedStrings.SettingStrings or {}
 
 DolgubonSetCrafter.localizedStrings.SettingsStrings.nowEditing                   = "You are changing %s settings"
 DolgubonSetCrafter.localizedStrings.SettingsStrings.accountWide                  = "Account Wide"
@@ -57,5 +57,5 @@ DolgubonSetCrafter.localizedStrings.armourTypes =
     "Lourde", "Moyenne", "Legere"
 }
 
-DolgubonSetCrafter.localizedStrings.optionStrings = {}
+
 ZO_CreateStringId("SI_BINDING_NAME_SET_CRAFTER_OPEN", "Ouvrir/Fermer le Crafter Set")
