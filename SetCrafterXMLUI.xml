@@ -9,7 +9,7 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 
 <GuiXml> 
 	<Controls>
-		<TopLevelControl name="DolgubonSetCrafterToggle" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false" >	
+		<TopLevelControl name="DolgubonSetCrafterToggle" clampedToScreen="true" mouseEnabled="false" movable="true" hidden="false" >	
 			<Dimensions x="75" y="75" />
 			<Anchor point="TOPRIGHT"  relativeTo="GuiRoot" relativePoint="TOPRIGHT" offsetX="50" offsetY="50"/>
 			<Controls>

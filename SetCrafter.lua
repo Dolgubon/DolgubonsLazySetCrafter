@@ -86,7 +86,7 @@ function DolgubonSetCrafter:Initialize()
 
 	--[[EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name, EVENT_PLAYER_ACTIVATED, function() 
 		if DolgubonSetCrafter.savedvars.notifyWiped then 
-			d("Dolgubon's Lazy Set Crafter settings have been wiped with this update") 
+			d("Dolgubon's Lazy Set Crafter settings have been wiped with this update")
 			DolgubonSetCrafter.savedvars.notifyWiped = false
 		end end)]]
 
