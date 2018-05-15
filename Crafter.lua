@@ -183,16 +183,18 @@ local validityFunctions = --stuff that's not here will automatically recieve a v
 -- uses the info in validityFunctions to recheck and see if attributes are an impediment to crafting.
 local function applyValidityFunctions(requestTable) 
 	for attribute, table in pairs(validityFunctions) do
-		local params = {}
+		if requestTable["Station"] == 7 and attribute == "Style" then
+		else
+			local params = {}
 
-		for i = 1, #table[2]  do
+			for i = 1, #table[2]  do
 
-			params[#params + 1] = requestTable["CraftRequestTable"][table[2][i]]
+				params[#params + 1] = requestTable["CraftRequestTable"][table[2][i]]
 
+			end
+			--d("one application for: "..attribute)
+			requestTable[attribute][3] = table[1](unpack(params) )
 		end
-		--d("one application for: "..attribute)
-		requestTable[attribute][3] = table[1](unpack(params) )
-
 	end
 end
 
@@ -220,6 +222,7 @@ local function findMatIndex(level, champion)
 end
 
 local function getPatternIndex(patternButton,weight)
+	d(patternButton.selectedIndex, weight)
 	--d(patternButton.selectedIndex)
 	local candidate = patternButton.selectedIndex
 	if weight == nil then
@@ -292,6 +295,7 @@ local function addPatternToQueue(patternButton,i)
 	local pattern, station  = 0, 0
 	local trait = 0
 	local isArmour 
+	d(i)
 	if i<9 then
 		for i = 1, 3 do 
 
@@ -307,7 +311,12 @@ local function addPatternToQueue(patternButton,i)
 		requestTable["Trait"] = shallowTwoItemCopy(comboBoxes.Armour.selected)
 		trait = comboBoxes.Armour.selected[1]
 		isArmour = true
-	elseif i== 21 then
+	elseif i == 10 or i == 11 then
+		requestTable["Weight"] = {nil, ""}
+		requestTable["Trait"] = shallowTwoItemCopy(comboBoxes.Armour.selected)
+		station = 7
+		pattern = i - 9
+	elseif i== 23 then
 		requestTable["Weight"] = {nil, ""}
 		requestTable["Trait"] = shallowTwoItemCopy(comboBoxes.Armour.selected)
 		pattern, station = getPatternIndex(patternButton)
@@ -320,6 +329,7 @@ local function addPatternToQueue(patternButton,i)
 		trait =comboBoxes.Weapon.selected[1]
 		isArmour = false
 	end
+	requestTable["Station"] = station
 	requestTable["Pattern"] = {pattern,patternButton.tooltip}
 	requestTable["Level"] = {tonumber(DolgubonSetCrafterWindowInputBox:GetText()),DolgubonSetCrafterWindowInputBox:GetText()}
 	local isCP = not DolgubonSetCrafterWindowInputToggleChampion.toggleValue
@@ -342,24 +352,26 @@ local function addPatternToQueue(patternButton,i)
 		end
 	end
 
-	
-	
-	requestTable["Style"] 	 	= shallowTwoItemCopy(comboBoxes.Style.selected)
-	
-	local styleIndex 			= comboBoxes.Style.selected[1]
-	requestTable["Set"]			= shallowTwoItemCopy(comboBoxes.Set.selected)
-	
+	local styleIndex
+	if station ~= 7 then
+		requestTable["Style"] 	= shallowTwoItemCopy(comboBoxes.Style.selected)
+		styleIndex 				= comboBoxes.Style.selected[1]
+	else
+		styleIndex 				= 0 
+	end
 
+	requestTable["Set"]			= shallowTwoItemCopy(comboBoxes.Set.selected)
 	local setIndex 				= comboBoxes.Set.selected[1]
+
 	requestTable["Quality"]		= shallowTwoItemCopy(comboBoxes.Quality.selected)
-	
 	local quality 				= comboBoxes.Quality.selected[1]
+
 	requestTable["Reference"]	= DolgubonSetCrafter.savedvars.counter
 	DolgubonSetCrafter.savedvars.counter = DolgubonSetCrafter.savedvars.counter + 1
 	-- Some names are just so long, we need to shorten it
 	shortenNames(requestTable)
 
-	if pattern and isCP ~= nil and requestTable["Level"][1] and styleIndex and trait and station and setIndex and quality and requestTable["Reference"] then
+	if pattern and isCP ~= nil and requestTable["Level"][1] and (styleIndex or station == 7) and trait and station and setIndex and quality and requestTable["Reference"] then
 		local CraftRequestTable = {pattern, isCP,tonumber(requestTable["Level"][1]),styleIndex,trait, false, station,  setIndex, quality, true, requestTable["Reference"]}
 		local returnedTable = LazyCrafter:CraftSmithingItemByLevel(unpack(CraftRequestTable))
 		
@@ -471,7 +483,8 @@ function DolgubonSetCrafter.initializeFunctions.initializeCrafting()
 	DolgubonSetCrafter.LazyCrafter = LazyCrafter
 	for k, v in pairs(queue) do 
 		if not v.doNotKeep then
-			local returnedTable = LazyCrafter:CraftSmithingItemByLevel(unpack(v["CraftRequestTable"]))
+			
+			local returnedTable = LazyCrafter:CraftSmithingItemByLevel(unpack(v["CraftRequestTable"])) 
 			addRequirements(returnedTable, true)
 			if pcall(function()applyValidityFunctions(v)end) then else d("Request could not be displayed. However, you should still be able to craft it.") end
 		else

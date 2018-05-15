@@ -154,7 +154,7 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 										else
 											DolgubonSetCrafterWindowMaterialListInputBoxText:SetText("")
 										end
-										DolgubonSetCrafter:GetSettings()["level"] = self:GetText()
+										
 									</OnTextChanged>
 								</EditBox>
 							</Controls>
@@ -193,7 +193,7 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 
 							</OnInitialized>
 							<OnTextChanged>
-								DolgubonSetCrafter:GetSettings()["level"] = self:GetText()
+								DolgubonSetCrafter.savedvars["level"] = self:GetText()
 							</OnTextChanged>
 						</EditBox>
 						<Label name="$(parent)CPLabel"  height="25" alpha="1" text="CP" color="FFFFFF" font="ZoFontGameLargeBold">

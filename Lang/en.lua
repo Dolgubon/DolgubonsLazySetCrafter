@@ -52,7 +52,7 @@ DolgubonSetCrafter.localizedStrings.weaponNames =
 }
 DolgubonSetCrafter.localizedStrings.pieceNames = 
 {
-    "Chest","Feet","Hands","Head","Legs","Shoulders","Belt","Jerkin"
+    "Chest","Feet","Hands","Head","Legs","Shoulders","Belt","Jerkin",  "Ring" , "Necklace",
 }
 DolgubonSetCrafter.localizedStrings.armourTypes = 
 {

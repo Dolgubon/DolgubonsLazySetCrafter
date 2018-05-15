@@ -18,7 +18,7 @@
 local LibLazyCrafting = LibStub("LibLazyCrafting")
 
 local widgetType = 'smithing'
-local widgetVersion = 1.9
+local widgetVersion = 2.0
 if not LibLazyCrafting:RegisterWidget(widgetType, widgetVersion) then return  end
 
 local function dbug(...)
@@ -37,7 +37,7 @@ SetIndexes ={}
 local abc = 1
 local improvementChances = {}
 
-local CRAFTING_TYPE_JEWELRY = CRAFTING_TYPE_JEWELRY or 7
+local CRAFTING_TYPE_JEWELRYCRAFTING = CRAFTING_TYPE_JEWELRYCRAFTING or 7
 GetItemLinkItemId = GetItemLinkItemId or GetItemIDFromLink
 
 -- This is filled out after crafting. It's so we can make sure that:
@@ -243,7 +243,7 @@ function canCraftItem(craftRequestTable)
 		-- Check if the specific trait is known
 		if IsSmithingTraitKnownForResult(craftRequestTable["pattern"], craftRequestTable["materialIndex"], craftRequestTable["materialQuantity"],craftRequestTable["style"], craftRequestTable["trait"]) then
 			-- Check if the style is known for that piece
-			if (craftRequestTable["station"] == CRAFTING_TYPE_JEWELRY) or IsSmithingStyleKnown(craftRequestTable["style"], craftRequestTable["pattern"]) then
+			if (craftRequestTable["station"] == CRAFTING_TYPE_JEWELRYCRAFTING) or IsSmithingStyleKnown(craftRequestTable["style"], craftRequestTable["pattern"]) then
 				return true
 			else
 
@@ -277,7 +277,7 @@ local function GetCurrentSetInteractionIndex()
 		sampleId = GetItemLinkItemId(GetSmithingPatternResultLink(16,1,7,1,1,0))
 	elseif currentStation == CRAFTING_TYPE_WOODWORKING then
 		sampleId = GetItemLinkItemId(GetSmithingPatternResultLink(7,1,3,1,1,0))
-	elseif currentStation == CRAFTING_TYPE_JEWELRY then
+	elseif currentStation == CRAFTING_TYPE_JEWELRYCRAFTING then
 		sampleId = GetItemLinkItemId(GetSmithingPatternResultLink(4,1,3,nil,1,0))
 	else
 		return nil , nil, nil, nil
@@ -378,7 +378,7 @@ end
 
 local function GetMatRequirements(pattern, index, station)
 	if station == nil then station = GetCraftingInteractionType() end
-	if station == CRAFTING_TYPE_JEWELRY then
+	if station == CRAFTING_TYPE_JEWELRYCRAFTING then
 		mats = JEWELY_MAT_REQUIREMENT[index][pattern]
 		return mats
 	end
@@ -404,17 +404,29 @@ end
 LibLazyCrafting.functionTable.GetMatRequirements = GetMatRequirements
 
 local function getImprovementLevel(station)
-	local SKILL_INDEX = 
+	local SkillTextures = 
 	{
-		[1] = {2,6}, -- bs, temper expertise
-		[2] = {3,6}, -- cl, tannin expertise
-		[6] = {7,6}, -- ww, rosin experise
-		[7] = {5,5} -- jw, platings expertise
+		[CRAFTING_TYPE_BLACKSMITHING] = "esoui/art/icons/ability_smith_004.dds", -- bs, temper expertise esoui/art/icons/ability_smith_004.dds
+		[CRAFTING_TYPE_CLOTHIER] = "esoui/art/icons/ability_tradecraft_004.dds", -- cl, tannin expertise esoui/art/icons/ability_tradecraft_004.dds
+		[CRAFTING_TYPE_WOODWORKING] = "esoui/art/icons/ability_tradecraft_001.dds", -- ww, rosin experise esoui/art/icons/ability_tradecraft_001.dds
+		[CRAFTING_TYPE_JEWELRYCRAFTING] = "/esoui/art/icons/passive_platingexpertise.dds" -- jw, platings expertise /esoui/art/icons/passive_platingexpertise.dds
 	}
-	local skillIndex   = SKILL_INDEX[station][1]
-	local abilityIndex = SKILL_INDEX[station][2]
-	local currentSkill, maxSkill = GetSkillAbilityUpgradeInfo(SKILL_TYPE_TRADESKILL,skillIndex,abilityIndex)
-	return currentSkill , maxSkill
+	local skillType, skillIndex = GetCraftingSkillLineIndices(station)
+	local abilityIndex = nil
+	for i = 1, GetNumSkillAbilities(skillType, skillIndex) do
+		local _, texture = GetSkillAbilityInfo(skillType, skillIndex, i)
+		if texture == SkillTextures[station] then
+			abilityIndex = i
+		end
+	end
+	if abilityIndex then
+
+		local currentSkill, maxSkill = GetSkillAbilityUpgradeInfo(skillType,skillIndex,abilityIndex)
+
+		return currentSkill , maxSkill
+	else
+		return 3,3
+	end
 end
 
 ---------------------------------
@@ -453,7 +465,7 @@ local function LLC_CraftSmithingItem(self, patternIndex, materialIndex, material
 		[CRAFTING_TYPE_BLACKSMITHING]  = true,
 		[CRAFTING_TYPE_WOODWORKING]  = true,
 		[CRAFTING_TYPE_CLOTHIER]  = true,
-		[CRAFTING_TYPE_JEWELRY]  = true,
+		[CRAFTING_TYPE_JEWELRYCRAFTING]  = true,
 	}
 	if not validStations[stationOverride] then
 		station = GetCraftingInteractionType()
@@ -510,6 +522,7 @@ end
 LibLazyCrafting.functionTable.isSmithingLevelValid = isValidLevel
 
 local function LLC_CraftSmithingItemByLevel(self, patternIndex, isCP , level, styleIndex, traitIndex, useUniversalStyleItem, stationOverride, setIndex, quality, autocraft, reference)
+
 	if isValidLevel( isCP ,level) then
 		local materialIndex = findMatIndex(level, isCP)
 
@@ -882,8 +895,8 @@ LibLazyCrafting.craftInteractionTables[CRAFTING_TYPE_WOODWORKING]["station"] = C
 LibLazyCrafting.craftInteractionTables[CRAFTING_TYPE_CLOTHIER] = copy(LibLazyCrafting.craftInteractionTables[CRAFTING_TYPE_BLACKSMITHING])
 LibLazyCrafting.craftInteractionTables[CRAFTING_TYPE_CLOTHIER]["station"] = CRAFTING_TYPE_CLOTHIER
 
-LibLazyCrafting.craftInteractionTables[CRAFTING_TYPE_JEWELRY] = copy(LibLazyCrafting.craftInteractionTables[CRAFTING_TYPE_BLACKSMITHING])
-LibLazyCrafting.craftInteractionTables[CRAFTING_TYPE_JEWELRY]["station"] = CRAFTING_TYPE_JEWELRY
+LibLazyCrafting.craftInteractionTables[CRAFTING_TYPE_JEWELRYCRAFTING] = copy(LibLazyCrafting.craftInteractionTables[CRAFTING_TYPE_BLACKSMITHING])
+LibLazyCrafting.craftInteractionTables[CRAFTING_TYPE_JEWELRYCRAFTING]["station"] = CRAFTING_TYPE_JEWELRYCRAFTING
 
 
 -- First is the name of the set. Second is a table of sample itemIds. Third is the number of required traits.
@@ -1016,6 +1029,14 @@ local materialItemIDs =
 		46142,
 		64502,
 	},
+	[CRAFTING_TYPE_JEWELRYCRAFTING] = 
+	{
+		135138,
+		135140,
+		135142,
+		135144,
+		135146,
+	}
 }
 
 -- Improvement mats
@@ -1044,14 +1065,6 @@ local improvementChances =
 	[3] = {2,3,4,8},
 }
 
-local abilityTextures =
-{
-	[1] = "/esoui/art/icons/ability_smith_004.dds",
-	[2] = "/esoui/art/icons/ability_tradecraft_004.dds",
-	[6] = "/esoui/art/icons/ability_tradecraft_001.dds",
-}
-
-
 local function compileImprovementRequirements(request, station)
 	local requirements = {}
 	local currentQuality = GetItemQuality(request.ItemBagID, request.ItemSlotID)
@@ -1072,8 +1085,9 @@ function compileRequirements(request, station)-- Ingot/style mat/trait mat/impro
 			matId = materialItemIDs[3][findMatTierByIndex(request.materialIndex)]
 		end
 		requirements[matId] = request.materialQuantity
-
-		requirements[ GetItemLinkItemId( GetItemStyleMaterialLink(request.style , 0))] = 1
+		if station ~= 7 then
+			requirements[ GetItemLinkItemId( GetItemStyleMaterialLink(request.style , 0))] = 1
+		end
 
 		local traitLink = GetSmithingTraitItemLink(request.trait, 0)
 		if traitLink~="" then

@@ -40,12 +40,17 @@ local autofillFunctions ={}
 
 local pieceNames = 
 {
-	"Chest","Feet","Hands","Head","Legs","Shoulders","Belt","Jerkin"
+	 "Chest","Feet","Hands","Head","Legs","Shoulders","Belt","Jerkin","Ring","Neck",
+}
+
+local jewelryNames =
+{
+	"Neck","Ring",
 }
 
 local weaponNames = 
 {
-	"Axe", "Mace", "Sword", "Battle Axe", "Maul", "Greatsword", "Dagger", "Bow", "Fire Staff", "Ice Staff", "Lightning Staff", "Restoration Staff", "Shield"
+	"Axe", "Mace", "Sword", "BattleAxe", "Maul", "Greatsword", "Dagger", "Bow", "Fire", "Ice", "Lightning", "Restoration", "Shield"
 }
 
 local armourTypes = 
@@ -77,7 +82,7 @@ local function setupPatternButtonOneTable(table,nameTable, initialX, initialY, p
 		button.tooltip = nameTable[k]
 		button.selectedIndex = k
 		-- Create the toggle
-		local locationPart = string.lower(string.gsub(string.gsub(v, " Staff", ""), " ", ""))
+		local locationPart = string.lower(v)
 		if v=="Jerkin" then 
 			locationPart= "chest" 
 			button:SetDimensions(36, 36)
@@ -97,6 +102,12 @@ local function setupPatternButtonOneTable(table,nameTable, initialX, initialY, p
 				false)
 		end
 		button:toggleOff() 
+		if v =="Ring" then
+			initialX = initialX +  spacingForButtons
+		end
+		if v == "Neck" or v=="Ring" then
+			button.ignoreStyle = true
+		end
 
 		button:SetAnchor(CENTER , DolgubonSetCrafterWindowPatternInput , CENTER , initialX + index*spacingForButtons, initialY)
 		--button:SetAnchor(CENTER , DolgubonSetCrafterWindowPatternInputPerson , CENTER , 
@@ -116,7 +127,7 @@ function DolgubonSetCrafter.setupPatternButtons()
 	DolgubonSetCrafter.armourTypes = {}
 
 	setupPatternButtonOneTable(pieceNames 	,langStrings.pieceNames			,  -400 					, 40 , DolgubonSetCrafter.patternButtons)
-	setupPatternButtonOneTable(weaponNames	,langStrings.weaponNames		, -400-spacingForButtons*8 	, 85 , DolgubonSetCrafter.patternButtons)
+	setupPatternButtonOneTable(weaponNames	,langStrings.weaponNames		, -400-spacingForButtons*10	, 85 , DolgubonSetCrafter.patternButtons)
 	setupPatternButtonOneTable(armourTypes	,langStrings.armourTypes		,  150					 	, 40 , DolgubonSetCrafter.armourTypes)
 	DolgubonSetCrafter.armourTypes[1]:toggle()
 
@@ -231,7 +242,7 @@ local function makeDropdownSelections(comboBoxContainer, tableInfo , text , x, y
 			autofillFunctions[#autofillFunctions + 1] = function() comboBoxContainer:SelectAutoFill() end
 		end
 		
-		if tableInfo[i][1] == DolgubonSetCrafter:GetSettings()[selectionTypes] and DolgubonSetCrafter:GetSettings().saveLastChoice then
+		if tableInfo[i][1] == DolgubonSetCrafter.savedvars[selectionTypes] and DolgubonSetCrafter.savedvars.saveLastChoice then
 			comboBox.m_comboBox:SelectItem(itemEntry)
 		end
 	end
@@ -275,22 +286,24 @@ function DolgubonSetCrafter.setupLevelSelector()
 
 	DolgubonSetCrafterWindowInputToggleChampion.onToggle = function(self, newState) 
 		DolgubonSetCrafterWindowInputCPLabel:SetHidden(newState)
-		DolgubonSetCrafter:GetSettings()["champion"] = newState
+		DolgubonSetCrafter.savedvars["champion"] = newState
 	end
 
 	DolgubonSetCrafterWindowInputBox.selectPrompt = zo_strformat(langStrings.UIStrings.selectPrompt,langStrings.UIStrings.level)
+	
+	if DolgubonSetCrafter.savedvars.saveLastChoice then
+		
+		if DolgubonSetCrafter.savedvars["level"] then
 
-	if DolgubonSetCrafter:GetSettings().saveLastChoice then
-		if DolgubonSetCrafter:GetSettings()["level"] then
-			DolgubonSetCrafterWindowInputBox:SetText(DolgubonSetCrafter:GetSettings()["level"])
+			DolgubonSetCrafterWindowInputBox:SetText(DolgubonSetCrafter.savedvars["level"])
 		end
-		if DolgubonSetCrafter:GetSettings()["champion"]~=nil then
-			DolgubonSetCrafterWindowInputToggleChampion:setState(DolgubonSetCrafter:GetSettings()["champion"])
+		if DolgubonSetCrafter.savedvars["champion"]~=nil then
+			DolgubonSetCrafterWindowInputToggleChampion:setState(DolgubonSetCrafter.savedvars["champion"])
 		end
 	end
 
-	if DolgubonSetCrafter:GetSettings()["level"] and DolgubonSetCrafter:GetSettings().saveLastChoice then 
-		DolgubonSetCrafterWindowInputBox:SetText(DolgubonSetCrafter:GetSettings()["level"])
+	if DolgubonSetCrafter.savedvars["level"] and DolgubonSetCrafter.savedvars.saveLastChoice then 
+		DolgubonSetCrafterWindowInputBox:SetText(DolgubonSetCrafter.savedvars["level"])
 	end 
 
 	debugSelections[#debugSelections+1] = function() DolgubonSetCrafterWindowInputBox:SetText("10") end
