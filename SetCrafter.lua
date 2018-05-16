@@ -27,6 +27,7 @@ DolgubonSetCrafter.default = {
 	["saveLastChoice"] = true,
 	["accountWideProfile"] = DolgubonSetCrafter.defaultCharacter,
 	["notifyWiped"] = true,
+
 }
 
 
@@ -77,10 +78,10 @@ function DolgubonSetCrafter:Initialize()
 	LAM:RegisterOptionControls("DolgubonsWritCrafter", DolgubonSetCrafter.settings["options"])]]
 	
 
-	DolgubonSetCrafter.savedvars = ZO_SavedVars:NewAccountWide("dolgubonslazysetcrafter", 
+	DolgubonSetCrafter.savedvars = ZO_SavedVars:NewAccountWide("dolgubonslazysetcraftersavedvars", 
 		DolgubonSetCrafter.version, nil, DolgubonSetCrafter.default)
 
-	DolgubonSetCrafter.charSavedVars = ZO_SavedVars:NewCharacterIdSettings("dolgubonslazysetcrafter",
+	DolgubonSetCrafter.charSavedVars = ZO_SavedVars:NewCharacterIdSettings("dolgubonslazysetcraftersavedvars",
 		DolgubonSetCrafter.version, nil, DolgubonSetCrafter.savedvars.accountWideProfile) 
 		-- Use the account Wide profile as the default
 

@@ -25,10 +25,10 @@
 				
 				<Label name="$(parent)Name" font="ZoFontGame" verticalAlignment="CENTER">
 					<Dimensions x="250" y="48" />
-					<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-100" offsetY="0" />
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
 				</Label>
 				<Control name="$(parent)ComboBox" inherits="ZO_StatsDropdownRow"><!--ZO_ScrollableComboBox-->
-					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="30" offsetY="0" />
+					<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" offsetY="0" />
 					<Dimensions x="200" y="30" />
 				</Control>
 			</Controls>
@@ -41,10 +41,10 @@
 				
 				<Label name="$(parent)Name" font="ZoFontGame" verticalAlignment="CENTER">
 					<Dimensions x="250" y="48" />
-					<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-100" offsetY="0" />
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
 				</Label>
 				<Control name="$(parent)ComboBox" inherits="ZO_ComboBox">
-					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="30" offsetY="0" />
+					<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" offsetY="0" />
 					<Dimensions x="200" y="30" />
 				</Control>
 			</Controls>

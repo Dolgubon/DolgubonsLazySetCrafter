@@ -15,6 +15,7 @@ DolgubonSetCrafter.localizedStrings.UIStrings.level               = "Level"
 DolgubonSetCrafter.localizedStrings.UIStrings.CP                  = "CP"
 DolgubonSetCrafter.localizedStrings.UIStrings.armourTrait         = "Armour Trait"
 DolgubonSetCrafter.localizedStrings.UIStrings.weaponTrait         = "Weapon Trait"
+DolgubonSetCrafter.localizedStrings.UIStrings.jewelryTrait        = "Jewelry Trait"
 DolgubonSetCrafter.localizedStrings.UIStrings.quality             = "Quality"
 DolgubonSetCrafter.localizedStrings.UIStrings.gearSet             = "Set"
 DolgubonSetCrafter.localizedStrings.UIStrings.addToQueue          = "Add to Queue"
@@ -25,6 +26,7 @@ DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughKnowledge  = "You do not 
 DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughMats       = "You do not have enough materials to make this attribute"
 DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughSpecificMat= "You do not have enough of this material to craft all items"
 DolgubonSetCrafter.localizedStrings.UIStrings.invalidLevel        = "Invalid Level"
+DolgubonSetCrafter.localizedStrings.UIStrings.multiplier          = "Multiplier"
 
 DolgubonSetCrafter.localizedStrings.SettingsStrings = {}
 

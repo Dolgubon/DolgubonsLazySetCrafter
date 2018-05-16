@@ -8,7 +8,7 @@
 ## APIVersion: 100022 100023
 ## Author: Dolgubon
 ## Version: 1.1.13
-## SavedVariables: dolgubonslazysetcrafter
+## SavedVariables: dolgubonslazysetcraftersavedvars
 ; This optional depends on is so that in debugging you can use d before chat is loaded.
 ## OptionalDependsOn: pChat 
 

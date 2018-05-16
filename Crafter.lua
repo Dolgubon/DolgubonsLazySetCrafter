@@ -284,6 +284,21 @@ local function addRequirements(returnedTable, addAmounts)
 	end
 end
 
+local function oneDeepCopy(t)
+	local newTable = {}
+	for k, v in pairs(t) do
+		if type(v) == "table" then
+			newTable[k] = {}
+			for dk, dv in pairs(v) do
+				newTable[k][dk] = dv
+			end
+		else
+			newTable[k] = v
+		end
+	end
+	return newTable
+end
+
 
 local function addPatternToQueue(patternButton,i)
 	local function shallowTwoItemCopy(t)
@@ -295,70 +310,43 @@ local function addPatternToQueue(patternButton,i)
 	local pattern, station  = 0, 0
 	local trait = 0
 	local isArmour 
-	d(i)
-	if i<9 then
-		for i = 1, 3 do 
 
-			if DolgubonSetCrafter.armourTypes[i].toggleValue then
-
-				
-				requestTable["Weight"] = {i,DolgubonSetCrafter.armourTypes[i].tooltip}
-
-				pattern, station = getPatternIndex(patternButton,i)
-			end
-
-		end
-		requestTable["Trait"] = shallowTwoItemCopy(comboBoxes.Armour.selected)
-		trait = comboBoxes.Armour.selected[1]
-		isArmour = true
-	elseif i == 10 or i == 11 then
-		requestTable["Weight"] = {nil, ""}
-		requestTable["Trait"] = shallowTwoItemCopy(comboBoxes.Armour.selected)
-		station = 7
-		pattern = i - 9
-	elseif i== 23 then
-		requestTable["Weight"] = {nil, ""}
-		requestTable["Trait"] = shallowTwoItemCopy(comboBoxes.Armour.selected)
-		pattern, station = getPatternIndex(patternButton)
-		trait = comboBoxes.Armour.selected[1]
-		isArmour = true
+	-- Weight
+	if patternButton:HaveWeights() then
+		requestTable["Weight"] = {DolgubonSetCrafter:GetWeight()}
 	else
 		requestTable["Weight"] = {nil, ""}
-		requestTable["Trait"] = shallowTwoItemCopy(comboBoxes.Weapon.selected)
-		pattern, station = getPatternIndex(patternButton)
-		trait =comboBoxes.Weapon.selected[1]
-		isArmour = false
-	end
-	requestTable["Station"] = station
-	requestTable["Pattern"] = {pattern,patternButton.tooltip}
-	requestTable["Level"] = {tonumber(DolgubonSetCrafterWindowInputBox:GetText()),DolgubonSetCrafterWindowInputBox:GetText()}
-	local isCP = not DolgubonSetCrafterWindowInputToggleChampion.toggleValue
-	-- Check that all selections are valid, i.e. valid level and not 'select trait'
-	if requestTable["Level"][2]=="" then 
-		requestTable["Level"][1]=nil 
-		out(DolgubonSetCrafterWindowInputBox.selectPrompt) 
-		return
-	elseif not LazyCrafter.isSmithingLevelValid(  isCP, requestTable["Level"][1] ) then
-		out(DolgubonSetCrafter.localizedStrings.UIStrings.invalidLevel)
-		return
-	end
-	local function isShield(requestTable)
-		return requestTable["Pattern"][1] == 6 and station == CRAFTING_TYPE_WOODWORKING
-	end
-	for k, combobox in pairs(comboBoxes) do
-		if combobox.invalidSelection(requestTable["Weight"][2], isArmour) and not DolgubonSetCrafter.savedvars.autofill then
-			out(combobox.selectPrompt)
-			return
-		end
 	end
 
-	local styleIndex
-	if station ~= 7 then
+	-- Station
+	station = patternButton:GetStation()
+	requestTable["Station"] = station
+
+	-- Pattern
+	pattern = patternButton:GetPattern()
+	requestTable["Pattern"] = {pattern,patternButton.tooltip}
+
+	-- Traits
+	local traitTable = patternButton:TraitsToUse()
+	if traitTable.invalidSelection() and not DolgubonSetCrafter.savedvars.autofill then
+		out(traitTable.selectPrompt)
+		return
+	end
+	trait = traitTable.selected[1]
+	requestTable["Trait"] = {trait, traitTable.selected[2] }
+
+	--Styles
+	if patternButton:UseStyle() then
 		requestTable["Style"] 	= shallowTwoItemCopy(comboBoxes.Style.selected)
 		styleIndex 				= comboBoxes.Style.selected[1]
 	else
 		styleIndex 				= 0 
 	end
+
+	local level, isCP = DolgubonSetCrafter:GetLevel()
+	
+	requestTable["Level"] = {level, level} -- doubled to simplify code in other areas
+
 
 	requestTable["Set"]			= shallowTwoItemCopy(comboBoxes.Set.selected)
 	local setIndex 				= comboBoxes.Set.selected[1]
@@ -366,29 +354,53 @@ local function addPatternToQueue(patternButton,i)
 	requestTable["Quality"]		= shallowTwoItemCopy(comboBoxes.Quality.selected)
 	local quality 				= comboBoxes.Quality.selected[1]
 
-	requestTable["Reference"]	= DolgubonSetCrafter.savedvars.counter
-	DolgubonSetCrafter.savedvars.counter = DolgubonSetCrafter.savedvars.counter + 1
+	-- Check that all selections are valid, i.e. valid level and not 'select trait'
+	if not level then -- is a level entered?
+		requestTable["Level"][1]=nil 
+		out(DolgubonSetCrafterWindowInputBox.selectPrompt) 
+		return
+		-- Is the level valid?
+	elseif not LazyCrafter.isSmithingLevelValid(  isCP, requestTable["Level"][1] ) then 
+		out(DolgubonSetCrafter.localizedStrings.UIStrings.invalidLevel)
+		return
+	end
+	-- Are all the combobox selections valid? We already checked traits though, so filter those out
+	for k, combobox in pairs(comboBoxes) do
+		if (not combobox.isTrait and combobox.invalidSelection()) and not DolgubonSetCrafter.savedvars.autofill then
+			out(combobox.selectPrompt)
+			return
+		end
+	end
+
 	-- Some names are just so long, we need to shorten it
 	shortenNames(requestTable)
+	-- double checking one final time
+	if pattern and isCP ~= nil and requestTable["Level"][1] and (styleIndex or station == 7) and trait and station and setIndex and quality then
+		local craftMultiplier = DolgubonSetCrafter:GetMultiplier()
+		for i = 1, craftMultiplier do
+			-- First, create a deep(er) copy. Tables only go down one deep so that's max depth we need to copy
+			local requestTableCopy = oneDeepCopy(requestTable)
+			-- increment counter for unique reference
+			requestTableCopy["Reference"]	= DolgubonSetCrafter.savedvars.counter
+			DolgubonSetCrafter.savedvars.counter = DolgubonSetCrafter.savedvars.counter + 1
 
-	if pattern and isCP ~= nil and requestTable["Level"][1] and (styleIndex or station == 7) and trait and station and setIndex and quality and requestTable["Reference"] then
-		local CraftRequestTable = {pattern, isCP,tonumber(requestTable["Level"][1]),styleIndex,trait, false, station,  setIndex, quality, true, requestTable["Reference"]}
-		local returnedTable = LazyCrafter:CraftSmithingItemByLevel(unpack(CraftRequestTable))
-		
-		--LLC_CraftSmithingItemByLevel(self, patternIndex, isCP , level, styleIndex, traitIndex, useUniversalStyleItem, stationOverride, setIndex, quality, autocraft)
-		if not DolgubonSetCrafterWindowInputToggleChampion.toggleValue then
-			requestTable["Level"][2] = "CP"..requestTable["Level"][2]
+			local CraftRequestTable = {pattern, isCP,tonumber(requestTableCopy["Level"][1]),styleIndex,trait, false, station,  setIndex, quality, true, requestTableCopy["Reference"]}
+
+			local returnedTable = LazyCrafter:CraftSmithingItemByLevel(unpack(CraftRequestTable))
+			
+			--LLC_CraftSmithingItemByLevel(self, patternIndex, isCP , level, styleIndex, traitIndex, useUniversalStyleItem, stationOverride, setIndex, quality, autocraft)
+			if not DolgubonSetCrafterWindowInputToggleChampion.toggleValue then
+				requestTableCopy["Level"][2] = "CP ".. requestTableCopy["Level"][2]
+			end
+			requestTableCopy["CraftRequestTable"] = CraftRequestTable
+			applyValidityFunctions(requestTableCopy)
+			if returnedTable then
+				addRequirements(returnedTable, true)
+			end
+			if requestTableCopy then
+				queue[#queue+1] = requestTableCopy
+			end
 		end
-		requestTable["CraftRequestTable"] = CraftRequestTable
-		applyValidityFunctions(requestTable)
-		if returnedTable then
-			addRequirements(returnedTable, true)
-		end
-		if #LazyCrafter:findItemByReference(requestTable["Reference"]) == 0 then
-			d("Was not added")
-			zo_calLater(function() d("Attempt to add again")addPatternToQueue(patternButton, i) end, 1000)
-		end
-		return requestTable
 	end
 end
 
@@ -401,10 +413,8 @@ function DolgubonSetCrafter.compileMatRequirements()
 		--d(DolgubonSetCrafter.patternButtons[i].tooltip..DolgubonSetCrafter.patternButtons[i].selectedIndex)
 		if DolgubonSetCrafter.patternButtons[i].toggleValue then
 			patternButtonSelected = true
-			local request =addPatternToQueue(DolgubonSetCrafter.patternButtons[i],i)
-			if request then
-				queue[#queue+1] = request
-			end
+			addPatternToQueue(DolgubonSetCrafter.patternButtons[i],i)
+
 		end
 	end
 	if not patternButtonSelected then

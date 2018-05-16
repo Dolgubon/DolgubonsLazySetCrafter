@@ -68,6 +68,11 @@ function DolgubonSetCrafter.out(text)
 	DolgubonSetCrafterWindowOutput:SetText(text)
 end
 
+function DolgubonSetCrafter:GetWeight()
+	local weight = DolgubonSetCrafter.armourTypes.weight
+	return weight, DolgubonSetCrafter.armourTypes[weight].tooltip
+end
+
 -- Sets up pattern buttons for weaponNames, armourTypes and pieceNames
 -- Since it's only three tables, some of it is hardcoded using if statements.
 local function setupPatternButtonOneTable(table,nameTable, initialX, initialY, positionToSave)
@@ -106,6 +111,7 @@ local function setupPatternButtonOneTable(table,nameTable, initialX, initialY, p
 			initialX = initialX +  spacingForButtons
 		end
 		if v == "Neck" or v=="Ring" then
+			
 			button.ignoreStyle = true
 		end
 
@@ -126,13 +132,69 @@ function DolgubonSetCrafter.setupPatternButtons()
 	DolgubonSetCrafter.patternButtons = {}
 	DolgubonSetCrafter.armourTypes = {}
 
-	setupPatternButtonOneTable(pieceNames 	,langStrings.pieceNames			,  -400 					, 40 , DolgubonSetCrafter.patternButtons)
-	setupPatternButtonOneTable(weaponNames	,langStrings.weaponNames		, -400-spacingForButtons*10	, 85 , DolgubonSetCrafter.patternButtons)
-	setupPatternButtonOneTable(armourTypes	,langStrings.armourTypes		,  150					 	, 40 , DolgubonSetCrafter.armourTypes)
+	setupPatternButtonOneTable(pieceNames 	,langStrings.pieceNames	,  -400 					, 40 , DolgubonSetCrafter.patternButtons)
+	setupPatternButtonOneTable(weaponNames	,langStrings.weaponNames, -400-spacingForButtons*10	, 85 , DolgubonSetCrafter.patternButtons)
+	setupPatternButtonOneTable(armourTypes	,langStrings.armourTypes,  150					 	, 40 , DolgubonSetCrafter.armourTypes)
 	DolgubonSetCrafter.armourTypes[1]:toggle()
 
 	debugSelections[#debugSelections+1] = function() DolgubonSetCrafter.patternButtons[1]:toggle() end
+	local patternButtons = DolgubonSetCrafter.patternButtons
+	-- Now, make functions which return what station, what styles to use, if it uses weight, and what traits to use
+	for i = 1, 8 do -- Armour, made to fit
+		patternButtons[i].GetStation = function() 
+			if DolgubonSetCrafter:GetWeight() == 1 then 
+				return CRAFTING_TYPE_BLACKSMITHING 
+			else
+				return CRAFTING_TYPE_CLOTHIER
+			end
+		end
+		patternButtons[i].UseStyle = function() return true end
+		patternButtons[i].TraitsToUse = function()return DolgubonSetCrafter.ComboBox.Armour end
+		patternButtons[i].HaveWeights = function() return true end
+		patternButtons[i].GetPattern = function(self, weightOverride)
+			local weight = weightOverride or DolgubonSetCrafter:GetWeight() 
+			if weight ~=3 and i == 8 then return 0 end
+			
+			if weight == 1 then
+				return i + 7
+			elseif weight == 2 then
+				return i + 8
+			else
+				if i == 8 then return 2 end
+				if i == 1 then return 1 end
+				return i - 1
+			end
 
+		end
+	end
+	for i = 9, 10 do -- ring + neck
+		patternButtons[i].GetStation = function() return CRAFTING_TYPE_JEWELRYCRAFTING end
+		patternButtons[i].UseStyle = function() return false end
+		patternButtons[i].TraitsToUse = function() return DolgubonSetCrafter.ComboBox.Jewelry end
+		patternButtons[i].HaveWeights = function() return false end
+		patternButtons[i].GetPattern = function() return i - 8 end
+	end
+	for i = 11, 17 do -- blacksmithing weapons
+		patternButtons[i].GetStation = function() return CRAFTING_TYPE_BLACKSMITHING end
+		patternButtons[i].UseStyle = function() return true end
+		patternButtons[i].TraitsToUse = function() return DolgubonSetCrafter.ComboBox.Weapon end
+		patternButtons[i].HaveWeights = function() return false end
+		patternButtons[i].GetPattern = function() return i - 10 end
+	end
+	for i = 18, 22 do -- woodworking weapons
+		patternButtons[i].GetStation = function() return CRAFTING_TYPE_WOODWORKING end
+		patternButtons[i].UseStyle = function() return true end
+		patternButtons[i].TraitsToUse = function() return DolgubonSetCrafter.ComboBox.Weapon end
+		patternButtons[i].HaveWeights = function() return false end
+		patternButtons[i].GetPattern = function() if i == 18 then return 1 else return i - 16 end end
+	end
+	local i = 23
+	patternButtons[i].GetStation = function() return CRAFTING_TYPE_WOODWORKING end
+	patternButtons[i].UseStyle = function() return true end
+	patternButtons[i].TraitsToUse = function()return DolgubonSetCrafter.ComboBox.Armour end
+	patternButtons[i].HaveWeights = function() return false end
+	patternButtons[i].GetPattern = function() return 2 end
+	DolgubonSetCrafter.armourTypes.weight = 1
 	local function setOtherArmourTypesToZero(index)
 		for i = 1, #DolgubonSetCrafter.armourTypes do
 			if index ~= i then
@@ -150,6 +212,7 @@ function DolgubonSetCrafter.setupPatternButtons()
 			end
 		end
 		function button:toggleOn()
+			DolgubonSetCrafter.armourTypes.weight = i
 			self.toggleValue = true
 			self:SetNormalTexture(self.onTexture)
 			if onOverTexture then self:SetMouseOverTexture(self.onOverTexture) end
@@ -168,8 +231,43 @@ end
 local out = DolgubonSetCrafter.out
 --/script d(Dolgubons_Set_Crafter_Style:GetNamedChild( Dolgubons_Set_Crafter_Style:GetChild(1):GetName() ) )
 
+function DolgubonSetCrafterWindowComboboxes:anchoruiElements()
+	self.elements = self.elements or {}
+	for i = 1, #self.elements do
+		self.elements[i]:ClearAnchors()
+	end
+	for i = 1, #self.elements do
+		if i %2 == 1 then
+			self.elements[i]:SetAnchor(LEFT, self, BOTTOMLEFT, 15, math.floor(i/2)*40 + 20)
+			self.elements[i]:SetAnchor(RIGHT, self, BOTTOM, -15, math.floor(i/2)*40 + 20)
+		else
+			self.elements[i]:SetAnchor(RIGHT, self, BOTTOMRIGHT, -40,( math.floor(i/2 ) - 1)*40 + 20)
+			self.elements[i]:SetAnchor(LEFT, self, BOTTOM, 15,( math.floor(i/2 ) - 1)*40 + 20)
+		end
+	end
+end
+
+function DolgubonSetCrafterWindowComboboxes:adduiElement(newElement, position)
+
+	-- create the elements table or grab the old one
+	self.elements = self.elements or {}
+	-- Add the new element to the elements table
+	if position then
+		table.insert(self.elements,  position, newElement)
+	else
+		table.insert(self.elements,  newElement)
+	end
+	
+
+	-- Finally, set the anchors for all the elements
+	
+--(CENTER,  DolgubonSetCrafterWindowComboboxes,CENTER, x,y)
+end
+
+
 -- Creates one dropdown box using the passed information
 local function makeDropdownSelections(comboBoxContainer, tableInfo , text , x, y, comboBoxLocation, selectionTypes, isArmourCombobox)
+
 	if selectionTypes == "armourTrait" then isArmourCombobox = true elseif selectionTypes == "weaponTrait" then isArmourCombobox = false end
 	local comboBox = comboBoxContainer:GetChild(comboBoxLocation)
 	-- if location is 1 then get child number 2 and if location is 2 get child number 1
@@ -192,19 +290,8 @@ local function makeDropdownSelections(comboBoxContainer, tableInfo , text , x, y
 		comboBoxContainer.selected = selectedInfo
 
 		comboBoxContainer.invalidSelection = function(weight, isAmour)
+			return selectedInfo[1]==-1 
 
-			if isArmourCombobox==nil then return selectedInfo[1]==-1 -- Is not a trait combobox
-			elseif not isAmour then -- If there is no weight then it is a weapon, (how to deal with shields?)
-				if isArmourCombobox then 
-					return false 
-				else
-					return selectedInfo[1]==-1 
-				end
-			elseif not isArmourCombobox then -- Armour piece is selected
-				return false
-			else 
-				return selectedInfo[1]==-1 
-			end	
 		end
 	end
 	-- We want to keep the original order of the stuff listed. However, the style and set boxes are sorted before anyway
@@ -250,11 +337,12 @@ local function makeDropdownSelections(comboBoxContainer, tableInfo , text , x, y
 	
 	--set size + position
 	comboBoxContainer:SetAnchor(CENTER,  DolgubonSetCrafterWindowComboboxes,CENTER, x,y)
+	
 
 	--make the selection
 	comboBox.m_comboBox:SetSelectedItemFont("ZoFontGameMedium")
 	comboBox.m_comboBox:SetDropdownFont("ZoFontGameMedium")
-
+	DolgubonSetCrafterWindowComboboxes:adduiElement(comboBoxContainer)
 end
 
 -- Sets up the different combo boxes
@@ -262,26 +350,54 @@ function DolgubonSetCrafter.setupComboBoxes()
 	--initial creation of blank combo boxes
 	-- Note: Could be combined into a loop or something, but left like this for clarity
 	DolgubonSetCrafter.ComboBox = {}
-	DolgubonSetCrafter.ComboBox.Style 		= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Style", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
+
 	DolgubonSetCrafter.ComboBox.Armour 		= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Armour_Trait", DolgubonSetCrafterWindowComboboxes, "ComboboxTemplate")
+	DolgubonSetCrafter.ComboBox.Style 		= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Style", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
 	DolgubonSetCrafter.ComboBox.Weapon 		= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Weapon_Trait", DolgubonSetCrafterWindowComboboxes, "ComboboxTemplate")
 	DolgubonSetCrafter.ComboBox.Quality		= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Quality", DolgubonSetCrafterWindowComboboxes, "ComboboxTemplate")
+	DolgubonSetCrafter.ComboBox.Jewelry		= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Jewelry_Trait", DolgubonSetCrafterWindowComboboxes, "ComboboxTemplate")
 	DolgubonSetCrafter.ComboBox.Set			= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Set", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
+	
 	for k, v in pairs(DolgubonSetCrafter.ComboBox) do
 		v.name = k
 	end
+	
 	local UIStrings = langStrings.UIStrings
 	--Three calls to make dropdown selections, as well as further setup the comboboxes.
-	makeDropdownSelections( DolgubonSetCrafter.ComboBox.Style  	   	, DolgubonSetCrafter.styleNames   , UIStrings.style 		, -130, 80, 2, "style")
-	makeDropdownSelections( DolgubonSetCrafter.ComboBox.Armour 		, DolgubonSetCrafter.armourTraits , UIStrings.armourTrait 	, -130, 120, 1, "armourTrait")
-	makeDropdownSelections( DolgubonSetCrafter.ComboBox.Quality	   	, DolgubonSetCrafter.quality 	  , UIStrings.quality 		, 270 , 80, 1, "quality")
-	makeDropdownSelections( DolgubonSetCrafter.ComboBox.Weapon 		, DolgubonSetCrafter.weaponTraits , UIStrings.weaponTrait 	, 270 , 120, 1, "weaponTrait")
-	makeDropdownSelections( DolgubonSetCrafter.ComboBox.Set  	   	, DolgubonSetCrafter.setIndexes   , UIStrings.gearSet 		, 270, 40, 2, "set")
+	makeDropdownSelections( DolgubonSetCrafter.ComboBox.Style  	   	, DolgubonSetCrafter.styleNames   , UIStrings.style 		, -160, 80, 2, "style")
+	makeDropdownSelections( DolgubonSetCrafter.ComboBox.Armour 		, DolgubonSetCrafter.armourTraits , UIStrings.armourTrait 	, -160, 120, 1, "armourTrait")
+	makeDropdownSelections( DolgubonSetCrafter.ComboBox.Quality	   	, DolgubonSetCrafter.quality 	  , UIStrings.quality 		, 240 , 80, 1, "quality")
+	makeDropdownSelections( DolgubonSetCrafter.ComboBox.Weapon 		, DolgubonSetCrafter.weaponTraits , UIStrings.weaponTrait 	, 240 , 120, 1, "weaponTrait")
+	makeDropdownSelections( DolgubonSetCrafter.ComboBox.Set  	   	, DolgubonSetCrafter.setIndexes   , UIStrings.gearSet 		, 240, 40, 2, "set")
+	makeDropdownSelections( DolgubonSetCrafter.ComboBox.Jewelry	   	, DolgubonSetCrafter.jewelryTraits, UIStrings.jewelryTrait	, -160, 160, 1, "jewelryTraits")
+	DolgubonSetCrafter.ComboBox.Armour.isTrait = true
+	DolgubonSetCrafter.ComboBox.Weapon.isTrait = true
+	DolgubonSetCrafter.ComboBox.Jewelry.isTrait = true
+	DolgubonSetCrafterWindowComboboxes:anchoruiElements()
+end
+
+function DolgubonSetCrafter:GetLevel()
+	local level = DolgubonSetCrafterWindowInputInputBox:GetText()
+	local isCP = not DolgubonSetCrafterWindowInputToggleChampion.toggleValue
+	if level == "" then
+		return nil, isCP
+	end
+	return tonumber(level), isCP
+end
+
+function DolgubonSetCrafter:GetMultiplier()
+	local multiplier = DolgubonSetCrafterWindowMultiplierInputInputBox:GetText()
+	if multiplier == "" then
+		return 1
+	else
+		return tonumber(multiplier)
+	end
 end
 
 -- Most of this is done in the XML, all that's left is to create the toggle and add to the editbox handler
 function DolgubonSetCrafter.setupLevelSelector()
-	DolgubonSetCrafterWindowInputBox:SetTextType(2) -- Set it so it takes only numbers
+	DolgubonSetCrafterWindowInputInputBox:SetTextType(2) -- Set it so it takes only numbers
+	DolgubonSetCrafterWindowMultiplierInputInputBox:SetTextType(2)
 	createToggle( DolgubonSetCrafterWindowInputToggleChampion , [[esoui\art\treeicons\achievements_indexicon_champion_up.dds]] , [[esoui\art\treeicons\achievements_indexicon_champion_down.dds]], false)
 
 	DolgubonSetCrafterWindowInputToggleChampion.onToggle = function(self, newState) 
@@ -289,13 +405,13 @@ function DolgubonSetCrafter.setupLevelSelector()
 		DolgubonSetCrafter.savedvars["champion"] = newState
 	end
 
-	DolgubonSetCrafterWindowInputBox.selectPrompt = zo_strformat(langStrings.UIStrings.selectPrompt,langStrings.UIStrings.level)
+	DolgubonSetCrafterWindowInputInputBox.selectPrompt = zo_strformat(langStrings.UIStrings.selectPrompt,langStrings.UIStrings.level)
 	
 	if DolgubonSetCrafter.savedvars.saveLastChoice then
 		
 		if DolgubonSetCrafter.savedvars["level"] then
 
-			DolgubonSetCrafterWindowInputBox:SetText(DolgubonSetCrafter.savedvars["level"])
+			DolgubonSetCrafterWindowInputInputBox:SetText(DolgubonSetCrafter.savedvars["level"])
 		end
 		if DolgubonSetCrafter.savedvars["champion"]~=nil then
 			DolgubonSetCrafterWindowInputToggleChampion:setState(DolgubonSetCrafter.savedvars["champion"])
@@ -303,10 +419,12 @@ function DolgubonSetCrafter.setupLevelSelector()
 	end
 
 	if DolgubonSetCrafter.savedvars["level"] and DolgubonSetCrafter.savedvars.saveLastChoice then 
-		DolgubonSetCrafterWindowInputBox:SetText(DolgubonSetCrafter.savedvars["level"])
+		DolgubonSetCrafterWindowInputInputBox:SetText(DolgubonSetCrafter.savedvars["level"])
 	end 
+	DolgubonSetCrafterWindowComboboxes:adduiElement(DolgubonSetCrafterWindowInput,1 )
+	DolgubonSetCrafterWindowComboboxes:adduiElement(DolgubonSetCrafterWindowMultiplierInput, 2)
 
-	debugSelections[#debugSelections+1] = function() DolgubonSetCrafterWindowInputBox:SetText("10") end
+	debugSelections[#debugSelections+1] = function() DolgubonSetCrafterWindowInputInputBox:SetText("10") end
 	debugSelections[#debugSelections+1] = DolgubonSetCrafterWindowInputToggleChampion.ToggleOff
 end
 
@@ -596,14 +714,15 @@ function DolgubonSetCrafter.autofillFunctions()
 end
 
 function DolgubonSetCrafter.setupLocalizedLabels()
-	DolgubonSetCrafterWindowPatternInput:SetText 	(langStrings.UIStrings.patternHeader)
-	DolgubonSetCrafterWindowComboboxes:SetText 		(langStrings.UIStrings.comboboxHeader)
-	DolgubonSetCrafterWindowAdd:SetText 			(langStrings.UIStrings.addToQueue)
-	DolgubonSetCrafterWindowInputLevelLabel:SetText (langStrings.UIStrings.level)
-	DolgubonSetCrafterWindowInputCPLabel:SetText 	(langStrings.UIStrings.CP)
-	DolgubonSetCrafterWindowResetSelections:SetText (langStrings.UIStrings.resetToDefault)
-	DolgubonSetCrafterWindowClearQueue:SetText 		(langStrings.UIStrings.clearQueue)
-	CraftingQueueScrollLabel:SetText 				(langStrings.UIStrings.queueHeader)
+	DolgubonSetCrafterWindowPatternInput:SetText 			(langStrings.UIStrings.patternHeader)
+	DolgubonSetCrafterWindowComboboxes:SetText 				(langStrings.UIStrings.comboboxHeader)
+	DolgubonSetCrafterWindowAdd:SetText 					(langStrings.UIStrings.addToQueue)
+	DolgubonSetCrafterWindowInputLevelLabel:SetText 		(langStrings.UIStrings.level..":")
+	DolgubonSetCrafterWindowMultiplierInputLabel:SetText 	(langStrings.UIStrings.multiplier..":")
+	DolgubonSetCrafterWindowInputCPLabel:SetText 			(langStrings.UIStrings.CP)
+	DolgubonSetCrafterWindowResetSelections:SetText 		(langStrings.UIStrings.resetToDefault)
+	DolgubonSetCrafterWindowClearQueue:SetText 				(langStrings.UIStrings.clearQueue)
+	CraftingQueueScrollLabel:SetText 						(langStrings.UIStrings.queueHeader)
 end
 
 
@@ -634,6 +753,7 @@ function DolgubonSetCrafter.initializeFunctions.setupUI()
 	--DolgubonSetCrafter.debugFunctions()
 	DolgubonSetCrafter.initializeWindowPosition()
 	DolgubonSetCrafterToggle:SetHidden(not DolgubonSetCrafter:GetSettings().showToggle )
+	DolgubonSetCrafterWindowComboboxes:anchoruiElements(DolgubonSetCrafterWindowInput,1 )
 end
 
 
@@ -661,7 +781,8 @@ function DolgubonSetCrafter.resetChoices()
 	for k, comboBoxContainer in pairs(DolgubonSetCrafter.ComboBox) do
 		comboBoxContainer:SelectFirstItem()
 	end
-	DolgubonSetCrafterWindowInputBox:SetText("")
+	DolgubonSetCrafterWindowInputInputBox:SetText("")
+	DolgubonSetCrafterWindowMultiplierInputInputBox:SetText("1")
 end
 
 function DolgubonSetCrafter.onWindowMove(window)
