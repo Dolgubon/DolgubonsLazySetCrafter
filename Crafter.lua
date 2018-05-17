@@ -357,7 +357,7 @@ local function addPatternToQueue(patternButton,i)
 	-- Check that all selections are valid, i.e. valid level and not 'select trait'
 	if not level then -- is a level entered?
 		requestTable["Level"][1]=nil 
-		out(DolgubonSetCrafterWindowInputBox.selectPrompt) 
+		out(DolgubonSetCrafterWindowInputInputBox.selectPrompt) 
 		return
 		-- Is the level valid?
 	elseif not LazyCrafter.isSmithingLevelValid(  isCP, requestTable["Level"][1] ) then 

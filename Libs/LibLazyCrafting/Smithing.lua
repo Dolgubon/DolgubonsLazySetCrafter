@@ -18,7 +18,7 @@
 local LibLazyCrafting = LibStub("LibLazyCrafting")
 
 local widgetType = 'smithing'
-local widgetVersion = 2.0
+local widgetVersion = 2.1
 if not LibLazyCrafting:RegisterWidget(widgetType, widgetVersion) then return  end
 
 local function dbug(...)
@@ -247,9 +247,9 @@ end
 local function getCraftLevel(station)
 	local SkillTextures = 
 	{
-		[CRAFTING_TYPE_BLACKSMITHING] = "esoui/art/icons/ability_smith_007.dds", -- bs, temper expertise esoui/art/icons/ability_smith_004.dds
-		[CRAFTING_TYPE_CLOTHIER] = "esoui/art/icons/ability_tradecraft_008.dds", -- cl, tannin expertise esoui/art/icons/ability_tradecraft_004.dds
-		[CRAFTING_TYPE_WOODWORKING] = "esoui/art/icons/ability_tradecraft_009.dds", -- ww, rosin experise esoui/art/icons/ability_tradecraft_001.dds
+		[CRAFTING_TYPE_BLACKSMITHING] = "/esoui/art/icons/ability_smith_007.dds", -- bs, temper expertise esoui/art/icons/ability_smith_004.dds
+		[CRAFTING_TYPE_CLOTHIER] = "/esoui/art/icons/ability_tradecraft_008.dds", -- cl, tannin expertise esoui/art/icons/ability_tradecraft_004.dds
+		[CRAFTING_TYPE_WOODWORKING] = "/esoui/art/icons/ability_tradecraft_009.dds", -- ww, rosin experise esoui/art/icons/ability_tradecraft_001.dds
 		[CRAFTING_TYPE_JEWELRYCRAFTING] = "/esoui/art/icons/passive_jewelerengraver.dds" -- jw, platings expertise /esoui/art/icons/passive_platingexpertise.dds
 	}
 	local skillType, skillIndex = GetCraftingSkillLineIndices(station)
@@ -266,7 +266,7 @@ local function getCraftLevel(station)
 
 		return currentSkill , maxSkill
 	else
-		return 3,3
+		return 0,1
 	end
 end
 
@@ -296,6 +296,7 @@ function canCraftItem(craftRequestTable)
 	else
 		matIndex = findMatTierByIndex(craftRequestTable['materialIndex'])
 	end
+	
 	if level >= matIndex then
 		
 	
@@ -452,9 +453,9 @@ LibLazyCrafting.functionTable.GetMatRequirements = GetMatRequirements
 local function getImprovementLevel(station)
 	local SkillTextures = 
 	{
-		[CRAFTING_TYPE_BLACKSMITHING] = "esoui/art/icons/ability_smith_004.dds", -- bs, temper expertise esoui/art/icons/ability_smith_004.dds
-		[CRAFTING_TYPE_CLOTHIER] = "esoui/art/icons/ability_tradecraft_004.dds", -- cl, tannin expertise esoui/art/icons/ability_tradecraft_004.dds
-		[CRAFTING_TYPE_WOODWORKING] = "esoui/art/icons/ability_tradecraft_001.dds", -- ww, rosin experise esoui/art/icons/ability_tradecraft_001.dds
+		[CRAFTING_TYPE_BLACKSMITHING] = "/esoui/art/icons/ability_smith_004.dds", -- bs, temper expertise esoui/art/icons/ability_smith_004.dds
+		[CRAFTING_TYPE_CLOTHIER] = "/esoui/art/icons/ability_tradecraft_004.dds", -- cl, tannin expertise esoui/art/icons/ability_tradecraft_004.dds
+		[CRAFTING_TYPE_WOODWORKING] = "/esoui/art/icons/ability_tradecraft_001.dds", -- ww, rosin experise esoui/art/icons/ability_tradecraft_001.dds
 		[CRAFTING_TYPE_JEWELRYCRAFTING] = "/esoui/art/icons/passive_platingexpertise.dds" -- jw, platings expertise /esoui/art/icons/passive_platingexpertise.dds
 	}
 	local skillType, skillIndex = GetCraftingSkillLineIndices(station)
@@ -471,7 +472,7 @@ local function getImprovementLevel(station)
 
 		return currentSkill , maxSkill
 	else
-		return 3,3
+		return 0,1
 	end
 end
 

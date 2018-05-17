@@ -791,6 +791,12 @@ function DolgubonSetCrafter.onWindowMove(window)
 	DolgubonSetCrafter.savedvars.yPos = window:GetTop()
 end
 
+local function getDividerPosition(window)
+end
+
+function DolgubonSetCrafter.onWindowResize(window)
+end
+
 --esoui/art/journal/gamepad/gp_journalcheck.dds
 --esoui/art/buttons/decline_up.dds
 --esoui/art/buttons/accept_up.dds

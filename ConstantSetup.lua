@@ -30,19 +30,29 @@ end
 
 DolgubonSetCrafter.armourTraits[#DolgubonSetCrafter.armourTraits + 1] = {[1] = ITEM_TRAIT_TYPE_ARMOR_NIRNHONED + 1, [2] = GetString(SI_ITEMTRAITTYPE26)} -- Nirnhoned
 DolgubonSetCrafter.weaponTraits[#DolgubonSetCrafter.weaponTraits + 1] = {[1] = ITEM_TRAIT_TYPE_WEAPON_NIRNHONED + 1, [2] = GetString(SI_ITEMTRAITTYPE25)}  -- Nirnhoned
-DolgubonSetCrafter.jewelryTraits = 
-{
-	{ITEM_TRAIT_TYPE_NONE + 1 , GetString( SI_ITEMTRAITTYPE0 )},
-	{ITEM_TRAIT_TYPE_JEWELRY_ARCANE + 1 , GetString(SI_ITEMTRAITTYPE22)},
-	{ITEM_TRAIT_TYPE_JEWELRY_HEALTHY + 1 , GetString(SI_ITEMTRAITTYPE23)},
-	{ITEM_TRAIT_TYPE_JEWELRY_ROBUST + 1 , GetString(SI_ITEMTRAITTYPE21)},
-	{ITEM_TRAIT_TYPE_JEWELRY_SWIFT + 1 , GetString(SI_ITEMTRAITTYPE28)},
-	{ITEM_TRAIT_TYPE_JEWELRY_BLOODTHIRSTY + 1 , GetString(SI_ITEMTRAITTYPE31)},
-	{ITEM_TRAIT_TYPE_JEWELRY_HARMONY + 1 , GetString(SI_ITEMTRAITTYPE29)},
-	{ITEM_TRAIT_TYPE_JEWELRY_INFUSED + 1 , GetString(SI_ITEMTRAITTYPE33)},
-	{ITEM_TRAIT_TYPE_JEWELRY_PROTECTIVE + 1 , GetString(SI_ITEMTRAITTYPE32)},
-	{ITEM_TRAIT_TYPE_JEWELRY_TRIUNE + 1 , GetString(SI_ITEMTRAITTYPE30)},
-}
+if GetAPIVersion() > 100022 then
+	DolgubonSetCrafter.jewelryTraits = 
+	{
+		{ITEM_TRAIT_TYPE_NONE + 1 , GetString( SI_ITEMTRAITTYPE0 )},
+		{ITEM_TRAIT_TYPE_JEWELRY_ARCANE + 1 , GetString(SI_ITEMTRAITTYPE22)},
+		{ITEM_TRAIT_TYPE_JEWELRY_HEALTHY + 1 , GetString(SI_ITEMTRAITTYPE23)},
+		{ITEM_TRAIT_TYPE_JEWELRY_ROBUST + 1 , GetString(SI_ITEMTRAITTYPE21)},
+		{ITEM_TRAIT_TYPE_JEWELRY_SWIFT + 1 , GetString(SI_ITEMTRAITTYPE28)},
+		{ITEM_TRAIT_TYPE_JEWELRY_BLOODTHIRSTY + 1 , GetString(SI_ITEMTRAITTYPE31)},
+		{ITEM_TRAIT_TYPE_JEWELRY_HARMONY + 1 , GetString(SI_ITEMTRAITTYPE29)},
+		{ITEM_TRAIT_TYPE_JEWELRY_INFUSED + 1 , GetString(SI_ITEMTRAITTYPE33)},
+		{ITEM_TRAIT_TYPE_JEWELRY_PROTECTIVE + 1 , GetString(SI_ITEMTRAITTYPE32)},
+		{ITEM_TRAIT_TYPE_JEWELRY_TRIUNE + 1 , GetString(SI_ITEMTRAITTYPE30)},
+	}
+else
+	DolgubonSetCrafter.jewelryTraits = 
+	{
+		{ITEM_TRAIT_TYPE_NONE + 1 , GetString( SI_ITEMTRAITTYPE0 )},
+		{ITEM_TRAIT_TYPE_JEWELRY_ARCANE + 1 , GetString(SI_ITEMTRAITTYPE22)},
+		{ITEM_TRAIT_TYPE_JEWELRY_HEALTHY + 1 , GetString(SI_ITEMTRAITTYPE23)},
+		{ITEM_TRAIT_TYPE_JEWELRY_ROBUST + 1 , GetString(SI_ITEMTRAITTYPE21)},
+	}
+end
 
 
 
@@ -143,4 +153,12 @@ table.remove(DolgubonSetCrafter.setIndexes,1)
 table.sort(DolgubonSetCrafter.setIndexes, function(a,b) return a[2]<b[2] end)
 table.insert(DolgubonSetCrafter.setIndexes,1, {[1] = 1, [2] = "No Set"})
 
+--[[ TODO: 
+1 make the toggle button moveable
+2. make a control container for the left side of stuff
+3. Add craft now button
+4. Add crown mimic stone toggle
+5. Reticle colouring
+6. Add new amount of item to the valuable reward text
 
+--]]
