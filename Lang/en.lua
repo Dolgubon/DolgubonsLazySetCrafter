@@ -27,6 +27,9 @@ DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughMats       = "You do not 
 DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughSpecificMat= "You do not have enough of this material to craft all items"
 DolgubonSetCrafter.localizedStrings.UIStrings.invalidLevel        = "Invalid Level"
 DolgubonSetCrafter.localizedStrings.UIStrings.multiplier          = "Multiplier"
+DolgubonSetCrafter.localizedStrings.UIStrings.autoCraft           = "Auto Craft"
+DolgubonSetCrafter.localizedStrings.UIStrings.craftStart		  = "Start Crafting"
+DolgubonSetCrafter.localizedStrings.UIStrings.materialScrollTitle = "Material Requirements"
 
 DolgubonSetCrafter.localizedStrings.SettingsStrings = {}
 

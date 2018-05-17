@@ -237,6 +237,7 @@ function DolgubonSetCrafterWindowComboboxes:anchoruiElements()
 		self.elements[i]:ClearAnchors()
 	end
 	for i = 1, #self.elements do
+		self.elements[i]:ClearAnchors()
 		if i %2 == 1 then
 			self.elements[i]:SetAnchor(LEFT, self, BOTTOMLEFT, 15, math.floor(i/2)*40 + 20)
 			self.elements[i]:SetAnchor(RIGHT, self, BOTTOM, -15, math.floor(i/2)*40 + 20)
@@ -714,7 +715,8 @@ function DolgubonSetCrafter.autofillFunctions()
 end
 
 function DolgubonSetCrafter.setupLocalizedLabels()
-	DolgubonSetCrafterWindowPatternInput:SetText 			(langStrings.UIStrings.patternHeader)
+	
+	out(langStrings.UIStrings.patternHeader)
 	DolgubonSetCrafterWindowComboboxes:SetText 				(langStrings.UIStrings.comboboxHeader)
 	DolgubonSetCrafterWindowAdd:SetText 					(langStrings.UIStrings.addToQueue)
 	DolgubonSetCrafterWindowInputLevelLabel:SetText 		(langStrings.UIStrings.level..":")
@@ -791,10 +793,45 @@ function DolgubonSetCrafter.onWindowMove(window)
 	DolgubonSetCrafter.savedvars.yPos = window:GetTop()
 end
 
-local function getDividerPosition(window)
+local function getDividerPosition(window, a)
+	local DIVIDER_RATIO = 800/1050
+	local width = window:GetWidth()
+	local divider = window:GetNamedChild("Divider")
+
+	divider:ClearAnchors()
+	local offsetX = DIVIDER_RATIO*width
+	if a%30 == 0 then
+		--d(width)
+		--d(offsetX)
+	end
+	divider:SetAnchor(LEFT ,window, LEFt, offsetX,0)
+	divider:SetDimensions(4, window:GetHeight())
 end
 
-function DolgubonSetCrafter.onWindowResize(window)
+local a = 1 
+local function dynamicResize(window)
+	a = a + 1
+	-- Resize method 1
+	getDividerPosition(window, a)
+	if true then return end
+	-- Resize method 2
+	local scale = math.sqrt(window:GetWidth()/1050)
+	scale = math.min(scale, 1.5)
+	scale = math.max(scale, 0.8)
+	window:SetScale(scale)
+end
+
+function DolgubonSetCrafter.onWindowResizeStart(window)
+	d("Start")
+	EVENT_MANAGER:RegisterForUpdate(DolgubonSetCrafter.name.."WindowResize",10, function()dynamicResize(window) end)
+	window:BringWindowToTop()
+
+end
+
+function DolgubonSetCrafter.onWindowResizeStop(window)
+	d("Stop")
+	d( window:GetWidth())
+	EVENT_MANAGER:UnregisterForUpdate(DolgubonSetCrafter.name.."WindowResize")
 end
 
 --esoui/art/journal/gamepad/gp_journalcheck.dds

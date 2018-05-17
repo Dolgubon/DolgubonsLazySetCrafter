@@ -26,6 +26,9 @@ DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughKnowledge  = "Dein Wissen
 DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughMats       = "Du besitzt nicht genug Materialien, um dieses Attribut herzustellen"
 DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughSpecificMat= "Du besitzt nicht genug von diesem Material, um alle Gegenstände herzustellen"
 DolgubonSetCrafter.localizedStrings.UIStrings.invalidLevel        = "Ungültiges Level"
+DolgubonSetCrafter.localizedStrings.UIStrings.multiplier 			= "Anzahl"
+DolgubonSetCrafter.localizedStrings.UIStrings.autoCraft 			= "Automatische Herstellung"
+DolgubonSetCrafter.localizedStrings.UIStrings.craftStart 			= "Herstellung beginnen"
 
 DolgubonSetCrafter.localizedStrings.SettingStrings = DolgubonSetCrafter.localizedStrings.SettingStrings or {}
 
