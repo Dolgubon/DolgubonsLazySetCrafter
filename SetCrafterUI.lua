@@ -122,24 +122,7 @@ local function setupPatternButtonOneTable(table,nameTable, initialX, initialY, p
 	end
 end
 
-
--- Sets up the pattern buttons and places them all in a table
---(for the tables with info on patterns, see ConstantSetup.lua)
-function DolgubonSetCrafter.setupPatternButtons()
-
-
-	-- Table to hold all the pattern buttons
-	DolgubonSetCrafter.patternButtons = {}
-	DolgubonSetCrafter.armourTypes = {}
-
-	setupPatternButtonOneTable(pieceNames 	,langStrings.pieceNames	,  -400 					, 40 , DolgubonSetCrafter.patternButtons)
-	setupPatternButtonOneTable(weaponNames	,langStrings.weaponNames, -400-spacingForButtons*10	, 85 , DolgubonSetCrafter.patternButtons)
-	setupPatternButtonOneTable(armourTypes	,langStrings.armourTypes,  150					 	, 40 , DolgubonSetCrafter.armourTypes)
-	DolgubonSetCrafter.armourTypes[1]:toggle()
-
-	debugSelections[#debugSelections+1] = function() DolgubonSetCrafter.patternButtons[1]:toggle() end
-	local patternButtons = DolgubonSetCrafter.patternButtons
-	-- Now, make functions which return what station, what styles to use, if it uses weight, and what traits to use
+local function setupPatternButtonFunctions(patternButtons)
 	for i = 1, 8 do -- Armour, made to fit
 		patternButtons[i].GetStation = function() 
 			if DolgubonSetCrafter:GetWeight() == 1 then 
@@ -194,6 +177,30 @@ function DolgubonSetCrafter.setupPatternButtons()
 	patternButtons[i].TraitsToUse = function()return DolgubonSetCrafter.ComboBox.Armour end
 	patternButtons[i].HaveWeights = function() return false end
 	patternButtons[i].GetPattern = function() return 2 end
+end
+
+
+
+-- Sets up the pattern buttons and places them all in a table
+--(for the tables with info on patterns, see ConstantSetup.lua)
+function DolgubonSetCrafter.setupPatternButtons()
+
+
+	-- Table to hold all the pattern buttons
+	DolgubonSetCrafter.patternButtons = {}
+	DolgubonSetCrafter.armourTypes = {}
+
+	setupPatternButtonOneTable(pieceNames 	,langStrings.pieceNames	,  -400 					, 40 , DolgubonSetCrafter.patternButtons)
+	setupPatternButtonOneTable(weaponNames	,langStrings.weaponNames, -400-spacingForButtons*10	, 85 , DolgubonSetCrafter.patternButtons)
+	setupPatternButtonOneTable(armourTypes	,langStrings.armourTypes,  150					 	, 40 , DolgubonSetCrafter.armourTypes)
+	DolgubonSetCrafter.armourTypes[1]:toggle()
+
+	debugSelections[#debugSelections+1] = function() DolgubonSetCrafter.patternButtons[1]:toggle() end
+	local patternButtons = DolgubonSetCrafter.patternButtons
+	-- Now, make functions which return what station, what styles to use, if it uses weight, and what traits to use
+	
+	setupPatternButtonFunctions(patternButtons)
+
 	DolgubonSetCrafter.armourTypes.weight = 1
 	local function setOtherArmourTypesToZero(index)
 		for i = 1, #DolgubonSetCrafter.armourTypes do
@@ -232,20 +239,25 @@ local out = DolgubonSetCrafter.out
 --/script d(Dolgubons_Set_Crafter_Style:GetNamedChild( Dolgubons_Set_Crafter_Style:GetChild(1):GetName() ) )
 
 function DolgubonSetCrafterWindowComboboxes:anchoruiElements()
+	local vSpacing = 35
+	local vPad = 5
 	self.elements = self.elements or {}
 	for i = 1, #self.elements do
 		self.elements[i]:ClearAnchors()
 	end
+	local minLeftSize = 1000
+	local minRightSize = 1000
 	for i = 1, #self.elements do
 		self.elements[i]:ClearAnchors()
 		if i %2 == 1 then
-			self.elements[i]:SetAnchor(LEFT, self, BOTTOMLEFT, 15, math.floor(i/2)*40 + 20)
-			self.elements[i]:SetAnchor(RIGHT, self, BOTTOM, -15, math.floor(i/2)*40 + 20)
+			self.elements[i]:SetAnchor(LEFT, self, TOPLEFT, 15, math.ceil(i/2)*vSpacing + vPad)
+			self.elements[i]:SetAnchor(RIGHT, self, TOP, -15, math.ceil(i/2)*vSpacing + vPad)
 		else
-			self.elements[i]:SetAnchor(RIGHT, self, BOTTOMRIGHT, -40,( math.floor(i/2 ) - 1)*40 + 20)
-			self.elements[i]:SetAnchor(LEFT, self, BOTTOM, 15,( math.floor(i/2 ) - 1)*40 + 20)
+			self.elements[i]:SetAnchor(RIGHT, self, TOPRIGHT, -40,( math.ceil(i/2 ))*vSpacing+ vPad )
+			self.elements[i]:SetAnchor(LEFT, self, TOP, 15,( math.ceil(i/2 ))*vSpacing + vPad)
 		end
 	end
+	self:SetDimensions(800,math.ceil(#self.elements/2)*vSpacing + 25)
 end
 
 function DolgubonSetCrafterWindowComboboxes:adduiElement(newElement, position)
@@ -718,12 +730,12 @@ function DolgubonSetCrafter.setupLocalizedLabels()
 	
 	out(langStrings.UIStrings.patternHeader)
 	DolgubonSetCrafterWindowComboboxes:SetText 				(langStrings.UIStrings.comboboxHeader)
-	DolgubonSetCrafterWindowAdd:SetText 					(langStrings.UIStrings.addToQueue)
+	DolgubonSetCrafterWindowLeftAdd:SetText 				(langStrings.UIStrings.addToQueue)
 	DolgubonSetCrafterWindowInputLevelLabel:SetText 		(langStrings.UIStrings.level..":")
 	DolgubonSetCrafterWindowMultiplierInputLabel:SetText 	(langStrings.UIStrings.multiplier..":")
 	DolgubonSetCrafterWindowInputCPLabel:SetText 			(langStrings.UIStrings.CP)
-	DolgubonSetCrafterWindowResetSelections:SetText 		(langStrings.UIStrings.resetToDefault)
-	DolgubonSetCrafterWindowClearQueue:SetText 				(langStrings.UIStrings.clearQueue)
+	DolgubonSetCrafterWindowLeftResetSelections:SetText		(langStrings.UIStrings.resetToDefault)
+	DolgubonSetCrafterWindowLeftClearQueue:SetText 			(langStrings.UIStrings.clearQueue)
 	CraftingQueueScrollLabel:SetText 						(langStrings.UIStrings.queueHeader)
 end
 
@@ -813,6 +825,8 @@ local function dynamicResize(window)
 	a = a + 1
 	-- Resize method 1
 	getDividerPosition(window, a)
+	DolgubonSetCrafter.manager:RefreshData() -- Show the scroll
+	DolgubonSetCrafter.materialManager:RefreshData()
 	if true then return end
 	-- Resize method 2
 	local scale = math.sqrt(window:GetWidth()/1050)
@@ -831,6 +845,7 @@ end
 function DolgubonSetCrafter.onWindowResizeStop(window)
 	d("Stop")
 	d( window:GetWidth())
+	d( window:GetHeight())
 	EVENT_MANAGER:UnregisterForUpdate(DolgubonSetCrafter.name.."WindowResize")
 end
 

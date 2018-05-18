@@ -27,9 +27,9 @@
 					<Dimensions x="250" y="48" />
 					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
 				</Label>
-				<Control name="$(parent)ComboBox" inherits="ZO_StatsDropdownRow"><!--ZO_ScrollableComboBox-->
+				<Control name="$(parent)ComboBox" inherits="ZO_ScrollableComboBox"><!--ZO_ScrollableComboBox-->
 					<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" offsetY="0" />
-					<Dimensions x="200" y="30" />
+					<Dimensions x="150" y="30" />
 				</Control>
 			</Controls>
 		</Label>
@@ -45,7 +45,7 @@
 				</Label>
 				<Control name="$(parent)ComboBox" inherits="ZO_ComboBox">
 					<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" offsetY="0" />
-					<Dimensions x="200" y="30" />
+					<Dimensions x="150" y="30" />
 				</Control>
 			</Controls>
 		</Label>

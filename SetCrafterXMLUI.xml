@@ -27,7 +27,7 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 
 		<TopLevelControl name="DolgubonSetCrafterWindow" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true" resizeHandleSize="10" >	
 			<Dimensions x="1050" y="650" />
-			<DimensionConstraints minX="850" />
+			<DimensionConstraints minX="850" minY="460" />
 			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="300" offsetY="-100"/>
 			<OnResizeStart>
 				DolgubonSetCrafter.onWindowResizeStart(self)
@@ -59,7 +59,8 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 					 However, due to a change in the XML file, I chose to use it so that the majority of names in
 					 SetCrafterUI.lua did not have to be changed. It does also make the names a bit cleaner though.
 		    	-->
-				<Backdrop name="$(parent)Left" alpha="1" centerColor="333300" >
+				<Backdrop name="$(parent)Left" alpha="1" edgeColor="333300" centerColor="111111" >
+					<Edge edgeSize="4"/>
 					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
 					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Divider" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
 					<OnInitialized>
@@ -78,54 +79,65 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 		    			<!-- Creating XML controls for Input/-->
 		    			<!-- Creating the holder for the pieces Input/-->
 				    	<Control name="$(grandparent)PatternInput" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="">
-
+				    		<Dimensions y="110"/>
 		        			<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="55" />
 		        			<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="55" />
 		    			</Control>
 		    			<!-- Creating the holder for the comboboxes/-->
 		    			<Label name="$(grandparent)Comboboxes" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Attributes">
 		    				<Dimensions x="800" y="25"/>
-		        			<Anchor point="LEFT" relativeTo="$(grandparent)PatternInput" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="105" />
-		        			<Anchor point="RIGHT" relativeTo="$(grandparent)PatternInput" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="105" />
+		        			<Anchor point="TOPLEFT" relativeTo="$(grandparent)PatternInput" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="50" />
+		        			<Anchor point="TOPRIGHT" relativeTo="$(grandparent)PatternInput" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="50" />
 		    			</Label>
+		    			<Control name="$(parent)InteractionButtons" >
+		    				<Dimensions y="28" x="800"/>
 
-		    			<Button name="$(grandparent)Add" alpha="1" clickSound="Default_Click" topmost="true" text="Add To Queue" inherits="ZO_DefaultButton">
-		     				<Anchor point="BOTTOM" relativeTo="$(grandparent)Comboboxes" relativePoint="BOTTOM" offsetX="0" offsetY="200" />
-		      				<Dimensions x="200" y="28" />
-							<OnClicked>
-								
-								DolgubonSetCrafter.craft()
-							</OnClicked>
-				    	</Button>
-				    	<Button name="$(grandparent)ResetSelections" alpha="1" clickSound="Default_Click" topmost="true" text="Reset to Default" inherits="ZO_DefaultButton">
-		     				<Anchor point="BOTTOM" relativeTo="$(grandparent)Comboboxes" relativePoint="BOTTOMRIGHT" offsetX="-150" offsetY="200" />
-		      				<Dimensions x="200" y="28" />
-							<OnClicked>
-								DolgubonSetCrafter.resetChoices()
-							</OnClicked>
-				    	</Button>
-				    	<Button name="$(grandparent)ClearQueue" alpha="1" clickSound="Default_Click" topmost="true" text="Clear Queue" inherits="ZO_DefaultButton">
-		     				<Anchor point="BOTTOM" relativeTo="$(grandparent)Comboboxes" relativePoint="BOTTOMLEFT" offsetX="150" offsetY="200" />
-		      				<Dimensions x="200" y="28" />
-							<OnClicked>
-								DolgubonSetCrafter.clearQueue()
-							</OnClicked>
-				    	</Button>
+		    				<Anchor point="TOPLEFT" relativeTo="$(grandparent)Comboboxes" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="5" />
+		    				<Anchor point="TOPRIGHT" relativeTo="$(grandparent)Comboboxes" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="5" />
+		    				<Controls>
+				    			<Button name="$(grandparent)Add" alpha="1" clickSound="Default_Click" topmost="true" text="Add To Queue" inherits="ZO_DefaultButton">
+				     				<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="0" />
+				      				<Dimensions x="200" y="28" />
+									<OnClicked>
+										
+										DolgubonSetCrafter.craft()
+									</OnClicked>
+						    	</Button>
+						    	<Button name="$(grandparent)ResetSelections" alpha="1"  topmost="true" text="Reset to Default" inherits="ZO_DefaultButton">
+				     				<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-30" offsetY="0" />
+				      				<Dimensions x="200" y="28" />
+									<OnClicked>
+										DolgubonSetCrafter.resetChoices()
+									</OnClicked>
+						    	</Button>
+						    	<Button name="$(grandparent)ClearQueue" alpha="1"  topmost="true" text="Clear Queue" inherits="ZO_DefaultButton">
+				     				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="30" offsetY="0" />
+				      				<Dimensions x="200" y="28" />
+									<OnClicked>
+										DolgubonSetCrafter.clearQueue()
+									</OnClicked>
+						    	</Button>
+						    </Controls>
+						</Control>
 
 				    	<!-- Scroll queue list-->
 				    	<Control name="CraftingQueueScroll" hidden="false" mouseEnabled="true" clampedToScreen="true" movable="false">
 							<Dimensions x="750" y="250" />
-							<Anchor point="TOP" relativeTo="$(grandparent)Add" relativePoint="BOTTOM" offsetX="0" offsetY="0" />
+							<DimensionConstraints minY="80" minX="500" />
+							<Anchor point="TOPLEFT" relativeTo="$(parent)InteractionButtons" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="-20" />
 							<Controls>
 								<Label name="$(parent)Label" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Crafting Requests">
-									<Anchor point="TOP" relativeTo="$(parent)Backdrop" relativePoint="TOP" offsetX="0" offsetY="10" />
+									<Anchor point="TOP" relativeTo="$(parent)Backdrop" relativePoint="TOP" offsetX="0" offsetY="0" />
 								</Label>
 								<Label name="$(parent)Counter" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="">
-									<Anchor point="LEFT" relativeTo="$(parent)Label" relativePoint="RIGHT" offsetX="0" offsetY="" />
+									<Anchor point="LEFT" relativeTo="$(parent)Label" relativePoint="RIGHT" offsetX="0" offsetY="0" />
 								</Label>
 								<Control name="$(parent)List" inherits="ZO_ScrollList">
-									<Anchor point="BOTTOM" relativeTo="$(parent)" offsetY="-10" offsetX="10" relativePoint="BOTTOM"/>
-									<Dimensions x="750" y="200" />
+
+									<Anchor point="TOPLET" relativeTo="$(parent)" offsetY="25" offsetX="10" relativePoint="TOPLET"/>
+									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" offsetY="-10" offsetX="-10" relativePoint="BOTTOMRIGHT"/>
+
 								</Control>
 							</Controls>
 						</Control>
@@ -208,7 +220,8 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 						</Control>
 					</Controls>
 				</Backdrop>
-				<Backdrop name="$(parent)Right" alpha="1" centerColor="333300" >
+				<Backdrop name="$(parent)Right" alpha="1" edgeColor="333300" centerColor="111111" >
+					<Edge edgeSize="4"/>
 					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
 					<Anchor point="TOPLEFT" relativeTo="$(parent)Divider" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
 					<OnInitialized>
