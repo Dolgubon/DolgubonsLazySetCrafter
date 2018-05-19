@@ -40,17 +40,17 @@ local autofillFunctions ={}
 
 local pieceNames = 
 {
-	 "Chest","Feet","Hands","Head","Legs","Shoulders","Belt","Jerkin","Ring","Neck",
+	"spaceHalf","Chest","Feet","Hands","Head","Legs","Shoulders","Belt","Jerkin", "space"
 }
 
 local jewelryNames =
 {
-	"Neck","Ring",
+	"Ring", "Neck", "space", "space"
 }
 
 local weaponNames = 
 {
-	"Axe", "Mace", "Sword", "BattleAxe", "Maul", "Greatsword", "Dagger", "Bow", "Fire", "Ice", "Lightning", "Restoration", "Shield"
+	"space","space","Axe", "Mace", "Sword", "BattleAxe", "Maul", "Greatsword", "Dagger", "Bow", "Fire", "Ice", "Lightning", "Restoration", "Shield"
 }
 
 local armourTypes = 
@@ -73,54 +73,6 @@ function DolgubonSetCrafter:GetWeight()
 	return weight, DolgubonSetCrafter.armourTypes[weight].tooltip
 end
 
--- Sets up pattern buttons for weaponNames, armourTypes and pieceNames
--- Since it's only three tables, some of it is hardcoded using if statements.
-local function setupPatternButtonOneTable(table,nameTable, initialX, initialY, positionToSave)
-	for k, v in pairs (table) do
-		-- Create the pattern button
-
-		local index = #positionToSave + 1
-		positionToSave[index] = WINDOW_MANAGER:CreateControlFromVirtual("DolgubonsSetCrafterPatternInput"..v, 
-			DolgubonSetCrafterWindowPatternInput, "PieceButtonTemplate")
-		-- Easy reference
-		local button = positionToSave[index]
-		button.tooltip = nameTable[k]
-		button.selectedIndex = k
-		-- Create the toggle
-		local locationPart = string.lower(v)
-		if v=="Jerkin" then 
-			locationPart= "chest" 
-			button:SetDimensions(36, 36)
-			button:SetHidden(true)
-		end
-		if v=="Head" or v=="Heavy" then
-			createToggle(button,"EsoUI/Art/Inventory/inventory_tabIcon_armor_down.dds", 
-				"EsoUI/Art/Inventory/inventory_tabIcon_armor_up.dds" , 
-				"EsoUI/Art/Inventory/inventory_tabIcon_armor_over.dds",
-				"EsoUI/Art/Inventory/inventory_tabIcon_armor_over.dds",
-				false)
-		else
-			createToggle(button,[[DolgubonsLazySetCrafter/images/patterns/]]..locationPart.."_down.dds", 
-				[[DolgubonsLazySetCrafter/images/patterns/]]..locationPart.."_up.dds" , 
-				[[DolgubonsLazySetCrafter/images/patterns/]]..locationPart.."_over.dds" ,
-				[[DolgubonsLazySetCrafter/images/patterns/]]..locationPart.."_over.dds",
-				false)
-		end
-		button:toggleOff() 
-		if v =="Ring" then
-			initialX = initialX +  spacingForButtons
-		end
-		if v == "Neck" or v=="Ring" then
-			
-			button.ignoreStyle = true
-		end
-
-		button:SetAnchor(CENTER , DolgubonSetCrafterWindowPatternInput , CENTER , initialX + index*spacingForButtons, initialY)
-		--button:SetAnchor(CENTER , DolgubonSetCrafterWindowPatternInputPerson , CENTER , 
-			--(-1)*60*((-1)^(index))*math.ceil(1 - 1/index), -160 +math.floor(index /2)*50 + math.floor(index/8)*50)
-
-	end
-end
 
 local function setupPatternButtonFunctions(patternButtons)
 	for i = 1, 8 do -- Armour, made to fit
@@ -180,6 +132,73 @@ local function setupPatternButtonFunctions(patternButtons)
 end
 
 
+local numSpacers = 0
+-- Sets up pattern buttons for weaponNames, armourTypes and pieceNames
+-- Since it's only three tables, some of it is hardcoded using if statements.
+local function setupPatternButtonOneTable(table,nameTable, initialX, initialY, positionToSave, parent)
+	local lastButton = nil
+	for k, v in pairs (table) do
+		-- Create the pattern button
+		local button
+		local index = #positionToSave + 1
+		if v == "space" then
+			button = WINDOW_MANAGER:CreateControlFromVirtual(parent:GetName()..numSpacers, 
+				parent, "SpacerTemplate")
+			numSpacers = numSpacers + 1
+		elseif v== "spaceHalf" then
+			button = WINDOW_MANAGER:CreateControlFromVirtual(parent:GetName()..numSpacers, 
+				parent, "SpacerTemplate")
+			numSpacers = numSpacers + 1
+			button:SetWidth(24)
+		else
+			positionToSave[index] = WINDOW_MANAGER:CreateControlFromVirtual(parent:GetName()..v, 
+				parent, "PieceButtonTemplate")
+		
+			-- Easy reference
+			button = positionToSave[index]
+			button.tooltip = nameTable[k]
+			button.selectedIndex = k
+			-- Create the toggle
+			local locationPart = string.lower(v)
+			if v=="Jerkin" then 
+				locationPart= "chest" 
+				button:SetDimensions(36, 36)
+				button:SetHidden(true)
+			end
+			if v=="Head" or v=="Heavy" then
+				createToggle(button,"EsoUI/Art/Inventory/inventory_tabIcon_armor_down.dds", 
+					"EsoUI/Art/Inventory/inventory_tabIcon_armor_up.dds" , 
+					"EsoUI/Art/Inventory/inventory_tabIcon_armor_over.dds",
+					"EsoUI/Art/Inventory/inventory_tabIcon_armor_over.dds",
+					false)
+			else
+				createToggle(button,[[DolgubonsLazySetCrafter/images/patterns/]]..locationPart.."_down.dds", 
+					[[DolgubonsLazySetCrafter/images/patterns/]]..locationPart.."_up.dds" , 
+					[[DolgubonsLazySetCrafter/images/patterns/]]..locationPart.."_over.dds" ,
+					[[DolgubonsLazySetCrafter/images/patterns/]]..locationPart.."_over.dds",
+					false)
+			end
+			button:toggleOff() 
+			if v =="Ring" then
+				initialX = initialX +  spacingForButtons
+			end
+			if v == "Neck" or v=="Ring" then
+				
+				button.ignoreStyle = true
+			end
+		end
+		if lastButton then
+			button:SetAnchor(LEFT , lastButton , RIGHT , 0, initialY)
+		else
+			button:SetAnchor(LEFT , parent , LEFT , 0, initialY)
+		end
+		lastButton = button
+		--button:SetAnchor(CENTER , DolgubonSetCrafterWindowPatternInputPerson , CENTER , 
+			--(-1)*60*((-1)^(index))*math.ceil(1 - 1/index), -160 +math.floor(index /2)*50 + math.floor(index/8)*50)
+
+	end
+end
+
 
 -- Sets up the pattern buttons and places them all in a table
 --(for the tables with info on patterns, see ConstantSetup.lua)
@@ -190,10 +209,16 @@ function DolgubonSetCrafter.setupPatternButtons()
 	DolgubonSetCrafter.patternButtons = {}
 	DolgubonSetCrafter.armourTypes = {}
 
-	setupPatternButtonOneTable(pieceNames 	,langStrings.pieceNames	,  -400 					, 40 , DolgubonSetCrafter.patternButtons)
-	setupPatternButtonOneTable(weaponNames	,langStrings.weaponNames, -400-spacingForButtons*10	, 85 , DolgubonSetCrafter.patternButtons)
-	setupPatternButtonOneTable(armourTypes	,langStrings.armourTypes,  150					 	, 40 , DolgubonSetCrafter.armourTypes)
+	setupPatternButtonOneTable(pieceNames 	,langStrings.pieceNames	,0,0 , DolgubonSetCrafter.patternButtons,DolgubonSetCrafterWindowPatternInputArmour )
+	setupPatternButtonOneTable(jewelryNames ,langStrings.jewelryNames,0,0 , DolgubonSetCrafter.patternButtons,DolgubonSetCrafterWindowPatternInputJewelry )
+	
+	setupPatternButtonOneTable(weaponNames	,langStrings.weaponNames,0 ,0, DolgubonSetCrafter.patternButtons, DolgubonSetCrafterWindowPatternInputWeapons)
+	setupPatternButtonOneTable(armourTypes	,langStrings.armourTypes,0 ,0, DolgubonSetCrafter.armourTypes, DolgubonSetCrafterWindowPatternInputArmourTypes)
 	DolgubonSetCrafter.armourTypes[1]:toggle()
+
+--	  -400 					,  0
+-- -400-spacingForButtons*10	, 45
+--  150					 	,  0
 
 	debugSelections[#debugSelections+1] = function() DolgubonSetCrafter.patternButtons[1]:toggle() end
 	local patternButtons = DolgubonSetCrafter.patternButtons
@@ -249,14 +274,28 @@ function DolgubonSetCrafterWindowComboboxes:anchoruiElements()
 	local minRightSize = 1000
 	for i = 1, #self.elements do
 		self.elements[i]:ClearAnchors()
-		if i %2 == 1 then
+		if i %2 == 1 then -- LEFT SIDE
 			self.elements[i]:SetAnchor(LEFT, self, TOPLEFT, 15, math.ceil(i/2)*vSpacing + vPad)
 			self.elements[i]:SetAnchor(RIGHT, self, TOP, -15, math.ceil(i/2)*vSpacing + vPad)
-		else
+			if self.elements[i]:GetNamedChild("ComboBox") then
+				self.elements[i]:GetNamedChild("ComboBox"):SetWidth(230)
+			end
+			if self.elements[i]:GetNamedChild("Name") then
+			minLeftSize = math.min(self.elements[i]:GetNamedChild("Name"):GetTextWidth() + 230, minLeftSize)
+		end
+		else -- RIGHT SIDE
 			self.elements[i]:SetAnchor(RIGHT, self, TOPRIGHT, -40,( math.ceil(i/2 ))*vSpacing+ vPad )
 			self.elements[i]:SetAnchor(LEFT, self, TOP, 15,( math.ceil(i/2 ))*vSpacing + vPad)
+			if self.elements[i]:GetNamedChild("ComboBox") then
+				self.elements[i]:GetNamedChild("ComboBox"):SetWidth(130)
+			end
+			if self.elements[i]:GetNamedChild("Name") then
+			minRightSize = math.min(self.elements[i]:GetNamedChild("Name"):GetTextWidth() + 130, minRightSize)
+		end
 		end
 	end
+
+	DolgubonSetCrafterWindow.minWidth = ( DolgubonSetCrafterWindow.minWidth or 0) + minRightSize + minLeftSize
 	self:SetDimensions(800,math.ceil(#self.elements/2)*vSpacing + 25)
 end
 
@@ -365,11 +404,11 @@ function DolgubonSetCrafter.setupComboBoxes()
 	DolgubonSetCrafter.ComboBox = {}
 
 	DolgubonSetCrafter.ComboBox.Armour 		= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Armour_Trait", DolgubonSetCrafterWindowComboboxes, "ComboboxTemplate")
-	DolgubonSetCrafter.ComboBox.Style 		= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Style", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
 	DolgubonSetCrafter.ComboBox.Weapon 		= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Weapon_Trait", DolgubonSetCrafterWindowComboboxes, "ComboboxTemplate")
 	DolgubonSetCrafter.ComboBox.Quality		= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Quality", DolgubonSetCrafterWindowComboboxes, "ComboboxTemplate")
 	DolgubonSetCrafter.ComboBox.Jewelry		= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Jewelry_Trait", DolgubonSetCrafterWindowComboboxes, "ComboboxTemplate")
 	DolgubonSetCrafter.ComboBox.Set			= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Set", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
+	DolgubonSetCrafter.ComboBox.Style 		= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Style", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
 	
 	for k, v in pairs(DolgubonSetCrafter.ComboBox) do
 		v.name = k
@@ -492,11 +531,17 @@ end
 local function formatAmountEntry(self, amountRequired, current)
 	local text
 	if current < amountRequired	 then
+		amountRequired = zo_strformat(SI_NUMBER_FORMAT, ZO_AbbreviateNumber(amountRequired, NUMBER_ABBREVIATION_PRECISION_TENTHS, USE_LOWERCASE_NUMBER_SUFFIXES))
+		current = zo_strformat(SI_NUMBER_FORMAT, ZO_AbbreviateNumber(current, NUMBER_ABBREVIATION_PRECISION_TENTHS, USE_LOWERCASE_NUMBER_SUFFIXES))
 		text = "|cFFBFBF"..tostring(current).."|r/"..tostring(amountRequired)
 	else
+		amountRequired = zo_strformat(SI_NUMBER_FORMAT, ZO_AbbreviateNumber(amountRequired, NUMBER_ABBREVIATION_PRECISION_TENTHS, USE_LOWERCASE_NUMBER_SUFFIXES))
+		current = zo_strformat(SI_NUMBER_FORMAT, ZO_AbbreviateNumber(current, NUMBER_ABBREVIATION_PRECISION_TENTHS, USE_LOWERCASE_NUMBER_SUFFIXES))
 		text = tostring(current).."/"..tostring(amountRequired)
 	end
 	self:SetText(text)
+	local width = self:GetTextWidth()
+	self:SetWidth(width + 5)
 end
 
 function MaterialScroll:SetupEntry(control, data)
@@ -816,23 +861,49 @@ local function getDividerPosition(window, a)
 		--d(width)
 		--d(offsetX)
 	end
-	divider:SetAnchor(LEFT ,window, LEFt, offsetX,0)
+	divider:SetAnchor(BOTTOMLEFT ,window, BOTTOMLEFT, offsetX,0)
+	divider:SetAnchor(TOPLEFT ,window, TOPLEFT, offsetX,0)
 	divider:SetDimensions(4, window:GetHeight())
 end
 
 local a = 1 
+--<DimensionConstraints minX="700" minY="460" />
+-- 700
+local function SetWindowScale(window, scale)
+	local LeftRightRatio =  800/1050
+	local divider = window:GetNamedChild("divider")
+	local left = window:GetNamedChild("Left")
+	local right = window:GetNamedChild("Right")
+	local newScale = window:GetWidth()/1050
+	newScale = math.min(newScale, 1) -- after 1, don't rescale it anymore
+	-- Rather than changing the scale of the whole window (which will change the size and call this again)
+	-- we scale the two main elements of the window so that they match the size
+	left:SetScale(newScale)
+	right:SetScale(newScale)
+	DolgubonSetCrafterWindowPatternInput:ClearAnchors()
+	DolgubonSetCrafterWindowPatternInput:SetAnchor(TOPLEFT, DolgubonSetCrafterWindowOutput, BOTTOMLEFT, 0, 0)
+	DolgubonSetCrafterWindowPatternInput:SetAnchor(BOTTOMRIGHT, DolgubonSetCrafterWindowOutput, BOTTOMRIGHT, 0, newScale*110)
+	
+end
+
+local minXBeforeResize = 995
+local minYBeforeResize = 460
 local function dynamicResize(window)
 	a = a + 1
 	-- Resize method 1
 	getDividerPosition(window, a)
 	DolgubonSetCrafter.manager:RefreshData() -- Show the scroll
 	DolgubonSetCrafter.materialManager:RefreshData()
-	if true then return end
+	
 	-- Resize method 2
+	local newScale = (1050 - window:GetWidth())*(-0.0008) + 1
 	local scale = math.sqrt(window:GetWidth()/1050)
-	scale = math.min(scale, 1.5)
-	scale = math.max(scale, 0.8)
-	window:SetScale(scale)
+	SetWindowScale(window, scale)
+	if true or window:GetWidth() > 1050 then return end
+	newScale = math.min(newScale, 1.5)
+	newScale = math.max(newScale, 0.8)
+	d("scale "..newScale)
+	window:SetScale(newScale)
 end
 
 function DolgubonSetCrafter.onWindowResizeStart(window)

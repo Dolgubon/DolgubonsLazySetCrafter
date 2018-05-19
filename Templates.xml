@@ -1,6 +1,7 @@
 <GuiXml> 
 	<Controls>
 		<!-- This button template is used as a template for all the piece toggle buttons.-->
+
 		<Button name="PieceButtonTemplate"  virtual="true" alpha="1"  topmost="true" ><!--inherits="ToggleButton">-->
 			<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"  />
 			<Dimensions x="48" y="48" />
@@ -17,6 +18,9 @@
 				self:toggle()
 			</OnClicked>
 		</Button>
+		<Control name="SpacerTemplate"  virtual="true" alpha="0"  topmost="false" ><!--inherits="ToggleButton">-->
+			<Dimensions x="48" y="48" />
+		</Control>
 		<!-- This template is used for all the scrolling comboboxes which have a large amount of options (e.g. style, set)-->
 		<Label name="ScrollComboboxTemplate" virtual="true" mouseEnabled="true">
 			<Dimensions x="250" y="30" />
@@ -36,7 +40,7 @@
 		<!-- This combobox template is used for all the non scrolling comboboxes-->
 		<Label name="ComboboxTemplate" virtual="true" mouseEnabled="true">
 			<Dimensions x="250" y="30" />
-			<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="20" />
+
 			<Controls>
 				
 				<Label name="$(parent)Name" font="ZoFontGame" verticalAlignment="CENTER">
@@ -102,14 +106,18 @@
 			<Dimensions x="850" y="30" />
 			<Controls>
 				<Backdrop name="$(parent)BG" />
+
 				
-				<Label name="$(parent)Name" inherits="QueueRowLabelTemplate" color="76BCC3" mouseEnabled="false">
-					<Dimensions x="180" y="48" />
-					<Anchor point="LEFT" relativeTo="$(parent)" offsetX="0" color="000000" />
+				<Label name="$(parent)Name" inherits="QueueRowLabelTemplate" color="76BCC3" mouseEnabled="false" wrapMode="TEXT_WRAP_MODE_TRUNCATE">
+
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" color="000000" />
+					<Anchor point="RIGHT" relativeTo="$(parent)Amount" relativePoint="LEFT" offsetX="0" color="000000" />
+
 				</Label>
+
 				<Label name="$(parent)Amount" inherits="QueueRowLabelTemplate" color="76BCC3" horizontalAlignment="RIGHT" mouseEnabled="false">
 					<Dimensions x="90" y="48" />
-					<Anchor point="RIGHT" relativeTo="$(parent)" offsetX="-20" color="000000" />
+					<Anchor point="RIGHT" relativeTo="$(parent)" offsetX="-5" color="000000" />
 				</Label>
 				
 			</Controls>
@@ -155,36 +163,36 @@
 				<Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
 				
 				<Label name="$(parent)Pattern" inherits="QueueRowLabelTemplate" color="76BCC3">
-					<Dimensions x="90" y="48" />
+					<Dimensions x="140" y="48" />
 					<Anchor point="LEFT" relativeTo="$(parent)" offsetX="0" color="000000" />
 				</Label>
 				<Label name="$(parent)Weight" inherits="QueueRowLabelTemplate">
 					<Dimensions x="70" y="48" />
-					<Anchor point="LEFT" relativeTo="$(parent)Pattern" offsetX="90" />
+					<Anchor point="CENTER" relativeTo="$(parent)Pattern" relativePoint="RIGHT" offsetX="0" />
 				</Label>
 				<Label name="$(parent)Level" inherits="QueueRowLabelTemplate">
 					<Dimensions x="50" y="48" />
-					<Anchor point="LEFT" relativeTo="$(parent)Weight" offsetX="70" />
+					<Anchor point="LEFT" relativeTo="$(parent)Weight" relativePoint="RIGHT" offsetX="0" />
 				</Label>
 				<Label name="$(parent)Style" inherits="QueueRowLabelTemplate" >
 					<Dimensions x="150" y="48" />
-					<Anchor point="LEFT" relativeTo="$(parent)Level" offsetX="50" />
+					<Anchor point="LEFT" relativeTo="$(parent)Level" relativePoint="RIGHT" offsetX="0" />
 				</Label>
 				<Label name="$(parent)Trait" inherits="QueueRowLabelTemplate" >
 					<Dimensions x="110" y="48" />
-					<Anchor point="LEFT" relativeTo="$(parent)Style" offsetX="150" />
+					<Anchor point="LEFT" relativeTo="$(parent)Style" relativePoint="RIGHT" offsetX="0" />
 				</Label>
 				<Label name="$(parent)Set" inherits="QueueRowLabelTemplate" >
 					<Dimensions x="140" y="48" />
-					<Anchor point="LEFT" relativeTo="$(parent)Trait" offsetX="110" />
+					<Anchor point="LEFT" relativeTo="$(parent)Trait" relativePoint="RIGHT" offsetX="0" />
 				</Label>
 				<Label name="$(parent)Quality" inherits="QueueRowLabelTemplate">
 					<Dimensions x="90" y="48" />
-					<Anchor point="LEFT" relativeTo="$(parent)Set" offsetX="140" />
+					<Anchor point="LEFT" relativeTo="$(parent)Set" relativePoint="RIGHT" offsetX="0" />
 				</Label>
 				<Label name="$(parent)Reference" inherits="QueueRowLabelTemplate">
 					<Dimensions x="30" y="48" />
-					<Anchor point="LEFT" relativeTo="$(parent)Set" offsetX="200" />
+					<Anchor point="LEFT" relativeTo="$(parent)Set" relativePoint="RIGHT" offsetX="0" />
 					<OnInitialized>
 						if not DolgubonSetCrafter:GetSettings().debug then
 							self:SetHidden(true)

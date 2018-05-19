@@ -22,7 +22,7 @@ end
 local function initializeFeedbackWindow()
 	local feedbackWindow = WINDOW_MANAGER:CreateControlFromVirtual("feedbackWindowL", owningWindow, "FeedbackTemplate")
 	parentAddonNameSpace.feedbackWindow = feedbackWindow
-	local showButton = WINDOW_MANAGER:CreateControlFromVirtual("ShowFeedbackWindowButton", owningWindow, "ShowFeedbackButtonTemplate")
+	local showButton = WINDOW_MANAGER:CreateControlFromVirtual("ShowFeedbackWindowButton", owningWindow:GetNamedChild("Left"), "ShowFeedbackButtonTemplate")
 	showButton.feedbackWindow = feedbackWindow
 	showButton:SetAnchor(unpack(mailButtonPosition))
 	showButton:SetDimensions(40,40)
