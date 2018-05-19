@@ -16,7 +16,7 @@
 
 		</Button>
 
-		<Control name="FeedbackTemplate" movable="true" mouseEnabled="true"  virtual="true">
+		<Control name="FeedbackTemplate" movable="true" mouseEnabled="true"  virtual="true" tier="HIGH">
 			<Dimensions x="545" y="150" />
 			<Controls>
 				<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />

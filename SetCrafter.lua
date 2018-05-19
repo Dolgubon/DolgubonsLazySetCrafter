@@ -27,7 +27,7 @@ DolgubonSetCrafter.default = {
 	["saveLastChoice"] = true,
 	["accountWideProfile"] = DolgubonSetCrafter.defaultCharacter,
 	["notifyWiped"] = true,
-
+	
 }
 
 

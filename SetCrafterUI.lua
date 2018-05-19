@@ -65,7 +65,12 @@ local spacingForButtons = 40
 
 -- A shortcut to output info to the user
 function DolgubonSetCrafter.out(text)
-	DolgubonSetCrafterWindowOutput:SetText(text)
+	if text == "" then
+		DolgubonSetCrafterWindowOutput:SetHidden(true)
+	else
+		DolgubonSetCrafterWindowOutput:SetText(text)
+		DolgubonSetCrafterWindowOutput:SetHidden(false)
+	end
 end
 
 function DolgubonSetCrafter:GetWeight()
@@ -137,6 +142,7 @@ local numSpacers = 0
 -- Since it's only three tables, some of it is hardcoded using if statements.
 local function setupPatternButtonOneTable(table,nameTable, initialX, initialY, positionToSave, parent)
 	local lastButton = nil
+	local count= 0
 	for k, v in pairs (table) do
 		-- Create the pattern button
 		local button
@@ -153,10 +159,10 @@ local function setupPatternButtonOneTable(table,nameTable, initialX, initialY, p
 		else
 			positionToSave[index] = WINDOW_MANAGER:CreateControlFromVirtual(parent:GetName()..v, 
 				parent, "PieceButtonTemplate")
-		
+			count = count + 1
 			-- Easy reference
 			button = positionToSave[index]
-			button.tooltip = nameTable[k]
+			button.tooltip = nameTable[count]
 			button.selectedIndex = k
 			-- Create the toggle
 			local locationPart = string.lower(v)
@@ -172,6 +178,8 @@ local function setupPatternButtonOneTable(table,nameTable, initialX, initialY, p
 					"EsoUI/Art/Inventory/inventory_tabIcon_armor_over.dds",
 					false)
 			else
+
+
 				createToggle(button,[[DolgubonsLazySetCrafter/images/patterns/]]..locationPart.."_down.dds", 
 					[[DolgubonsLazySetCrafter/images/patterns/]]..locationPart.."_up.dds" , 
 					[[DolgubonsLazySetCrafter/images/patterns/]]..locationPart.."_over.dds" ,
@@ -250,10 +258,10 @@ function DolgubonSetCrafter.setupPatternButtons()
 			if onOverTexture then self:SetMouseOverTexture(self.onOverTexture) end
 			setOtherArmourTypesToZero(i)
 			if i == 3 then
-				DolgubonsSetCrafterPatternInputJerkin:SetHidden(false)
+				DolgubonSetCrafterWindowPatternInputArmourJerkin:SetHidden(false)
 			else
-				DolgubonsSetCrafterPatternInputJerkin:toggleOff()
-				DolgubonsSetCrafterPatternInputJerkin:SetHidden(true)
+				DolgubonSetCrafterWindowPatternInputArmourJerkin:toggleOff()
+				DolgubonSetCrafterWindowPatternInputArmourJerkin:SetHidden(true)
 			end
 
 		end
@@ -264,7 +272,8 @@ local out = DolgubonSetCrafter.out
 --/script d(Dolgubons_Set_Crafter_Style:GetNamedChild( Dolgubons_Set_Crafter_Style:GetChild(1):GetName() ) )
 
 function DolgubonSetCrafterWindowComboboxes:anchoruiElements()
-	local vSpacing = 35
+
+	local vSpacing = 0
 	local vPad = 5
 	self.elements = self.elements or {}
 	for i = 1, #self.elements do
@@ -272,31 +281,51 @@ function DolgubonSetCrafterWindowComboboxes:anchoruiElements()
 	end
 	local minLeftSize = 1000
 	local minRightSize = 1000
+	local lastControlRight = nil
+	local lastControlLeft = nil
 	for i = 1, #self.elements do
 		self.elements[i]:ClearAnchors()
 		if i %2 == 1 then -- LEFT SIDE
-			self.elements[i]:SetAnchor(LEFT, self, TOPLEFT, 15, math.ceil(i/2)*vSpacing + vPad)
-			self.elements[i]:SetAnchor(RIGHT, self, TOP, -15, math.ceil(i/2)*vSpacing + vPad)
+			if i>2 then
+
+				self.elements[i]:SetAnchor(TOPLEFT , self.elements[i - 2], BOTTOMLEFT, 0,  vPad)
+				self.elements[i]:SetAnchor(TOPRIGHT, self.elements[i - 2], BOTTOMRIGHT, 0,  vPad)
+			else
+				self.elements[i]:SetAnchor(LEFT, self, BOTTOMLEFT, 10,  vPad +  7)
+				self.elements[i]:SetAnchor(RIGHT, self, BOTTOM, 0, vPad +  7)
+			end
 			if self.elements[i]:GetNamedChild("ComboBox") then
 				self.elements[i]:GetNamedChild("ComboBox"):SetWidth(230)
 			end
 			if self.elements[i]:GetNamedChild("Name") then
-			minLeftSize = math.min(self.elements[i]:GetNamedChild("Name"):GetTextWidth() + 230, minLeftSize)
-		end
+				minLeftSize = math.min(self.elements[i]:GetNamedChild("Name"):GetTextWidth() + 230, minLeftSize)
+
+			end
 		else -- RIGHT SIDE
-			self.elements[i]:SetAnchor(RIGHT, self, TOPRIGHT, -40,( math.ceil(i/2 ))*vSpacing+ vPad )
-			self.elements[i]:SetAnchor(LEFT, self, TOP, 15,( math.ceil(i/2 ))*vSpacing + vPad)
+			if i > 2 then
+				self.elements[i]:SetAnchor(TOPLEFT , self.elements[i - 2], BOTTOMLEFT, 0,  vPad)
+				self.elements[i]:SetAnchor(TOPRIGHT, self.elements[i - 2], BOTTOMRIGHT, 0,vPad )
+			else
+				self.elements[i]:SetAnchor(RIGHT, self, BOTTOMRIGHT, -40,vPad + 7 )
+				self.elements[i]:SetAnchor(LEFT, self, BOTTOM, 15, vPad  + 7)
+			end
 			if self.elements[i]:GetNamedChild("ComboBox") then
-				self.elements[i]:GetNamedChild("ComboBox"):SetWidth(130)
+				self.elements[i]:GetNamedChild("ComboBox"):SetWidth(160)
 			end
 			if self.elements[i]:GetNamedChild("Name") then
-			minRightSize = math.min(self.elements[i]:GetNamedChild("Name"):GetTextWidth() + 130, minRightSize)
+				minRightSize = math.min(self.elements[i]:GetNamedChild("Name"):GetTextWidth() + 130, minRightSize)
+			end
 		end
-		end
+		lastControl = self.elements[i]
 	end
 
 	DolgubonSetCrafterWindow.minWidth = ( DolgubonSetCrafterWindow.minWidth or 0) + minRightSize + minLeftSize
 	self:SetDimensions(800,math.ceil(#self.elements/2)*vSpacing + 25)
+	self.height = math.ceil(#self.elements/2)*vSpacing + 25
+	DolgubonSetCrafterWindowLeftInteractionButtons:ClearAnchors()
+	DolgubonSetCrafterWindowLeftInteractionButtons:SetAnchor(TOPLEFT, self.elements[#self.elements - 1], BOTTOMLEFT, 0,vPad)
+	DolgubonSetCrafterWindowLeftInteractionButtons:SetAnchor(TOPRIGHT, self.elements[#self.elements], BOTTOMRIGHT, 0,vPad)
+
 end
 
 function DolgubonSetCrafterWindowComboboxes:adduiElement(newElement, position)
@@ -425,7 +454,7 @@ function DolgubonSetCrafter.setupComboBoxes()
 	DolgubonSetCrafter.ComboBox.Armour.isTrait = true
 	DolgubonSetCrafter.ComboBox.Weapon.isTrait = true
 	DolgubonSetCrafter.ComboBox.Jewelry.isTrait = true
-	DolgubonSetCrafterWindowComboboxes:anchoruiElements()
+	--DolgubonSetCrafterWindowComboboxes:anchoruiElements()
 end
 
 function DolgubonSetCrafter:GetLevel()
@@ -792,6 +821,15 @@ function DolgubonSetCrafter.initializeWindowPosition()
 	DolgubonSetCrafterWindow:SetAnchor(TOPLEFT,GuiRoot, TOPLEFT,DolgubonSetCrafter.savedvars.xPos, DolgubonSetCrafter.savedvars.yPos )
 end
 
+function DolgubonSetCrafter.setupBehaviourToggles()
+	DolgubonSetCrafter.createToggle(DolgubonSetCrafterWindowLeftTogglesAutocraftCheckbox,"esoui/art/cadwell/checkboxicon_checked.dds", 
+		"esoui/art/cadwell/checkboxicon_unchecked.dds", "esoui/art/cadwell/checkboxicon_unchecked.dds", "esoui/art/cadwell/checkboxicon_checked.dds", true )
+	DolgubonSetCrafter.createToggle(DolgubonSetCrafterWindowLeftTogglesMimicStonesCheckbox,"esoui/art/cadwell/checkboxicon_checked.dds", 
+		"esoui/art/cadwell/checkboxicon_unchecked.dds", "esoui/art/cadwell/checkboxicon_unchecked.dds", "esoui/art/cadwell/checkboxicon_checked.dds", true )
+	DolgubonSetCrafterWindowLeftTogglesAutocraftLabel:SetText("Auto Craft")
+	DolgubonSetCrafterWindowLeftTogglesMimicStonesLabel:SetText("Use Mimic Stones")
+end
+
 -- UI setup directing function
 function DolgubonSetCrafter.initializeFunctions.setupUI()
 	langStrings = DolgubonSetCrafter.localizedStrings
@@ -801,18 +839,24 @@ function DolgubonSetCrafter.initializeFunctions.setupUI()
 	DolgubonSetCrafter.setupPatternButtons() -- check
 	DolgubonSetCrafter.setupComboBoxes() -- check
 	DolgubonSetCrafter.setupLevelSelector() --check
+	DolgubonSetCrafter.setupBehaviourToggles()
+
 
 	DolgubonSetCrafter.manager = DolgubonScroll:New(CraftingQueueScroll) -- check
-	DolgubonSetCrafter.manager:RefreshData() -- Show the scroll
+	
 	
 	
 	DolgubonSetCrafter.materialManager = MaterialScroll:New(DolgubonSetCrafterWindowMaterialList)
-	DolgubonSetCrafter.materialManager:RefreshData()
+	
 
 	--DolgubonSetCrafter.debugFunctions()
 	DolgubonSetCrafter.initializeWindowPosition()
 	DolgubonSetCrafterToggle:SetHidden(not DolgubonSetCrafter:GetSettings().showToggle )
 	DolgubonSetCrafterWindowComboboxes:anchoruiElements(DolgubonSetCrafterWindowInput,1 )
+	DolgubonSetCrafter.manager:RefreshData() -- Show the scroll
+	DolgubonSetCrafter.materialManager:RefreshData()
+	
+
 end
 
 
@@ -861,7 +905,7 @@ local function getDividerPosition(window, a)
 		--d(width)
 		--d(offsetX)
 	end
-	divider:SetAnchor(BOTTOMLEFT ,window, BOTTOMLEFT, offsetX,3)
+	divider:SetAnchor(BOTTOMLEFT ,window, BOTTOMLEFT, offsetX,-3)
 	divider:SetAnchor(TOPLEFT ,window, TOPLEFT, offsetX,0)
 	divider:SetDimensions(4, window:GetHeight())
 end
@@ -884,6 +928,9 @@ local function SetWindowScale(window, scale)
 	DolgubonSetCrafterWindowPatternInput:SetAnchor(TOPLEFT, DolgubonSetCrafterWindowOutput, BOTTOMLEFT, 0, 0)
 	DolgubonSetCrafterWindowPatternInput:SetAnchor(BOTTOMRIGHT, DolgubonSetCrafterWindowOutput, BOTTOMRIGHT, 0, newScale*110)
 
+	--DolgubonSetCrafterWindowComboboxes.height*(1 - (1 - newScale )/2)
+	
+
 end
 
 local minXBeforeResize = 995
@@ -905,7 +952,8 @@ local function dynamicResize(window)
 
 	window:SetScale(newScale)
 end
-
+DolgubonSetCrafter.dynamic = dynamicResize
+-- /script DolgubonSetCrafterWindow:SetWidth(800) DolgubonSetCrafter.dynamic(DolgubonSetCrafterWindow)
 function DolgubonSetCrafter.onWindowResizeStart(window)
 
 	EVENT_MANAGER:RegisterForUpdate(DolgubonSetCrafter.name.."WindowResize",10, function()dynamicResize(window) end)

@@ -66,10 +66,11 @@ end
 local styles = {}
 for i = 1, GetNumValidItemStyles() do
 	local styleItemIndex = GetValidItemStyleId(i)
-	local  itemName = GetItemStyleName(styleItemIndex)
+	local  styleName = GetItemStyleName(styleItemIndex)
 	local styleItem = GetSmithingStyleItemInfo(styleItemIndex)
-
-	table.insert(styles,{styleItemIndex,itemName, styleItem, GetItemStyleMaterialLink(styleItemIndex, 0 )})
+	if styleItemIndex ~= 33 then
+		table.insert(styles,{styleItemIndex,styleName, styleItem, GetItemStyleMaterialLink(styleItemIndex, 0 )})
+	end
 
 end
 table.sort(styles, function (a,b) return a[2]<b[2] end)--GetItemStyleMaterialLink(number itemStyleId, number LinkStyle linkStyle)
@@ -78,6 +79,7 @@ for i = 1, #styles do
 	local colour = "|cFFFFFF"
 	if not IsSmithingStyleKnown(styles[i][1]) then colour = "|c808080"  end
 	styles[i][2] = colour..styles[i][2].."|r"
+
 end
 DolgubonSetCrafter.styleNames = styles
 
@@ -155,10 +157,11 @@ table.insert(DolgubonSetCrafter.setIndexes,1, {[1] = 1, [2] = "No Set"})
 
 --[[ TODO: 
 1 make the toggle button moveable
-2. make a control container for the left side of stuff
+2. make a control container for the left side of stuff - Check
 3. Add craft now button
 4. Add crown mimic stone toggle
 5. Reticle colouring
 6. Add new amount of item to the valuable reward text
+7. Resizing - Check
 
 --]]

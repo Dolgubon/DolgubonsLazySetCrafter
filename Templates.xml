@@ -18,6 +18,23 @@
 				self:toggle()
 			</OnClicked>
 		</Button>
+		<Control name="BehaviourToggleTemplate"  virtual="true" alpha="1"  topmost="true" tier="HIGH" resizeToFitDescendents="true" ><!--inherits="ToggleButton">-->
+			<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"  />
+			<Controls>
+				
+				<Button name="$(parent)Checkbox">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT"  />
+					<Textures mouseOver="esoui/art/cadwell/checkboxicon_unchecked.dds" normal="esoui/art/cadwell/checkboxicon_unchecked.dds"/>
+					<Dimensions x="24" y="24" />
+					<OnClicked>
+						self:toggle()
+					</OnClicked>
+				</Button>
+				<Label name="$(parent)Label" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Auto Craft" >
+					<Anchor point="LEFT" relativeTo="$(parent)Checkbox" relativePoint="RIGHT"  />
+				</Label>
+			</Controls>
+		</Control>
 		<Control name="SpacerTemplate"  virtual="true" alpha="0"  topmost="false" ><!--inherits="ToggleButton">-->
 			<Dimensions x="48" y="48" />
 		</Control>

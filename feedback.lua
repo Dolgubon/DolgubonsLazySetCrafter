@@ -5,18 +5,22 @@ local parentAddonName = "Dolgubon's Lazy Set Crafter"
 local windowName = "DolgubonSetCrafterFeedback"
 local parentAddonNameSpace = DolgubonSetCrafter
 
-local mailButtonPosition = {TOPLEFT , owningWindow , TOPLEFT , 25, 25}
+local mailButtonPosition = {TOPLEFT , owningWindow , TOPLEFT , 10, 10}
 
-local amounts = {0,1000,10000,100000}
+local amounts = {0,5000,50000, "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7CZ3LW6E66NAU"}--RequestOpenUnsafeURL("
 
 local function SendNote(self)
-	owningWindow:SetHidden(true)
-	SCENE_MANAGER:Show('mailSend')
-	zo_callLater(function()
-	ZO_MailSendToField:SetText(destination)
-	ZO_MailSendSubjectField:SetText(parentAddonName)
-	QueueMoneyAttachment(self.amount)
-	ZO_MailSendBodyField:TakeFocus() end, 200)
+	if type(self.amount)=="string" then
+		RequestOpenUnsafeURL(self.amount)
+	else
+		owningWindow:SetHidden(true)
+		SCENE_MANAGER:Show('mailSend')
+		zo_callLater(function()
+		ZO_MailSendToField:SetText(destination)
+		ZO_MailSendSubjectField:SetText(parentAddonName)
+		QueueMoneyAttachment(self.amount)
+		ZO_MailSendBodyField:TakeFocus() end, 200)
+	end
 end
 
 local function initializeFeedbackWindow()
@@ -39,6 +43,8 @@ local function initializeFeedbackWindow()
 			buttons[i].SendNote = SendNote
 			if amounts[i] == 0 then
 				buttons[i]:SetText("Send Note")
+			elseif type(amounts[i] )=="string" then
+				buttons[i]:SetText("Send $$")
 			else
 				buttons[i]:SetText("Send "..tostring(amounts[i]).." gold")
 			end

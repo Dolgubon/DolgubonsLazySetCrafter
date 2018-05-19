@@ -40,7 +40,7 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 		    	<Backdrop name="$(parent)Divider" edgeColor="FFFFFF">
 		    		<Edge edgeSize="3"/>
 					<Dimensions x="4" y="650" />
-					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="0" offsetX="275" />
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="-3" offsetX="275" />
 				</Backdrop>
 				<Button name="$(parent)Close" alpha="1" clickSound="Default_Click" topmost="true">
 		    		<Textures normal="/esoui/art/hud/radialicon_cancel_up.dds" mouseOver="/esoui/art/hud/radialicon_cancel_over.dds" />
@@ -70,10 +70,13 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 				    	<!--Setting up the window -->
 
 				    	<Label name="$(grandparent)Title" scale="1" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Dolgubon's Lazy Set Crafter">
+
 		        			<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="10" />
 		        			<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="10" />
 		    			</Label>
 				    	<Label name="$(grandparent)Output" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="">
+				    		<Dimensions x="25"/>
+				    		
 		        			<Anchor point="TOPLEFT" relativeTo="$(grandparent)Title" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="5" />
 		        			<Anchor point="TOPRIGHT" relativeTo="$(grandparent)Title" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="5" />
 		    			</Label>
@@ -82,7 +85,7 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 		    			<!-- Creating the holder for the pieces Input/-->
 
 				    	<Control name="$(grandparent)PatternInput" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" >
-				    		<!--Controls><Backdrop name="$(parent)bg" edgeColor="FFFFFF" centerColor="000000"><Edge edgeWidth="4"/><AnchorFill /> </Backdrop></Controls-->
+				    		<!--Controls><Backdrop name="$(parent)bg" edgeColor="FFFFFF" centerColor="000000"><Edge edgeWidth="2"/><AnchorFill /> </Backdrop></Controls-->
 				    		<Controls>
 				    			<Control name="$(parent)Armour" resizeToFitDescendents="true">
 				    				
@@ -106,12 +109,28 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 		        			<Anchor point="TOPRIGHT" relativeTo="$(grandparent)Output" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
 		    			</Control>
 		    			<!-- Creating the holder for the comboboxes/-->
-		    			<Label name="$(grandparent)Comboboxes" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Attributes" resizeToFitDescendents="true">
-		    				<Controls><Backdrop name="$(parent)bg" alpha="0" edgeColor="FFFFFF" centerColor="000000"><Edge edgeWidth="4"/><AnchorFill /> </Backdrop></Controls>
-		    				<Dimensions x="800" y="25"/>
+		    			<Label name="$(grandparent)Comboboxes" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Attributes" resizeToFitDescendents="false"  >
+
+		    				<Dimensions x="800" y="105"/>
 		        			<Anchor point="TOPLEFT" relativeTo="$(grandparent)PatternInput" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="5" />
 		        			<Anchor point="TOPRIGHT" relativeTo="$(grandparent)PatternInput" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="5" />
 		    			</Label>
+		    			<Control name="$(parent)Toggles" resizeToFitDescendents="true">
+		    				<Dimensions x="500" y="75"/>
+		    				<Anchor point="RIGHT" relativeTo="$(grandparent)Output" relativePoint="RIGHT" offsetX="-10" offsetY="0"  />
+		    				
+		    				<Controls>
+		    					
+		    					<Control name="$(parent)Autocraft" inherits="BehaviourToggleTemplate">
+		    						<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+
+		    					</Control>
+		    					<Control name="$(parent)MimicStones" inherits="BehaviourToggleTemplate">
+		    						<Anchor point="TOPLEFT" relativeTo="$(parent)Autocraft" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+
+		    					</Control>
+		    				</Controls>
+		    			</Control>
 		    			<Control name="$(parent)InteractionButtons" >
 		    				<Dimensions y="28" x="800"/>
 
@@ -138,6 +157,14 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 				      				<Dimensions x="200" y="28" />
 									<OnClicked>
 										DolgubonSetCrafter.clearQueue()
+									</OnClicked>
+						    	</Button>
+						    	<Button name="$(grandparent)Craft" hidden="true" clickSound="Default_Click" topmost="true" text="Add To Queue" inherits="ZO_DefaultButton">
+				     				<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="0" />
+				      				<Dimensions x="200" y="28" />
+									<OnClicked>
+										
+										DolgubonSetCrafter.craft()
 									</OnClicked>
 						    	</Button>
 						    </Controls>
@@ -168,7 +195,7 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 						
 
 		    			<!-- Creating the input box -->
-		    			<Control name="$(grandparent)Input" tier="HIGH">
+		    			<Control name="$(grandparent)Input" tier="HIGH" resizeToFitDescendents="true">
 							<Anchor point="BOTTOM" relativeTo="$(grandparent)Comboboxes" relativePoint="CENTER" offsetX="-50" offsetY="50" />
 							<Dimensions x="250"/>
 							<Controls>
@@ -190,7 +217,7 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 								</Backdrop>
 								<Button name="$(parent)ToggleChampion" alpha="1"  topmost="true" ><!--inherits="ToggleButton">-->
 			         				<Anchor point="RIGHT" relativeTo="$(parent)Input" relativePoint="LEFT" offsetX="-15" offsetY="0" />
-			          				<Dimensions x="48" y="48" />
+			          				<Dimensions x="30" y="30" />
 			          				<Textures mouseOver="esoui\art\treeicons\achievements_indexicon_champion_over.dds"/>
 									<OnClicked>
 										self:toggle()
@@ -207,7 +234,7 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 								</Label>
 							</Controls>
 						</Control>
-				    	<Control name="$(grandparent)MultiplierInput" tier="HIGH">
+				    	<Control name="$(grandparent)MultiplierInput" tier="HIGH" resizeToFitDescendents="true">
 							<Anchor point="BOTTOM" relativeTo="$(parent)Comboboxes" relativePoint="CENTER" offsetX="-50" offsetY="50" />
 							<Dimensions x="250"/>
 							<OnInitialized>
@@ -245,7 +272,7 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 				</Control>
 				<Backdrop name="$(parent)Right" alpha="0" edgeColor="333300" centerColor="111111" inheritAlpha="false" >
 					<Edge edgeSize="4"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="5" />
 					<Anchor point="TOPLEFT" relativeTo="$(parent)Divider" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
 					<OnInitialized>
 						self.GetName = function() return DolgubonSetCrafterWindow end
