@@ -36,8 +36,6 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 				DolgubonSetCrafter.onWindowResizeStop(self)
 			</OnResizeStop>
 			<OnMoveStop>DolgubonSetCrafter.onWindowMove(self) </OnMoveStop>
-			<OnMouseUp> ShowMouse(false) d("UP") </OnMouseUp>
-
 		    <Controls>
 		    	<Backdrop name="$(parent)Divider" edgeColor="FFFFFF">
 		    		<Edge edgeSize="3"/>
@@ -60,10 +58,7 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 					 However, due to a change in the XML file, I chose to use it so that the majority of names in
 					 SetCrafterUI.lua did not have to be changed. It does also make the names a bit cleaner though.
 		    	-->
-		    	<Backdrop name="$(parent)bgPattern" alhpa="0" edgeColor="FFFFFF" centerColor="000000"><Edge edgeWidth="1"/>
-		    			<Anchor point="TOPLEFT" relativeTo="$(parent)Left" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
-		    			<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Left" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
-		    			 </Backdrop>
+
 				<Control name="$(parent)Left" alpha="1" edgeColor="333300" centerColor="111111" >
 
 					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
@@ -85,10 +80,7 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 		    			<!----------------------------------------------------------------->
 		    			<!-- Creating XML controls for Input/-->
 		    			<!-- Creating the holder for the pieces Input/-->
-		    			<Backdrop name="$(parent)bgPattern" edgeColor="FFFFFF" centerColor="000000"><Edge edgeWidth="1"/>
-		    			<Anchor point="TOPLEFT" relativeTo="$(grandparent)PatternInput" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
-		    			<Anchor point="BOTTOMRIGHT" relativeTo="$(grandparent)PatternInput" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
-		    			 </Backdrop>
+
 				    	<Control name="$(grandparent)PatternInput" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" >
 				    		<!--Controls><Backdrop name="$(parent)bg" edgeColor="FFFFFF" centerColor="000000"><Edge edgeWidth="4"/><AnchorFill /> </Backdrop></Controls-->
 				    		<Controls>
@@ -111,7 +103,7 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 				    		</Controls>
 				    		<Dimensions y="110"/>
 		        			<Anchor point="TOPLEFT" relativeTo="$(grandparent)Output" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
-		        			<Anchor point="BOTTOMRIGHT" relativeTo="$(grandparent)Output" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="110" />
+		        			<Anchor point="TOPRIGHT" relativeTo="$(grandparent)Output" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
 		    			</Control>
 		    			<!-- Creating the holder for the comboboxes/-->
 		    			<Label name="$(grandparent)Comboboxes" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Attributes" resizeToFitDescendents="true">

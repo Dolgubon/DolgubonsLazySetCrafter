@@ -861,7 +861,7 @@ local function getDividerPosition(window, a)
 		--d(width)
 		--d(offsetX)
 	end
-	divider:SetAnchor(BOTTOMLEFT ,window, BOTTOMLEFT, offsetX,0)
+	divider:SetAnchor(BOTTOMLEFT ,window, BOTTOMLEFT, offsetX,3)
 	divider:SetAnchor(TOPLEFT ,window, TOPLEFT, offsetX,0)
 	divider:SetDimensions(4, window:GetHeight())
 end
@@ -883,7 +883,7 @@ local function SetWindowScale(window, scale)
 	DolgubonSetCrafterWindowPatternInput:ClearAnchors()
 	DolgubonSetCrafterWindowPatternInput:SetAnchor(TOPLEFT, DolgubonSetCrafterWindowOutput, BOTTOMLEFT, 0, 0)
 	DolgubonSetCrafterWindowPatternInput:SetAnchor(BOTTOMRIGHT, DolgubonSetCrafterWindowOutput, BOTTOMRIGHT, 0, newScale*110)
-	
+
 end
 
 local minXBeforeResize = 995
@@ -902,21 +902,19 @@ local function dynamicResize(window)
 	if true or window:GetWidth() > 1050 then return end
 	newScale = math.min(newScale, 1.5)
 	newScale = math.max(newScale, 0.8)
-	d("scale "..newScale)
+
 	window:SetScale(newScale)
 end
 
 function DolgubonSetCrafter.onWindowResizeStart(window)
-	d("Start")
+
 	EVENT_MANAGER:RegisterForUpdate(DolgubonSetCrafter.name.."WindowResize",10, function()dynamicResize(window) end)
 	window:BringWindowToTop()
 
 end
 
 function DolgubonSetCrafter.onWindowResizeStop(window)
-	d("Stop")
-	d( window:GetWidth())
-	d( window:GetHeight())
+
 	EVENT_MANAGER:UnregisterForUpdate(DolgubonSetCrafter.name.."WindowResize")
 end
 
