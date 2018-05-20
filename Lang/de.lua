@@ -29,6 +29,7 @@ DolgubonSetCrafter.localizedStrings.UIStrings.invalidLevel        = "Ungültiges
 DolgubonSetCrafter.localizedStrings.UIStrings.multiplier 			= "Anzahl"
 DolgubonSetCrafter.localizedStrings.UIStrings.autoCraft 			= "Automatische Herstellung"
 DolgubonSetCrafter.localizedStrings.UIStrings.craftStart 			= "Herstellung beginnen"
+DolgubonSetCrafter.localizedStrings.UIStrings.mimicStones			= "Mimensteine benutzen"
 
 DolgubonSetCrafter.localizedStrings.SettingStrings = DolgubonSetCrafter.localizedStrings.SettingStrings or {}
 

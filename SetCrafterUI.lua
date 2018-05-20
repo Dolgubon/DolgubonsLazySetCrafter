@@ -821,13 +821,77 @@ function DolgubonSetCrafter.initializeWindowPosition()
 	DolgubonSetCrafterWindow:SetAnchor(TOPLEFT,GuiRoot, TOPLEFT,DolgubonSetCrafter.savedvars.xPos, DolgubonSetCrafter.savedvars.yPos )
 end
 
+function DolgubonSetCrafter:GetMimicStoneUse()
+	return DolgubonSetCrafterWindowLeftTogglesMimicStonesCheckbox.toggleValue
+end
+
+function DolgubonSetCrafter:GetAutocraft()
+	return DolgubonSetCrafterWindowLeftTogglesAutocraftCheckbox.toggleValue
+end
+
+-- Here because we want the craft button to disappear if the autocraft is on
+local function FillWithTwoControls(anchorTo, LeftControl, RightControl)
+	LeftControl:ClearAnchors()
+	RightControl:ClearAnchors()
+	LeftControl:SetAnchor(LEFT, anchorTo, LEFT)
+	LeftControl:SetAnchor(RIGHT, anchorTo, CENTER)
+	RightControl:SetAnchor(LEFT, anchorTo, CENTER)
+	RightControl:SetAnchor(RIGHT, anchorTo, RIGHT)
+end
+local function LeftCenterRightAnchoring(anchorTo, LeftControl,CenterControl,  RightControl)
+	LeftControl:ClearAnchors()
+	RightControl:ClearAnchors()
+	CenterControl:ClearAnchors()
+	LeftControl:SetAnchor(BOTTOMLEFT, anchorTo, BOTTOMLEFT)
+	CenterControl:SetAnchor(BOTTOM, anchorTo, BOTTOM)
+	RightControl:SetAnchor(BOTTOMRIGHT, anchorTo, BOTTOMRIGHT)
+end
+
+local function anchorInteractionButtons(stateOfAutocraft)
+	DolgubonSetCrafterWindowLeftCraft:SetHidden(not stateOfAutocraft)
+	local mainControl = DolgubonSetCrafterWindowLeftInteractionButtons
+	if not stateOfAutocraft then
+		LeftCenterRightAnchoring(mainControl, DolgubonSetCrafterWindowLeftClearQueue, DolgubonSetCrafterWindowLeftAdd, DolgubonSetCrafterWindowLeftResetSelections )
+	else
+		FillWithTwoControls(mainControl:GetNamedChild("PositionLeft"), DolgubonSetCrafterWindowLeftClearQueue, DolgubonSetCrafterWindowLeftAdd)
+		FillWithTwoControls(mainControl:GetNamedChild("PositionRight"), DolgubonSetCrafterWindowLeftCraft, DolgubonSetCrafterWindowLeftResetSelections)
+	end
+
+end
+
 function DolgubonSetCrafter.setupBehaviourToggles()
-	DolgubonSetCrafter.createToggle(DolgubonSetCrafterWindowLeftTogglesAutocraftCheckbox,"esoui/art/cadwell/checkboxicon_checked.dds", 
-		"esoui/art/cadwell/checkboxicon_unchecked.dds", "esoui/art/cadwell/checkboxicon_unchecked.dds", "esoui/art/cadwell/checkboxicon_checked.dds", true )
-	DolgubonSetCrafter.createToggle(DolgubonSetCrafterWindowLeftTogglesMimicStonesCheckbox,"esoui/art/cadwell/checkboxicon_checked.dds", 
-		"esoui/art/cadwell/checkboxicon_unchecked.dds", "esoui/art/cadwell/checkboxicon_unchecked.dds", "esoui/art/cadwell/checkboxicon_checked.dds", true )
-	DolgubonSetCrafterWindowLeftTogglesAutocraftLabel:SetText("Auto Craft")
-	DolgubonSetCrafterWindowLeftTogglesMimicStonesLabel:SetText("Use Mimic Stones")
+	-- Set initial to true
+	local autoCraft = DolgubonSetCrafterWindowLeftTogglesAutocraftCheckbox
+	local mimicStones = DolgubonSetCrafterWindowLeftTogglesMimicStonesCheckbox
+
+	DolgubonSetCrafter.createToggle(autoCraft,"esoui/art/cadwell/checkboxicon_checked.dds",	"esoui/art/cadwell/checkboxicon_unchecked.dds", 
+		"esoui/art/cadwell/checkboxicon_unchecked.dds", "esoui/art/cadwell/checkboxicon_checked.dds", true )
+	DolgubonSetCrafter.createToggle(mimicStones,"esoui/art/cadwell/checkboxicon_checked.dds", "esoui/art/cadwell/checkboxicon_unchecked.dds", 
+		"esoui/art/cadwell/checkboxicon_unchecked.dds", "esoui/art/cadwell/checkboxicon_checked.dds", true )
+
+	autoCraft:GetNamedChild("Label"):SetText(DolgubonSetCrafter.localizedStrings.UIStrings.autoCraft)
+	mimicStones:GetNamedChild("Label"):SetText(GetString(SI_CRAFTING_CONFIRM_USE_UNIVERSAL_STYLE_ITEM_TITLE))
+	if DolgubonSetCrafter.savedvars.saveLastChoice then
+		autoCraft:setState(DolgubonSetCrafter.savedvars["autoCraft"])
+		anchorInteractionButtons(DolgubonSetCrafter.savedvars["autoCraft"])
+		mimicStones:setState(DolgubonSetCrafter.savedvars["mimicStones"])
+	end
+
+
+	autoCraft.onToggle = function(self, newState) 
+		DolgubonSetCrafter.savedvars['autoCraft'] = newState 
+		DolgubonSetCrafter.LazyCrafter:SetAllAutoCraft(newState)
+		DolgubonSetCrafter.LazyCrafter:craftInteract()
+		anchorInteractionButtons(newState)
+
+	end
+
+	mimicStones.onToggle = function(self, newState) 
+		DolgubonSetCrafter.savedvars['mimicStones'] = newState 
+	end
+
+	
+
 end
 
 -- UI setup directing function

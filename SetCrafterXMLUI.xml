@@ -37,7 +37,7 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 			</OnResizeStop>
 			<OnMoveStop>DolgubonSetCrafter.onWindowMove(self) </OnMoveStop>
 		    <Controls>
-		    	<Backdrop name="$(parent)Divider" edgeColor="FFFFFF">
+		    	<Backdrop name="$(parent)Divider" edgeColor="ffffff">
 		    		<Edge edgeSize="3"/>
 					<Dimensions x="4" y="650" />
 					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="-3" offsetX="275" />
@@ -117,7 +117,7 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 		    			</Label>
 		    			<Control name="$(parent)Toggles" resizeToFitDescendents="true">
 		    				<Dimensions x="500" y="75"/>
-		    				<Anchor point="RIGHT" relativeTo="$(grandparent)Output" relativePoint="RIGHT" offsetX="-10" offsetY="0"  />
+		    				<Anchor point="RIGHT" relativeTo="$(grandparent)Output" relativePoint="TOPRIGHT" offsetX="-10" offsetY="0"  />
 		    				
 		    				<Controls>
 		    					
@@ -137,36 +137,53 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 		    				<Anchor point="TOPLEFT" relativeTo="$(grandparent)Comboboxes" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
 		    				<Anchor point="TOPRIGHT" relativeTo="$(grandparent)Comboboxes" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
 		    				<Controls>
-				    			<Button name="$(grandparent)Add" alpha="1" clickSound="Default_Click" topmost="true" text="Add To Queue" inherits="ZO_DefaultButton">
-				     				<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="0" />
+				    			<Control name="$(parent)PositionLeft">
+				    				<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT"/>
+				    				<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="CENTER"/>
+				    			</Control>
+				    			<Control name="$(parent)PositionRight">
+				    				<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT"/>
+				    				<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="CENTER"/>
+				    			</Control>
+						    	<Button name="$(grandparent)ResetSelections" alpha="1"  topmost="true" text="Reset to Default" inherits="ZO_DefaultButton">
+				     				
+				     				<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)PositionRight" relativePoint="BOTTOMRIGHT"/>
+				    				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)PositionRight" relativePoint="BOTTOM"/>
+				      				<Dimensions x="200" y="28" />
+				      				
+									<OnClicked>
+										DolgubonSetCrafter.resetChoices()
+									</OnClicked>
+						    	</Button>
+						    	<Button name="$(grandparent)Add" alpha="1" clickSound="Default_Click" topmost="true" text="Add To Queue" inherits="ZO_DefaultButton">
+				     				<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)PositionLeft" relativePoint="BOTTOMRIGHT"/>
+				    				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)PositionLeft" relativePoint="BOTTOM"/>
 				      				<Dimensions x="200" y="28" />
 									<OnClicked>
 										
 										DolgubonSetCrafter.craft()
 									</OnClicked>
 						    	</Button>
-						    	<Button name="$(grandparent)ResetSelections" alpha="1"  topmost="true" text="Reset to Default" inherits="ZO_DefaultButton">
-				     				<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-30" offsetY="0" />
-				      				<Dimensions x="200" y="28" />
-									<OnClicked>
-										DolgubonSetCrafter.resetChoices()
-									</OnClicked>
-						    	</Button>
 						    	<Button name="$(grandparent)ClearQueue" alpha="1"  topmost="true" text="Clear Queue" inherits="ZO_DefaultButton">
-				     				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="30" offsetY="0" />
+				     				
+				     				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)PositionLeft" relativePoint="BOTTOMLEFT"/>
+				    				<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)PositionLeft" relativePoint="BOTTOM"/>
 				      				<Dimensions x="200" y="28" />
 									<OnClicked>
 										DolgubonSetCrafter.clearQueue()
 									</OnClicked>
 						    	</Button>
-						    	<Button name="$(grandparent)Craft" hidden="true" clickSound="Default_Click" topmost="true" text="Add To Queue" inherits="ZO_DefaultButton">
-				     				<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="0" />
+						    	<Button name="$(grandparent)Craft" hidden="false" clickSound="Default_Click" topmost="true" text="Craft" inherits="ZO_DefaultButton">
+				     				
+				     				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)PositionRight" relativePoint="BOTTOMLEFT"/>
+				    				<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)PositionRight" relativePoint="BOTTOM"/>
 				      				<Dimensions x="200" y="28" />
 									<OnClicked>
-										
-										DolgubonSetCrafter.craft()
+										d("HEY")
+										--DolgubonSetCrafter.craft()
 									</OnClicked>
 						    	</Button>
+
 						    </Controls>
 						</Control>
 

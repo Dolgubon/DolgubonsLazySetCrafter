@@ -384,7 +384,19 @@ local function addPatternToQueue(patternButton,i)
 			requestTableCopy["Reference"]	= DolgubonSetCrafter.savedvars.counter
 			DolgubonSetCrafter.savedvars.counter = DolgubonSetCrafter.savedvars.counter + 1
 
-			local CraftRequestTable = {pattern, isCP,tonumber(requestTableCopy["Level"][1]),styleIndex,trait, false, station,  setIndex, quality, true, requestTableCopy["Reference"]}
+			local CraftRequestTable = {
+				pattern, 
+				isCP,
+				tonumber(requestTableCopy["Level"][1]),
+				styleIndex,
+				trait, 
+				DolgubonSetCrafter:GetMimicStoneUse(), 
+				station,  
+				setIndex, 
+				quality, 
+				DolgubonSetCrafter:GetAutocraft(),
+				requestTableCopy["Reference"]
+			}
 
 			local returnedTable = LazyCrafter:CraftSmithingItemByLevel(unpack(CraftRequestTable))
 			
@@ -489,7 +501,7 @@ end
 function DolgubonSetCrafter.initializeFunctions.initializeCrafting()
 	queue = DolgubonSetCrafter.savedvars.queue
 
-	LazyCrafter = LibLazyCrafting:AddRequestingAddon(DolgubonSetCrafter.name, false, LLCCraftCompleteHandler)	
+	LazyCrafter = LibLazyCrafting:AddRequestingAddon(DolgubonSetCrafter.name, false, LLCCraftCompleteHandler)
 	DolgubonSetCrafter.LazyCrafter = LazyCrafter
 	for k, v in pairs(queue) do 
 		if not v.doNotKeep then
@@ -501,6 +513,7 @@ function DolgubonSetCrafter.initializeFunctions.initializeCrafting()
 			table.remove(queue, k)
 		end
 	end
+	LazyCrafter:SetAllAutoCraft(DolgubonSetCrafter:GetAutocraft())
 end
 
 

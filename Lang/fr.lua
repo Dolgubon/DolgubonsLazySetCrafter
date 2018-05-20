@@ -23,8 +23,14 @@ DolgubonSetCrafter.localizedStrings.UIStrings.queueHeader         = "File D'atte
 DolgubonSetCrafter.localizedStrings.UIStrings.clearQueue          = "Effacer la Liste"
 DolgubonSetCrafter.localizedStrings.UIStrings.resetToDefault      = "Effacer Selections"
 DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughKnowledge  = "You do not have enough knowledge for this attribute"
+DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughMats			= "You do not have enough materials to make this attribute"
 DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughSpecificMat= "You do not have enough of this material to craft all items"
 DolgubonSetCrafter.localizedStrings.UIStrings.invalidLevel        = "Invalid Level"
+DolgubonSetCrafter.localizedStrings.UIStrings.multiplier			= "Multiplier"
+DolgubonSetCrafter.localizedStrings.UIStrings.autoCraft				= "Auto Craft"
+DolgubonSetCrafter.localizedStrings.UIStrings.mimicStones			= "Use Mimic Stones"
+DolgubonSetCrafter.localizedStrings.UIStrings.craftStart			= "Start Crafting"
+DolgubonSetCrafter.localizedStrings.UIStrings.materialScrollTitle	= "Material Requirements"
 
 DolgubonSetCrafter.localizedStrings.SettingStrings = DolgubonSetCrafter.localizedStrings.SettingStrings or {}
 

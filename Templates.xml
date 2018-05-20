@@ -29,10 +29,22 @@
 					<OnClicked>
 						self:toggle()
 					</OnClicked>
+					<Controls>
+						<Label name="$(parent)Label" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Auto Craft" >
+							<Anchor point="LEFT" relativeTo="$(parent)Checkbox" relativePoint="RIGHT"  />
+							<OnMouseEnter>
+								d("1")
+								d(self:GetParent():GetHandler("OnMouseEnter"))
+								self:GetParent():GetHandler("OnMouseEnter")()
+							</OnMouseEnter>
+							<OnMouseExit>
+								self:GetParent():GetHandler("OnMouseExit")()
+							</OnMouseExit>
+						</Label>
+					</Controls>
+
 				</Button>
-				<Label name="$(parent)Label" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Auto Craft" >
-					<Anchor point="LEFT" relativeTo="$(parent)Checkbox" relativePoint="RIGHT"  />
-				</Label>
+
 			</Controls>
 		</Control>
 		<Control name="SpacerTemplate"  virtual="true" alpha="0"  topmost="false" ><!--inherits="ToggleButton">-->

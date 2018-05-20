@@ -621,6 +621,21 @@ local function CraftComplete(event, station)
 	end
 end
 
+local function LLC_SetAllAutoCraft(self, newAutoCraftSetting)
+	for i = 1, #craftingQueue[self.addonName] do
+		for j = 1, #craftingQueue[self.addonName][i] do
+			craftingQueue[self.addonName][i][j]["autocraft"] = newAutoCraftSetting
+		end
+	end
+end
+
+LibLazyCrafting.functionTable.SetAllAutoCraft = LLC_SetAllAutoCraft
+LibLazyCrafting.functionTable.craftInteract =function()
+if GetCraftingInteractionType() ~= 0 then
+	CraftInteract(nil, GetCraftingInteractionType())
+end
+end
+
 local function OnAddonLoaded()
 	if not libLoaded then
 		libLoaded = true

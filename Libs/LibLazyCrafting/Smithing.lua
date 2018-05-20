@@ -1137,7 +1137,11 @@ function compileRequirements(request, station)-- Ingot/style mat/trait mat/impro
 		end
 		requirements[matId] = request.materialQuantity
 		if station ~= 7 then
-			requirements[ GetItemLinkItemId( GetItemStyleMaterialLink(request.style , 0))] = 1
+			if request.useUniversalStyleItem then
+				requirements[ 71668] = 1 -- mimic stone ID
+			else
+				requirements[ GetItemLinkItemId( GetItemStyleMaterialLink(request.style , 0))] = 1
+			end
 		end
 
 		local traitLink = GetSmithingTraitItemLink(request.trait, 0)
