@@ -16,6 +16,7 @@ DolgubonSetCrafter.localizedStrings.UIStrings.level               = GetString(SI
 DolgubonSetCrafter.localizedStrings.UIStrings.CP                  = "CP"
 DolgubonSetCrafter.localizedStrings.UIStrings.armourTrait         = "|t100%:100%:EsoUI/Art/Inventory/inventory_tabIcon_armor_up.dds|tEigenschaft"
 DolgubonSetCrafter.localizedStrings.UIStrings.weaponTrait         = "|t100%:100%:DolgubonsLazySetCrafter/images/patterns/greatsword_up.dds|tEigenschaft"
+DolgubonSetCrafter.localizedStrings.UIStrings.jewelryTrait			= "Schmuck Eigenschaft"
 DolgubonSetCrafter.localizedStrings.UIStrings.quality             = "Qualität"
 DolgubonSetCrafter.localizedStrings.UIStrings.gearSet             = "Set"
 DolgubonSetCrafter.localizedStrings.UIStrings.addToQueue          = "|c26CD00Auswahl → Warteschlange|r"
@@ -28,19 +29,24 @@ DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughSpecificMat= "Du besitzt 
 DolgubonSetCrafter.localizedStrings.UIStrings.invalidLevel        = "Ungültiges Level"
 DolgubonSetCrafter.localizedStrings.UIStrings.multiplier 			= "Anzahl"
 DolgubonSetCrafter.localizedStrings.UIStrings.autoCraft 			= "Automatische Herstellung"
-DolgubonSetCrafter.localizedStrings.UIStrings.craftStart 			= "Herstellung beginnen"
-DolgubonSetCrafter.localizedStrings.UIStrings.mimicStones			= "Mimensteine benutzen"
+DolgubonSetCrafter.localizedStrings.UIStrings.craftStart 			= "Herstellung Beginnen"
+DolgubonSetCrafter.localizedStrings.UIStrings.mimicStones			= "Mimenstein benutzen"
+DolgubonSetCrafter.localizedStrings.UIStrings.materialScrollTitle 	="Materialvoraussetzungen"
+DolgubonSetCrafter.localizedStrings.UIStrings.mailRequirements 		="Voraussetzungen per Mail"
+DolgubonSetCrafter.localizedStrings.UIStrings.chatRequirements 		="In Chat einfügen"
+DolgubonSetCrafter.localizedStrings.UIStrings.defaultUserId 		="@UserId eingeben"
 
-DolgubonSetCrafter.localizedStrings.SettingStrings = DolgubonSetCrafter.localizedStrings.SettingStrings or {}
+DolgubonSetCrafter.localizedStrings.SettingsStrings = DolgubonSetCrafter.localizedStrings.SettingsStrings or {}
 
 DolgubonSetCrafter.localizedStrings.SettingsStrings.nowEditing                   = "Du änderst %s Einstellungen"
 DolgubonSetCrafter.localizedStrings.SettingsStrings.accountWide                  = "Gesamtes Konto"
 DolgubonSetCrafter.localizedStrings.SettingsStrings.characterSpecific            = "Charakter spezifisch"
 
-DolgubonSetCrafter.localizedStrings.SettingStrings.showAtStation 				= "Bei Handwerkstation anzeigen"
-DolgubonSetCrafter.localizedStrings.SettingStrings.showAtStationTooltip			= "Zeigt das Set Crafter Fenster beim Öffnen einer Handwerkstation automatisch an"
-DolgubonSetCrafter.localizedStrings.SettingStrings.saveLastChoice				= "Auswahl sichern"
-DolgubonSetCrafter.localizedStrings.SettingStrings.saveLastChoiceTooltip		= "Sichert die zuletzt gewählte Auswahl"
+DolgubonSetCrafter.localizedStrings.SettingsStrings.showAtStation 				= "Bei Handwerkstation anzeigen"
+
+DolgubonSetCrafter.localizedStrings.SettingsStrings.showAtStationTooltip			= "Zeigt das Set Crafter Fenster beim Öffnen einer Handwerkstation automatisch an"
+DolgubonSetCrafter.localizedStrings.SettingsStrings.saveLastChoice				= "Auswahl sichern"
+DolgubonSetCrafter.localizedStrings.SettingsStrings.saveLastChoiceTooltip		= "Sichert die zuletzt gewählte Auswahl"
 DolgubonSetCrafter.localizedStrings.SettingsStrings.closeOnExit                  = "Schließen beim Verlassen"
 DolgubonSetCrafter.localizedStrings.SettingsStrings.closeOnExitTooltip           = "Schließt die Set Crafter Benutzeroberfläche, wenn eine Handwerksstation verlassen wird"
 DolgubonSetCrafter.localizedStrings.SettingsStrings.useCharacterSettings         = "Nutze Charakter Einstellungen"
@@ -53,6 +59,10 @@ DolgubonSetCrafter.localizedStrings.weaponNames =
 {
     "Axt", "Keule", "Schwert", "Streitaxt", "Streitkolben", "Bidenhänder", "Dolch", "Bogen", "Flammenstab", "Froststab", "Blitzstab", "Heilungsstab", "Schild"
 }
+DolgubonSetCrafter.localizedStrings.jewelryNames = 
+{
+    "Ring" , "Halskette",
+}
 DolgubonSetCrafter.localizedStrings.pieceNames = 
 {
     "Torso","Füße","Hände","Kopf","Beine","Schultern","Taille","Hemd"
@@ -64,4 +74,3 @@ DolgubonSetCrafter.localizedStrings.armourTypes =
 
 
 ZO_CreateStringId("SI_BINDING_NAME_SET_CRAFTER_OPEN", "Öffne/Schließe Set Crafter Fenster")
-DolgubonSetCrafterWindowAdd:SetDimensions(230,28)

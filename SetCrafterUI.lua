@@ -728,8 +728,9 @@ end
 function DolgubonScroll:SetupEntry(control, data)
 
 	control.data = data
-
-	control.usesMimicStone = data[1].CraftRequestTable[6]
+	if data[1].CraftRequestTable[7] ~= 7 then
+		control.usesMimicStone = data[1].CraftRequestTable[6]
+	end
 
 	for k , v in pairs (data[1]) do
 		control[k] = GetControl(control, k)
@@ -814,14 +815,23 @@ function DolgubonSetCrafter.setupLocalizedLabels()
 	DolgubonSetCrafterWindowLeftResetSelections:SetText		(langStrings.UIStrings.resetToDefault)
 	DolgubonSetCrafterWindowLeftClearQueue:SetText 			(langStrings.UIStrings.clearQueue)
 	CraftingQueueScrollLabel:SetText 						(langStrings.UIStrings.queueHeader)
+	DolgubonSetCrafterWindowLeftCraft:SetText				(langStrings.UIStrings.craftStart)
+	DolgubonSetCrafterWindowRightOutputRequirements:SetText (langStrings.UIStrings.chatRequirements)
+	DolgubonSetCrafterWindowRightMailRequirements:SetText	(langStrings.UIStrings.mailRequirements)
+	DolgubonSetCrafterWindowRightLabel:SetText 				(langStrings.UIStrings.materialScrollTitle)
+
 end
 
 
 
 function DolgubonSetCrafter.initializeWindowPosition()
 	DolgubonSetCrafterWindow:ClearAnchors()
-	
 	DolgubonSetCrafterWindow:SetAnchor(TOPLEFT,GuiRoot, TOPLEFT,DolgubonSetCrafter.savedvars.xPos, DolgubonSetCrafter.savedvars.yPos )
+	DolgubonSetCrafterToggle:ClearAnchors()
+	DolgubonSetCrafterToggle:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, DolgubonSetCrafter.savedvars.toggleXPos, DolgubonSetCrafter.savedvars.toggleYPos)
+	DolgubonSetCrafterWindow:SetDimensions(DolgubonSetCrafter.savedvars.width, DolgubonSetCrafter.savedvars.height)
+	DolgubonSetCrafter.dynamicResize(DolgubonSetCrafterWindow)
+
 end
 
 function DolgubonSetCrafter:GetMimicStoneUse()
@@ -850,17 +860,17 @@ local function LeftCenterRightAnchoring(anchorTo, LeftControl,CenterControl,  Ri
 	RightControl:SetAnchor(BOTTOMRIGHT, anchorTo, BOTTOMRIGHT)
 end
 
-local function anchorInteractionButtons(stateOfAutocraft)
-	DolgubonSetCrafterWindowLeftCraft:SetHidden(stateOfAutocraft)
+function DolgubonSetCrafter.toggleCraftButton(toggleOn)
+	DolgubonSetCrafterWindowLeftCraft:SetHidden(not toggleOn)
 	local mainControl = DolgubonSetCrafterWindowLeftInteractionButtons
-	if stateOfAutocraft then
+	if not toggleOn then
 		LeftCenterRightAnchoring(mainControl, DolgubonSetCrafterWindowLeftClearQueue, DolgubonSetCrafterWindowLeftAdd, DolgubonSetCrafterWindowLeftResetSelections )
 	else
 		FillWithTwoControls(mainControl:GetNamedChild("PositionLeft"), DolgubonSetCrafterWindowLeftClearQueue, DolgubonSetCrafterWindowLeftAdd)
 		FillWithTwoControls(mainControl:GetNamedChild("PositionRight"), DolgubonSetCrafterWindowLeftCraft, DolgubonSetCrafterWindowLeftResetSelections)
 	end
-
 end
+
 
 function DolgubonSetCrafter.setupBehaviourToggles()
 	-- Set initial to true
@@ -873,11 +883,17 @@ function DolgubonSetCrafter.setupBehaviourToggles()
 		"esoui/art/cadwell/checkboxicon_unchecked.dds", "esoui/art/cadwell/checkboxicon_checked.dds", false )
 
 	autoCraft:GetNamedChild("Label"):SetText(DolgubonSetCrafter.localizedStrings.UIStrings.autoCraft)
-	mimicStones:GetNamedChild("Label"):SetText(GetString(SI_CRAFTING_CONFIRM_USE_UNIVERSAL_STYLE_ITEM_TITLE))
+	if GetCVar("language.2") == "fr" then
+		mimicStones:GetNamedChild("Label"):SetText("Utiliser Pierre Cameleon")
+	else
+		mimicStones:GetNamedChild("Label"):SetText(GetString(SI_CRAFTING_CONFIRM_USE_UNIVERSAL_STYLE_ITEM_TITLE))
+		
+	end
 	if DolgubonSetCrafter.savedvars.saveLastChoice then
 		autoCraft:setState(DolgubonSetCrafter.savedvars["autoCraft"])
-		anchorInteractionButtons(DolgubonSetCrafter.savedvars["autoCraft"])
+		DolgubonSetCrafter.toggleCraftButton( DolgubonSetCrafter.savedvars["autoCraft"])
 		mimicStones:setState(DolgubonSetCrafter.savedvars["mimicStones"])
+	else
 	end
 
 
@@ -885,7 +901,8 @@ function DolgubonSetCrafter.setupBehaviourToggles()
 		DolgubonSetCrafter.savedvars['autoCraft'] = newState 
 		DolgubonSetCrafter.LazyCrafter:SetAllAutoCraft(newState)
 		DolgubonSetCrafter.LazyCrafter:craftInteract()
-		anchorInteractionButtons(newState)
+		if GetCraftingInteractionType() == 0 then return end
+		DolgubonSetCrafter.toggleCraftButton(not newState)
 
 	end
 
@@ -922,6 +939,7 @@ function DolgubonSetCrafter.initializeFunctions.setupUI()
 	DolgubonSetCrafterWindowComboboxes:anchoruiElements(DolgubonSetCrafterWindowInput,1 )
 	DolgubonSetCrafter.manager:RefreshData() -- Show the scroll
 	DolgubonSetCrafter.materialManager:RefreshData()
+
 	
 
 end
@@ -973,7 +991,7 @@ local function getDividerPosition(window, a)
 		--d(offsetX)
 	end
 	divider:SetAnchor(BOTTOMLEFT ,window, BOTTOMLEFT, offsetX,-3)
-	divider:SetAnchor(TOPLEFT ,window, TOPLEFT, offsetX,0)
+	divider:SetAnchor(TOPLEFT ,window, TOPLEFT, offsetX,2)
 	divider:SetDimensions(4, window:GetHeight())
 end
 
@@ -994,15 +1012,18 @@ local function SetWindowScale(window, scale)
 	DolgubonSetCrafterWindowPatternInput:ClearAnchors()
 	DolgubonSetCrafterWindowPatternInput:SetAnchor(TOPLEFT, DolgubonSetCrafterWindowOutput, BOTTOMLEFT, 0, 0)
 	DolgubonSetCrafterWindowPatternInput:SetAnchor(BOTTOMRIGHT, DolgubonSetCrafterWindowOutput, BOTTOMRIGHT, 0, newScale*110)
+	DolgubonSetCrafterWindowClose:SetScale(newScale)
+	-- Change the new minimum height as required
+	DolgubonSetCrafterWindow:SetDimensionConstraints(740, 470*(1 - (1 - newScale)/2))
 
-	--DolgubonSetCrafterWindowComboboxes.height*(1 - (1 - newScale )/2)
+	
 	
 
 end
 
 local minXBeforeResize = 995
 local minYBeforeResize = 460
-local function dynamicResize(window)
+function DolgubonSetCrafter.dynamicResize(window)
 	a = a + 1
 	-- Resize method 1
 	getDividerPosition(window, a)
@@ -1023,7 +1044,7 @@ DolgubonSetCrafter.dynamic = dynamicResize
 -- /script DolgubonSetCrafterWindow:SetWidth(800) DolgubonSetCrafter.dynamic(DolgubonSetCrafterWindow)
 function DolgubonSetCrafter.onWindowResizeStart(window)
 
-	EVENT_MANAGER:RegisterForUpdate(DolgubonSetCrafter.name.."WindowResize",10, function()dynamicResize(window) end)
+	EVENT_MANAGER:RegisterForUpdate(DolgubonSetCrafter.name.."WindowResize",10, function()DolgubonSetCrafter.dynamicResize(window) end)
 	window:BringWindowToTop()
 
 end
@@ -1031,6 +1052,8 @@ end
 function DolgubonSetCrafter.onWindowResizeStop(window)
 
 	EVENT_MANAGER:UnregisterForUpdate(DolgubonSetCrafter.name.."WindowResize")
+	DolgubonSetCrafter.savedvars.width = DolgubonSetCrafterWindow:GetWidth()
+	DolgubonSetCrafter.savedvars.height = DolgubonSetCrafterWindow:GetHeight()
 end
 
 --esoui/art/journal/gamepad/gp_journalcheck.dds

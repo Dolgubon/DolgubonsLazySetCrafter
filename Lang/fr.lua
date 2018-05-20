@@ -16,38 +16,40 @@ DolgubonSetCrafter.localizedStrings.UIStrings.level               = "Niveau"
 DolgubonSetCrafter.localizedStrings.UIStrings.CP                  = "CP"
 DolgubonSetCrafter.localizedStrings.UIStrings.armourTrait         = "Armures Trait"
 DolgubonSetCrafter.localizedStrings.UIStrings.weaponTrait         = "Armes Trait"
+DolgubonSetCrafter.localizedStrings.UIStrings.genericTrait			= "Traits"
+DolgubonSetCrafter.localizedStrings.UIStrings.jewelryTrait			= "Joaillerie Trait"
 DolgubonSetCrafter.localizedStrings.UIStrings.quality             = "Qualite"
 DolgubonSetCrafter.localizedStrings.UIStrings.gearSet             = "Ensemble"
 DolgubonSetCrafter.localizedStrings.UIStrings.addToQueue          = "Ajouter a la Liste"
 DolgubonSetCrafter.localizedStrings.UIStrings.queueHeader         = "File D'attente D'artisanat"
 DolgubonSetCrafter.localizedStrings.UIStrings.clearQueue          = "Effacer la Liste"
 DolgubonSetCrafter.localizedStrings.UIStrings.resetToDefault      = "Effacer Selections"
-DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughKnowledge  = "You do not have enough knowledge for this attribute"
-DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughMats			= "You do not have enough materials to make this attribute"
-DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughSpecificMat= "You do not have enough of this material to craft all items"
-DolgubonSetCrafter.localizedStrings.UIStrings.invalidLevel        = "Invalid Level"
-DolgubonSetCrafter.localizedStrings.UIStrings.multiplier			= "Multiplier"
-DolgubonSetCrafter.localizedStrings.UIStrings.autoCraft				= "Auto Craft"
-DolgubonSetCrafter.localizedStrings.UIStrings.mimicStones			= "Use Mimic Stones"
-DolgubonSetCrafter.localizedStrings.UIStrings.craftStart			= "Start Crafting"
-DolgubonSetCrafter.localizedStrings.UIStrings.materialScrollTitle	= "Material Requirements"
-
-DolgubonSetCrafter.localizedStrings.SettingStrings = DolgubonSetCrafter.localizedStrings.SettingStrings or {}
-
-DolgubonSetCrafter.localizedStrings.SettingsStrings.nowEditing                   = "You are changing %s settings"
-DolgubonSetCrafter.localizedStrings.SettingsStrings.accountWide                  = "Account Wide"
-DolgubonSetCrafter.localizedStrings.SettingsStrings.characterSpecific            = "Character Specific"
-
-DolgubonSetCrafter.localizedStrings.SettingStrings.showAtStation 				= "Show at Station"
-DolgubonSetCrafter.localizedStrings.SettingStrings.showAtStationTooltip			= "Always show the Set Crafter UI at crafting stations"
-DolgubonSetCrafter.localizedStrings.SettingStrings.saveLastChoice				= "Save Choices"
-DolgubonSetCrafter.localizedStrings.SettingStrings.saveLastChoiceTooltip		= "Save the last selected choices"
-DolgubonSetCrafter.localizedStrings.SettingsStrings.closeOnExit                  = "Close on Station Exit"
-DolgubonSetCrafter.localizedStrings.SettingsStrings.closeOnExitTooltip           = "Close the Set Crafter UI when exiting a crafting station"
-DolgubonSetCrafter.localizedStrings.SettingsStrings.useCharacterSettings         = "Use character settings" 
-DolgubonSetCrafter.localizedStrings.SettingsStrings.useCharacterSettingsTooltip  = "Use character specific settings on this character only"
+DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughKnowledge  = "Vous n'avez pas assez de connaissance pour fabriquer cet attribut"
+DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughMats			= "Vous n'avez pas les matériaux requis pour fabriquer cet attribut"
+DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughSpecificMat= "Vous n'avez pas assez de matériaux pour fabriquer touts les items requis"
+DolgubonSetCrafter.localizedStrings.UIStrings.invalidLevel        = "Niveau Invalide"
+DolgubonSetCrafter.localizedStrings.UIStrings.multiplier			= "Multiplicateur"
+DolgubonSetCrafter.localizedStrings.UIStrings.autoCraft				= "Fabrication Automatique"
+DolgubonSetCrafter.localizedStrings.UIStrings.mimicStones			= "Utiliser les Pierre Cameleon"
+DolgubonSetCrafter.localizedStrings.UIStrings.craftStart			= "Débuter la fabrication"
+DolgubonSetCrafter.localizedStrings.UIStrings.materialScrollTitle	= "Materiaux Requis"
 
 
+DolgubonSetCrafter.localizedStrings.SettingsStrings = DolgubonSetCrafter.localizedStrings.SettingsStrings or {}
+
+DolgubonSetCrafter.localizedStrings.SettingsStrings.nowEditing                   = "Vous modifier le réglage de %s"
+DolgubonSetCrafter.localizedStrings.SettingsStrings.accountWide                  = "Configuration Globale"
+DolgubonSetCrafter.localizedStrings.SettingsStrings.characterSpecific            = " Configuration Specifique par personnage"
+
+
+DolgubonSetCrafter.localizedStrings.SettingsStrings.showAtStation 				= "Rendre Visible aux stations"
+DolgubonSetCrafter.localizedStrings.SettingsStrings.showAtStationTooltip			= "Toujours voir le UI de Création aux stations de fabrication"
+DolgubonSetCrafter.localizedStrings.SettingsStrings.saveLastChoice				= "Sauvegarder vos choix"
+DolgubonSetCrafter.localizedStrings.SettingsStrings.saveLastChoiceTooltip		= "Sauvegarder votre dernier choix"
+DolgubonSetCrafter.localizedStrings.SettingsStrings.closeOnExit                  = "Fermer en quittant la station"
+DolgubonSetCrafter.localizedStrings.SettingsStrings.closeOnExitTooltip           = "Fermet le UI de création the en quittant une station"
+DolgubonSetCrafter.localizedStrings.SettingsStrings.useCharacterSettings         = "Utilliser les paramètres du personnage" 
+DolgubonSetCrafter.localizedStrings.SettingsStrings.useCharacterSettingsTooltip  = "Utilliser les paramètres spécifique du personnage actuel seulement"
 
 
 DolgubonSetCrafter.localizedStrings.weaponNames = 

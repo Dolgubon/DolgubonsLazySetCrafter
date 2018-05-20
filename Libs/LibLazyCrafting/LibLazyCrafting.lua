@@ -17,7 +17,7 @@ end
 
 -- Initialize libraries
 local libLoaded
-local LIB_NAME, VERSION = "LibLazyCrafting", 2.0
+local LIB_NAME, VERSION = "LibLazyCrafting", 2.1
 local LibLazyCrafting, oldminor = LibStub:NewLibrary(LIB_NAME, VERSION)
 if not LibLazyCrafting then return end
 local LLC = LibLazyCrafting
@@ -370,6 +370,7 @@ end
 LibLazyCrafting.findEarliestRequest = findEarliestRequest
 
 local function LLC_CraftAllItems(self)
+	if GetCraftingInteractionType() == 0 then return end
 	for i = 1, #craftingQueue[self.addonName] do
 		for j = 1, #craftingQueue[self.addonName][i] do
 			craftingQueue[self.addonName][i][j]["craftNow"] = true
@@ -378,6 +379,7 @@ local function LLC_CraftAllItems(self)
 end
 
 local function LLC_CraftItem(self, station, position)
+	if GetCraftingInteractionType() == 0 then return end
 	if position == nil then
 		for i = 1, #craftingQueue[self.addonName][station] do
 			craftingQueue[self.addonName][station][i]["craftNow"] = true
@@ -451,6 +453,16 @@ local function LLC_SetAllAutoCraft(self, newAutoCraftSetting)
 		for j = 1, #craftingQueue[self.addonName][i] do
 			craftingQueue[self.addonName][i][j]["autocraft"] = newAutoCraftSetting
 		end
+	end
+end
+
+local function LLC_SetAutoCraft(self, station, position)
+	if position == nil then
+		for i = 1, #craftingQueue[self.addonName][station] do
+			craftingQueue[self.addonName][station][i]["autocraft"] = true
+		end
+	else
+		craftingQueue[self.addonName][station][position]["autocraft"] = true
 	end
 end
 

@@ -153,15 +153,16 @@ end
 table.remove(DolgubonSetCrafter.setIndexes,1)
 
 table.sort(DolgubonSetCrafter.setIndexes, function(a,b) return a[2]<b[2] end)
-table.insert(DolgubonSetCrafter.setIndexes,1, {[1] = 1, [2] = "No Set"})
+table.insert(DolgubonSetCrafter.setIndexes,1, {[1] = 1, [2] = DolgubonSetCrafter.localizedStrings.UIStrings.noSet})
 
 --[[ TODO: 
-1 make the toggle button moveable
+1 make the toggle button moveable - Check
 2. make a control container for the left side of stuff - Check
-3. Add craft now button
-4. Add crown mimic stone toggle
-5. Reticle colouring
-6. Add new amount of item to the valuable reward text
+3. Add craft now button - Check
+4. Add crown mimic stone toggle - Check
+5. Reticle colouring - Check
+6. Add new amount of item to the valuable reward text - Check
 7. Resizing - Check
+8. Save Window Size - Check
 
 --]]

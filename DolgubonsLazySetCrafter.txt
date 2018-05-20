@@ -39,13 +39,13 @@ libs\LibAddonMenu-2.0\controls\slider.lua
 libs\LibAddonMenu-2.0\controls\texture.lua
 libs\LibAddonMenu-2.0\controls\divider.lua
 
-; Load the UI elements
-Templates.xml
-SetCrafterXMLUI.xml
-
 ; Localization files - Default (en) first
 Lang/en.lua
 Lang/$(language).lua
+
+; Load the UI elements
+Templates.xml
+SetCrafterXMLUI.xml
 
 ; Load all the styles, traits, qualities, etc.
 ConstantSetup.lua

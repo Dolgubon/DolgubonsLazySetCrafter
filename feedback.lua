@@ -34,21 +34,23 @@ local function initializeFeedbackWindow()
 	feedbackWindow:SetHidden(true)
 
 	feedbackWindow:SetDimensions(#amounts*150 , 150)
+	
 	local buttons = {}
 	for i = 1, #amounts do
-		if amounts[i]== 0 or GetWorldName() == destinationServer then
-			buttons[#buttons+1] =  WINDOW_MANAGER:CreateControlFromVirtual("DolgubonFeedbackButton"..i, feedbackWindow, "FeedbackButton")
-			buttons[i]:SetAnchor(BOTTOM,feedbackWindow, BOTTOMLEFT, (i-1)*150+70,-10)
-			buttons[i].amount = amounts[i]
-			buttons[i].SendNote = SendNote
-			if amounts[i] == 0 then
-				buttons[i]:SetText("Send Note")
-			elseif type(amounts[i] )=="string" then
-				buttons[i]:SetText("Send $$")
-			else
-				buttons[i]:SetText("Send "..tostring(amounts[i]).." gold")
-			end
+
+		buttons[#buttons+1] =  WINDOW_MANAGER:CreateControlFromVirtual("DolgubonFeedbackButton"..i, feedbackWindow, "FeedbackButton")
+		buttons[i]:SetAnchor(BOTTOM,feedbackWindow, BOTTOMLEFT, (i-1)*150+70,-10)
+		buttons[i].amount = amounts[i]
+		buttons[i].SendNote = SendNote
+
+		if amounts[i] == 0 then
+			buttons[i]:SetText("Send Note")
+		elseif type(amounts[i] )=="string" then
+			buttons[i]:SetText("Send $$")
+		else
+			buttons[i]:SetText("Send "..tostring(amounts[i]).." gold")
 		end
+
 	end
 end
 

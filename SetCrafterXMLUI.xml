@@ -9,17 +9,22 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 
 <GuiXml> 
 	<Controls>
-		<TopLevelControl name="DolgubonSetCrafterToggle" clampedToScreen="true" mouseEnabled="false" movable="true" hidden="false" >	
+		<TopLevelControl name="DolgubonSetCrafterToggle" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false" resizeToFitDescendents="true">	
 			<Dimensions x="75" y="75" />
-			<Anchor point="TOPRIGHT"  relativeTo="GuiRoot" relativePoint="TOPRIGHT" offsetX="50" offsetY="50"/>
+			
+			<OnMoveStop>
+
+				DolgubonSetCrafter.savedvars.toggleXPos = self:GetLeft()
+				DolgubonSetCrafter.savedvars.toggleYPos = self:GetTop()
+			</OnMoveStop>
+			<OnMouseDown>
+				DolgubonSetCrafter.close()
+			</OnMouseDown>
 			<Controls>
-				<Button name="$(parent)Button" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false"  >
+				<Button name="$(parent)Button" clampedToScreen="true" mouseEnabled="false" movable="true" hidden="false"  >
 					<Anchor point="TOPRIGHT"  relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
 					<Dimensions x="75" y="75" />
-						<Textures normal="esoui/art/icons/housing_dwe_inc_anvila001.dds"/>
-						<OnClicked>
-							DolgubonSetCrafter.close()
-						</OnClicked>
+					<Textures normal="esoui/art/icons/housing_dwe_inc_anvila001.dds"/>
 
 				</Button>
 			</Controls>
@@ -27,7 +32,7 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 
 		<TopLevelControl name="DolgubonSetCrafterWindow" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true" resizeHandleSize="10" >	
 			<Dimensions x="1050" y="650" />
-			<DimensionConstraints minX="740" minY="460" />
+			<DimensionConstraints minX="740" minY="470" />
 			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="300" offsetY="-100"/>
 			<OnResizeStart>
 				DolgubonSetCrafter.onWindowResizeStart(self)
@@ -37,6 +42,9 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 			</OnResizeStop>
 			<OnMoveStop>DolgubonSetCrafter.onWindowMove(self) </OnMoveStop>
 		    <Controls>
+		    	<Backdrop name="$(parent)Backdrop" alpha="1" inherits="ZO_DefaultBackdrop" centerColor="666666">
+		    		<AnchorFill/>
+				</Backdrop>
 		    	<Backdrop name="$(parent)Divider" edgeColor="ffffff">
 		    		<Edge edgeSize="3"/>
 					<Dimensions x="4" y="650" />
@@ -50,9 +58,7 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 						DolgubonSetCrafter.close()
 					</OnClicked>
 		    	</Button>
-		    	<Backdrop name="$(parent)Backdrop" alpha="1" inherits="ZO_DefaultBackdrop" centerColor="666666">
-		    		<AnchorFill/>
-				</Backdrop>
+		    	
 		    	<!-- This control is all of the UI elements which are contained on the left side of the divider.
 					 Note that there is extensive use of $(grandparent) in this section. I do not suggest this.
 					 However, due to a change in the XML file, I chose to use it so that the majority of names in
@@ -64,7 +70,7 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
 					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Divider" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
 					<OnInitialized>
-						self.GetName = function() return DolgubonSetCrafterWindow end
+						self.GetName = function() return DolgubonSetCrafterWindow:GetName() end
 					</OnInitialized>
 					<Controls>
 				    	<!--Setting up the window -->
@@ -315,24 +321,23 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 							</Controls>
 
 						</Control>
-						<Button name="$(parent)OutputRequirements" alpha="1" topmost="true" text="Requirements To Chat" inherits="ZO_DefaultButton" inheritAlpha="false">
-		     				<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="-115" />
-		     				<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="-80" />
+						<Button name="$(parent)MailRequirements" alpha="1" clickSound="Default_Click" topmost="true" text="Requirements To Mail" inherits="ZO_DefaultButton" inheritAlpha="false">
+		     				<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-10" />
 		      				<Dimensions x="200" y="28" />
 							<OnClicked>
-								local text = DolgubonSetCrafter.outputAllMats()
+								local text = DolgubonSetCrafter.mailAllMats()
 								--StartChatInput("Requires: "..text)
 								
 							</OnClicked>
 				    	</Button>
 				    	<Backdrop name="$(parent)Input" tier="HIGH" inherits="ZO_EditBackdrop" inheritAlpha="false">
-							<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-45" />
+							<Anchor point="BOTTOM" relativeTo="$(parent)MailRequirements" relativePoint="TOP" offsetX="0" offsetY="-5" />
 							<Dimensions x="200"/>
 							<Controls>
 								<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText">
 
 									<OnInitialized>
-										ZO_EditDefaultText_Initialize(self, "Enter @Userid")
+										ZO_EditDefaultText_Initialize(self, DolgubonSetCrafter.localizedStrings.UIStrings.defaultUserId)
 										local editControlGroup = ZO_EditControlGroup:New()
 										<<!-- 
 											--Add new recipient and new subject into an edit group and add autocomplete for the recipient name
@@ -353,46 +358,21 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 								</EditBox>
 							</Controls>
 						</Backdrop>
-
-				    	<Button name="$(parent)MailRequirements" alpha="1" clickSound="Default_Click" topmost="true" text="Requirements To Mail" inherits="ZO_DefaultButton" inheritAlpha="false">
-		     				<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-10" />
+						<Button name="$(parent)OutputRequirements" alpha="1" topmost="true" text="Requirements To Chat" inherits="ZO_DefaultButton" inheritAlpha="false">
+		     				<Anchor point="BOTTOM" relativeTo="$(parent)Input" relativePoint="TOP" offsetX="0" offsetY="-5" />
 		      				<Dimensions x="200" y="28" />
 							<OnClicked>
-								local text = DolgubonSetCrafter.mailAllMats()
+								local text = DolgubonSetCrafter.outputAllMats()
 								--StartChatInput("Requires: "..text)
 								
 							</OnClicked>
 				    	</Button>
+				    	
+
+				    	
 					</Controls>
 				</Backdrop>
 		    </Controls>
-		</TopLevelControl>
-		<TopLevelControl name="DolgubonSetCrafterConfirm" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true">	
-			<Dimensions x="300" y="200" />
-			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="-200"/>
-			<Controls>
-				<Backdrop name="$(parent)Backdrop"  alpha="1" inherits="ZO_DefaultBackdrop" centerColor="666666" >
-		    		<Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
-		    		<Dimensions x="300" y="200" />
-		    	</Backdrop>
-				<Label name="$(parent)Output" text="Level" font="ZoFontGameLargeBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
-					<Anchor point="TOP" relativePoint="TOP" relativeTo="$(parent)" offsetY="10"/>
-				</Label>
-	    		<Button name="$(parent)CraftButton" alpha="1" clickSound="Default_Click" topmost="true" text="Craft" inherits="ZO_DefaultButton">
-     				<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="-65" offsetY="-10" />
-      				<Dimensions x="100" y="28" />
-					<OnClicked>
-						DolgubonSetCrafter.craft()
-					</OnClicked>
-		    	</Button>
-	    		<Button name="$(parent)CancelButton" alpha="1" clickSound="Default_Click" topmost="true" text="Cancel" inherits="ZO_DefaultButton">
-     				<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="65" offsetY="-10" />
-      				<Dimensions x="100" y="28" />
-					<OnClicked>
-						DolgubonSetCrafterConfirm:SetHidden(true)
-					</OnClicked>
-		    	</Button>
-			</Controls>
 		</TopLevelControl>
 	</Controls>
 </GuiXml>

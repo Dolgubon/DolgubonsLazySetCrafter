@@ -32,6 +32,11 @@ DolgubonSetCrafter.localizedStrings.UIStrings.autoCraft				= "Auto Craft"
 DolgubonSetCrafter.localizedStrings.UIStrings.mimicStones			= "Use Mimic Stones"
 DolgubonSetCrafter.localizedStrings.UIStrings.craftStart			= "Start Crafting"
 DolgubonSetCrafter.localizedStrings.UIStrings.materialScrollTitle	= "Material Requirements"
+DolgubonSetCrafter.localizedStrings.UIStrings.mailRequirements      = "Mail Requirements"
+DolgubonSetCrafter.localizedStrings.UIStrings.chatRequirements      = "Requirements to Chat"
+DolgubonSetCrafter.localizedStrings.UIStrings.defaultUserId         = "Enter @UserId"
+DolgubonSetCrafter.localizedStrings.UIStrings.noSet                 = "No Set"
+DolgubonSetCrafter.localizedStrings.UIStrings.usesMimicStone        = "This item will be made using a Mimic Stone"
 
 
 DolgubonSetCrafter.localizedStrings.SettingsStrings = {}

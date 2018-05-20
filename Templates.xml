@@ -30,15 +30,15 @@
 						self:toggle()
 					</OnClicked>
 					<Controls>
-						<Label name="$(parent)Label" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Auto Craft" >
+						<Label name="$(parent)Label" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Auto Craft" mouseEnabled="true" >
 							<Anchor point="LEFT" relativeTo="$(parent)Checkbox" relativePoint="RIGHT"  />
 							<OnMouseEnter>
-								d("1")
-								d(self:GetParent():GetHandler("OnMouseEnter"))
-								self:GetParent():GetHandler("OnMouseEnter")()
+								--d("1")
+								--d(self:GetParent():GetHandler("OnMouseEnter"))
+								--self:GetParent():GetHandler("OnMouseEnter")()
 							</OnMouseEnter>
 							<OnMouseExit>
-								self:GetParent():GetHandler("OnMouseExit")()
+								--self:GetParent():GetHandler("OnMouseExit")()
 							</OnMouseExit>
 						</Label>
 					</Controls>
@@ -155,7 +155,7 @@
 
 				</Label>
 
-				<Label name="$(parent)Amount" inherits="QueueRowLabelTemplate" color="76BCC3" horizontalAlignment="RIGHT" mouseEnabled="false">
+				<Label name="$(parent)Amount" inherits="QueueRowLabelTemplate" color="76BCC3" horizontalAlignment="RIGHT" mouseEnabled="false" >
 					<Dimensions x="90" y="48" />
 					<Anchor point="RIGHT" relativeTo="$(parent)" offsetX="-5" color="000000" />
 				</Label>
@@ -173,7 +173,7 @@
 						InitializeTooltip(InformationTooltip, self, TOP, 0, 0)
 					end
 					if not added then
-						InformationTooltip:AddLine("This item will be made using a Mimic Stone")
+						InformationTooltip:AddLine(DolgubonSetCrafter.localizedStrings.UIStrings.usesMimicStone)
 						added = true
 					end
 				end

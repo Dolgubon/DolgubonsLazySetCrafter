@@ -28,6 +28,10 @@ DolgubonSetCrafter.default = {
 	["accountWideProfile"] = DolgubonSetCrafter.defaultCharacter,
 	["notifyWiped"] = true,
 	['autoCraft'] = true,
+	['toggleXPos'] = 50,
+	['toggleYPost'] = 50,
+	['width'] = 1050,
+	['height'] = 650,
 }
 
 
@@ -110,7 +114,7 @@ local function closeWindow (optionalOverride)
 	if optionalOverride==nil then optionalOverride = not DolgubonSetCrafterWindow:IsHidden() end
 	DolgubonSetCrafterWindow:SetHidden(optionalOverride) 
 	CraftingQueueScroll:SetHidden(optionalOverride)
-	DolgubonSetCrafterConfirm:SetHidden(true)
+
 end
 
 DolgubonSetCrafter.close = closeWindow
@@ -128,7 +132,10 @@ end
 
 EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name, EVENT_CRAFTING_STATION_INTERACT, 
 	function(event, station) 
-		if station <3 or station >5 then 
+		if station <3 or station >5 then
+			if not DolgubonSetCrafter:GetAutocraft() then
+				DolgubonSetCrafter.toggleCraftButton(true)
+			end
 			if DolgubonSetCrafter:GetSettings().OpenAtCraftStation then 
 				closeWindow(false) 
 			else
@@ -140,6 +147,7 @@ EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name, EVENT_CRAFTING_STATION_I
 EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name, EVENT_END_CRAFTING_STATION_INTERACT, 
 	function(event, station) 
 		if (station <3 or station >5) then
+			DolgubonSetCrafter.toggleCraftButton(false)
 			if DolgubonSetCrafter:GetSettings().closeOnExit then closeWindow(true) 
 			end 
 			if not DolgubonSetCrafter:GetSettings().showToggle then
