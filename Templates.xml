@@ -88,9 +88,16 @@
 				local original = self.SetColor
 				self.ApplyColour = function(self, isKnown)
 					if isKnown then
-						original(self,0.4627451300621,0.73725491762161,0.76470595598221)
+						if self:GetParent().usesMimicStone then
+							original(self, 1, 1, 0.4)
+						else
+							original(self,0.46,0.73,0.76)
+						end
 					elseif isKnown==nil then
-						self.SetColor = original return
+
+						self.SetColor = function(...) if self:GetParent().usesMimicStone then
+							original(self, 1, 1, 0.4)
+						else original(...) end end return
 					else
 						original(self,1,0.75,0.75,0.75)
 					end
@@ -104,8 +111,12 @@
 				if self.isKnown == false then
 					InitializeTooltip(InformationTooltip, self, TOP, 0, 0)
 					SetTooltipText(InformationTooltip, self:GetParent().errorTooltip)
+					self:GetParent():GetHandler("OnMouseEnter")(self:GetParent(), true)
+					return
 				end
-				DolgubonSetCrafter.scroll:Row_OnMouseEnter(self:GetParent())
+
+				self:GetParent():GetHandler("OnMouseEnter")(self:GetParent(), false)
+				--DolgubonSetCrafter.scroll:Row_OnMouseEnter(self:GetParent())
 			</OnMouseEnter>
 			<OnMouseExit>
 				ClearTooltip(InformationTooltip)
@@ -155,10 +166,21 @@
 		<Button name="CraftingRequestTemplate" virtual="true" mouseEnabled="true" >
 			<OnMouseEnter>
 				DolgubonSetCrafter.scroll:Row_OnMouseEnter(self)
+				local added = false
+				local parameters = {...}
+				if self.usesMimicStone then
+					if not parameters[2] then
+						InitializeTooltip(InformationTooltip, self, TOP, 0, 0)
+					end
+					if not added then
+						InformationTooltip:AddLine("This item will be made using a Mimic Stone")
+						added = true
+					end
+				end
 			</OnMouseEnter>
 
 			<OnMouseExit>
-
+				ClearTooltip(ItemTooltip)
 				DolgubonSetCrafter.scroll:Row_OnMouseExit(self)
 			</OnMouseExit>
 			<OnClicked>

@@ -728,6 +728,9 @@ end
 function DolgubonScroll:SetupEntry(control, data)
 
 	control.data = data
+
+	control.usesMimicStone = data[1].CraftRequestTable[6]
+
 	for k , v in pairs (data[1]) do
 		control[k] = GetControl(control, k)
 
@@ -848,9 +851,9 @@ local function LeftCenterRightAnchoring(anchorTo, LeftControl,CenterControl,  Ri
 end
 
 local function anchorInteractionButtons(stateOfAutocraft)
-	DolgubonSetCrafterWindowLeftCraft:SetHidden(not stateOfAutocraft)
+	DolgubonSetCrafterWindowLeftCraft:SetHidden(stateOfAutocraft)
 	local mainControl = DolgubonSetCrafterWindowLeftInteractionButtons
-	if not stateOfAutocraft then
+	if stateOfAutocraft then
 		LeftCenterRightAnchoring(mainControl, DolgubonSetCrafterWindowLeftClearQueue, DolgubonSetCrafterWindowLeftAdd, DolgubonSetCrafterWindowLeftResetSelections )
 	else
 		FillWithTwoControls(mainControl:GetNamedChild("PositionLeft"), DolgubonSetCrafterWindowLeftClearQueue, DolgubonSetCrafterWindowLeftAdd)
@@ -867,7 +870,7 @@ function DolgubonSetCrafter.setupBehaviourToggles()
 	DolgubonSetCrafter.createToggle(autoCraft,"esoui/art/cadwell/checkboxicon_checked.dds",	"esoui/art/cadwell/checkboxicon_unchecked.dds", 
 		"esoui/art/cadwell/checkboxicon_unchecked.dds", "esoui/art/cadwell/checkboxicon_checked.dds", true )
 	DolgubonSetCrafter.createToggle(mimicStones,"esoui/art/cadwell/checkboxicon_checked.dds", "esoui/art/cadwell/checkboxicon_unchecked.dds", 
-		"esoui/art/cadwell/checkboxicon_unchecked.dds", "esoui/art/cadwell/checkboxicon_checked.dds", true )
+		"esoui/art/cadwell/checkboxicon_unchecked.dds", "esoui/art/cadwell/checkboxicon_checked.dds", false )
 
 	autoCraft:GetNamedChild("Label"):SetText(DolgubonSetCrafter.localizedStrings.UIStrings.autoCraft)
 	mimicStones:GetNamedChild("Label"):SetText(GetString(SI_CRAFTING_CONFIRM_USE_UNIVERSAL_STYLE_ITEM_TITLE))

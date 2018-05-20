@@ -179,7 +179,8 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 				    				<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)PositionRight" relativePoint="BOTTOM"/>
 				      				<Dimensions x="200" y="28" />
 									<OnClicked>
-										d("HEY")
+										DolgubonSetCrafter.LazyCrafter:CraftAllItems()
+										DolgubonSetCrafter.LazyCrafter:craftInteract()
 										--DolgubonSetCrafter.craft()
 									</OnClicked>
 						    	</Button>
