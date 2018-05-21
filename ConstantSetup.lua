@@ -166,3 +166,14 @@ table.insert(DolgubonSetCrafter.setIndexes,1, {[1] = 1, [2] = DolgubonSetCrafter
 8. Save Window Size - Check
 
 --]]
+
+ ZO_PreHook(QuickslotActionButton, "HandleRelease", function(...)
+ 	local slot = GetCurrentQuickslot()
+ 	local link = GetSlotItemLink(slot)
+ 	if link == "|H0:collectible:267|h|h" then
+ 		-- Do Banker stuff
+ 		return true
+ 	else
+ 		return false
+ 	end
+ 	end)

@@ -35,6 +35,7 @@ DolgubonSetCrafter.localizedStrings.UIStrings.materialScrollTitle 	="Materialvor
 DolgubonSetCrafter.localizedStrings.UIStrings.mailRequirements 		="Voraussetzungen per Mail"
 DolgubonSetCrafter.localizedStrings.UIStrings.chatRequirements 		="In Chat einfügen"
 DolgubonSetCrafter.localizedStrings.UIStrings.defaultUserId 		="@UserId eingeben"
+DolgubonSetCrafter.localizedStrings.UIStrings.usesMimicStone		= "Ihr benötigt einen Kronen-Mimenstein um diesen Gegenstand herstellen zu können"
 
 DolgubonSetCrafter.localizedStrings.SettingsStrings = DolgubonSetCrafter.localizedStrings.SettingsStrings or {}
 

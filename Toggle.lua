@@ -15,7 +15,13 @@ function DolgubonSetCrafter.createToggle(control, onTexture, offTexture, onOverT
 	control.offOverTexture = offOverTexture or nil
 
 	-- Set the initial texture; this can be done in the xml, but a bit of redundancy doesn't hurt
-	if control.toggleValue then control:SetNormalTexture(onTexture) else control:SetNormalTexture(offTexture) end
+	if control.toggleValue then 
+		control:SetNormalTexture(onTexture) 
+		if onOverTexture then control:SetMouseOverTexture(onOverTexture) end
+	else 
+		if offOverTexture then control:SetMouseOverTexture(offOverTexture) end
+		control:SetNormalTexture(offTexture) 
+	end
 
 	-- Toggle to a set value
 	-- Changes the textures and mouse over texture if needed

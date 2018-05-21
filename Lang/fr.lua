@@ -64,6 +64,10 @@ DolgubonSetCrafter.localizedStrings.armourTypes =
 {
     "Lourde", "Moyenne", "Legere"
 }
+DolgubonSetCrafter.localizedStrings.jewelryNames = 
+{
+    "Anneau" , "Collier",
+}
 
 
 ZO_CreateStringId("SI_BINDING_NAME_SET_CRAFTER_OPEN", "Ouvrir/Fermer le Crafter Set")
