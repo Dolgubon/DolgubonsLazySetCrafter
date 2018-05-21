@@ -45,9 +45,9 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 		    	<Backdrop name="$(parent)Backdrop" alpha="1" inherits="ZO_DefaultBackdrop" centerColor="666666">
 		    		<AnchorFill/>
 				</Backdrop>
-		    	<Backdrop name="$(parent)Divider" edgeColor="ffffff">
-		    		<Edge edgeSize="3"/>
-					<Dimensions x="4" y="650" />
+		    	<Backdrop name="$(parent)Divider" edgeColor="696969">
+		    		<Edge edgeSize="2"/>
+					<Dimensions x="3" y="650" />
 					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="-3" offsetX="275" />
 				</Backdrop>
 				<Button name="$(parent)Close" alpha="1" clickSound="Default_Click" topmost="true">

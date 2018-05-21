@@ -30,30 +30,20 @@ end
 
 DolgubonSetCrafter.armourTraits[#DolgubonSetCrafter.armourTraits + 1] = {[1] = ITEM_TRAIT_TYPE_ARMOR_NIRNHONED + 1, [2] = GetString(SI_ITEMTRAITTYPE26)} -- Nirnhoned
 DolgubonSetCrafter.weaponTraits[#DolgubonSetCrafter.weaponTraits + 1] = {[1] = ITEM_TRAIT_TYPE_WEAPON_NIRNHONED + 1, [2] = GetString(SI_ITEMTRAITTYPE25)}  -- Nirnhoned
-if GetAPIVersion() > 100022 then
-	DolgubonSetCrafter.jewelryTraits = 
-	{
-		{ITEM_TRAIT_TYPE_NONE + 1 , GetString( SI_ITEMTRAITTYPE0 )},
-		{ITEM_TRAIT_TYPE_JEWELRY_ARCANE + 1 , GetString(SI_ITEMTRAITTYPE22)},
-		{ITEM_TRAIT_TYPE_JEWELRY_HEALTHY + 1 , GetString(SI_ITEMTRAITTYPE23)},
-		{ITEM_TRAIT_TYPE_JEWELRY_ROBUST + 1 , GetString(SI_ITEMTRAITTYPE21)},
-		{ITEM_TRAIT_TYPE_JEWELRY_SWIFT + 1 , GetString(SI_ITEMTRAITTYPE28)},
-		{ITEM_TRAIT_TYPE_JEWELRY_BLOODTHIRSTY + 1 , GetString(SI_ITEMTRAITTYPE31)},
-		{ITEM_TRAIT_TYPE_JEWELRY_HARMONY + 1 , GetString(SI_ITEMTRAITTYPE29)},
-		{ITEM_TRAIT_TYPE_JEWELRY_INFUSED + 1 , GetString(SI_ITEMTRAITTYPE33)},
-		{ITEM_TRAIT_TYPE_JEWELRY_PROTECTIVE + 1 , GetString(SI_ITEMTRAITTYPE32)},
-		{ITEM_TRAIT_TYPE_JEWELRY_TRIUNE + 1 , GetString(SI_ITEMTRAITTYPE30)},
-	}
-else
-	DolgubonSetCrafter.jewelryTraits = 
-	{
-		{ITEM_TRAIT_TYPE_NONE + 1 , GetString( SI_ITEMTRAITTYPE0 )},
-		{ITEM_TRAIT_TYPE_JEWELRY_ARCANE + 1 , GetString(SI_ITEMTRAITTYPE22)},
-		{ITEM_TRAIT_TYPE_JEWELRY_HEALTHY + 1 , GetString(SI_ITEMTRAITTYPE23)},
-		{ITEM_TRAIT_TYPE_JEWELRY_ROBUST + 1 , GetString(SI_ITEMTRAITTYPE21)},
-	}
-end
 
+DolgubonSetCrafter.jewelryTraits = 
+{
+	{ITEM_TRAIT_TYPE_NONE + 1 , GetString( SI_ITEMTRAITTYPE0 )},
+	{ITEM_TRAIT_TYPE_JEWELRY_ARCANE + 1 , GetString(SI_ITEMTRAITTYPE22)},
+	{ITEM_TRAIT_TYPE_JEWELRY_HEALTHY + 1 , GetString(SI_ITEMTRAITTYPE23)},
+	{ITEM_TRAIT_TYPE_JEWELRY_ROBUST + 1 , GetString(SI_ITEMTRAITTYPE21)},
+	{ITEM_TRAIT_TYPE_JEWELRY_SWIFT + 1 , GetString(SI_ITEMTRAITTYPE28)},
+	{ITEM_TRAIT_TYPE_JEWELRY_BLOODTHIRSTY + 1 , GetString(SI_ITEMTRAITTYPE31)},
+	{ITEM_TRAIT_TYPE_JEWELRY_HARMONY + 1 , GetString(SI_ITEMTRAITTYPE29)},
+	{ITEM_TRAIT_TYPE_JEWELRY_INFUSED + 1 , GetString(SI_ITEMTRAITTYPE33)},
+	{ITEM_TRAIT_TYPE_JEWELRY_PROTECTIVE + 1 , GetString(SI_ITEMTRAITTYPE32)},
+	{ITEM_TRAIT_TYPE_JEWELRY_TRIUNE + 1 , GetString(SI_ITEMTRAITTYPE30)},
+}
 
 
 --------------------------------------
@@ -68,7 +58,7 @@ for i = 1, GetNumValidItemStyles() do
 	local styleItemIndex = GetValidItemStyleId(i)
 	local  styleName = GetItemStyleName(styleItemIndex)
 	local styleItem = GetSmithingStyleItemInfo(styleItemIndex)
-	if styleItemIndex ~= 33 then
+	if styleItemIndex ~= 36 then
 		table.insert(styles,{styleItemIndex,styleName, styleItem, GetItemStyleMaterialLink(styleItemIndex, 0 )})
 	end
 
