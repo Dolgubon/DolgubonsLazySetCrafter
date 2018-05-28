@@ -54,7 +54,7 @@ DolgubonSetCrafter.localizedStrings.SettingsStrings.closeOnExit                 
 DolgubonSetCrafter.localizedStrings.SettingsStrings.closeOnExitTooltip           = "Close the Set Crafter UI when exiting a crafting station"
 DolgubonSetCrafter.localizedStrings.SettingsStrings.useCharacterSettings         = "Use character settings" 
 DolgubonSetCrafter.localizedStrings.SettingsStrings.useCharacterSettingsTooltip  = "Use character specific settings on this character only"
-DolgubonSetCrafter.localizedStrings.SettingsStrings.showToggleButton              = "Show toggle button"
+DolgubonSetCrafter.localizedStrings.SettingsStrings.showToggleButton              = "Always show toggle button"
 DolgubonSetCrafter.localizedStrings.SettingsStrings.showToggleButtonTooltip       = "Show the UI toggle button at all times"
 
 

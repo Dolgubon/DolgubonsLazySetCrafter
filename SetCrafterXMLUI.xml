@@ -280,7 +280,7 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 												--DolgubonSetCrafterWindowInputBox = self
 											</OnInitialized>
 											<OnTextChanged>
-												DolgubonSetCrafter.savedvars["level"] = self:GetText()
+												DolgubonSetCrafter.savedvars["multiplier"] = self:GetText()
 											</OnTextChanged>
 										</EditBox>
 									</Controls>
@@ -299,7 +299,7 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="5" />
 					<Anchor point="TOPLEFT" relativeTo="$(parent)Divider" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
 					<OnInitialized>
-						self.GetName = function() return DolgubonSetCrafterWindow end
+						self.GetName = function() return DolgubonSetCrafterWindow:GetName() end
 					</OnInitialized>
 					<Controls>
 						<Label name="$(parent)Label" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Material Requirements" inheritAlpha="false">
@@ -337,9 +337,10 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 								<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText">
 
 									<OnInitialized>
+										--DolgubonSetCrafterWindowRightInputBox:SetText( DolgubonSetCrafter.localizedStrings.UIStrings.defaultUserId)
 										ZO_EditDefaultText_Initialize(self, DolgubonSetCrafter.localizedStrings.UIStrings.defaultUserId)
 										local editControlGroup = ZO_EditControlGroup:New()
-										<<!-- 
+										<!-- 
 											--Add new recipient and new subject into an edit group and add autocomplete for the recipient name
 									        local editControlGroup = ZO_EditControlGroup:New()
 									        MailBuddy.autoCompleteRecipient = ZO_AutoComplete:New(MailBuddy_MailSendRecipientsBoxEditNewRecipient, { AUTO_COMPLETE_FLAG_ALL }, nil, AUTO_COMPLETION_ONLINE_OR_OFFLINE, MAX_AUTO_COMPLETION_RESULTS)
@@ -348,10 +349,12 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 									        editControlGroup:AddEditControl(MailBuddy_MailSendSubjectsBoxEditNewSubject, nil)-->
 									</OnInitialized>
 									<OnTextChanged>
-										if self:GetText() == "" then
-											DolgubonSetCrafterWindowMaterialListInputBoxText:SetText("Enter Name")
+										if self:GetText() ~= "" then
+										ZO_EditDefaultText_Initialize(self, "")
+											--DolgubonSetCrafterWindowRightInputBox:SetText( DolgubonSetCrafter.localizedStrings.UIStrings.defaultUserId)
 										else
-											DolgubonSetCrafterWindowMaterialListInputBoxText:SetText("")
+											--DolgubonSetCrafterWindowRightInputBox:SetText("")
+											ZO_EditDefaultText_Initialize(self, DolgubonSetCrafter.localizedStrings.UIStrings.defaultUserId)
 										end
 										
 									</OnTextChanged>

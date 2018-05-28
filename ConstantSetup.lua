@@ -154,16 +154,5 @@ table.insert(DolgubonSetCrafter.setIndexes,1, {[1] = 1, [2] = DolgubonSetCrafter
 6. Add new amount of item to the valuable reward text - Check
 7. Resizing - Check
 8. Save Window Size - Check
-
---]]
-
- ZO_PreHook(QuickslotActionButton, "HandleRelease", function(...)
- 	local slot = GetCurrentQuickslot()
- 	local link = GetSlotItemLink(slot)
- 	if link == "|H0:collectible:267|h|h" then
- 		-- Do Banker stuff
- 		return true
- 	else
- 		return false
- 	end
- 	end)
+--WTS |H1:item:139405:30:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h(Swift) |H1:item:139407:30:1:0:0:0:0:0:0:0:0:0:0:0:0:0:1:0:0:0:0|h|h(Bloodthirsty) , WTB |H1:item:139411:30:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h PST
+ --]]

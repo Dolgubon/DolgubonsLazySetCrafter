@@ -92,7 +92,9 @@ local function setupPatternButtonFunctions(patternButtons)
 		patternButtons[i].TraitsToUse = function()return DolgubonSetCrafter.ComboBox.Armour end
 		patternButtons[i].HaveWeights = function() return true end
 		patternButtons[i].GetPattern = function(self, weightOverride)
+
 			local weight = weightOverride or DolgubonSetCrafter:GetWeight() 
+
 			if weight ~=3 and i == 8 then return 0 end
 			
 			if weight == 1 then
@@ -102,7 +104,7 @@ local function setupPatternButtonFunctions(patternButtons)
 			else
 				if i == 8 then return 2 end
 				if i == 1 then return 1 end
-				return i - 1
+				return i + 1
 			end
 
 		end
@@ -502,6 +504,9 @@ function DolgubonSetCrafter.setupLevelSelector()
 	if DolgubonSetCrafter.savedvars["level"] and DolgubonSetCrafter.savedvars.saveLastChoice then 
 		DolgubonSetCrafterWindowInputInputBox:SetText(DolgubonSetCrafter.savedvars["level"])
 	end 
+	if DolgubonSetCrafter.savedvars["multiplier"] and DolgubonSetCrafter.savedvars.saveLastChoice then
+		DolgubonSetCrafterWindowMultiplierInputInputBox:SetText(DolgubonSetCrafter.savedvars["multiplier"])
+	end
 	DolgubonSetCrafterWindowComboboxes:adduiElement(DolgubonSetCrafterWindowInput,1 )
 	DolgubonSetCrafterWindowComboboxes:adduiElement(DolgubonSetCrafterWindowMultiplierInput, 2)
 
@@ -666,7 +671,7 @@ function DolgubonSetCrafter.outputAllMats()
 end
 
 local function MailNextLine(eventCode)
-	local receiver = DolgubonSetCrafterWindowMaterialListInputBox:GetText()
+	local receiver = DolgubonSetCrafterWindowRightInputBox:GetText()
 	local subject = mailOutputTexts[#mailOutputTexts][2]
 	local body = mailOutputTexts[#mailOutputTexts][1]
 
@@ -688,7 +693,7 @@ function DolgubonSetCrafter.mailAllMats()
 	for k, v in pairs(DolgubonSetCrafter.materialList) do
 		tempMatHolder[#tempMatHolder + 1] = v
 	end
-	if #tempMatHolder == 0 then return end
+	if #tempMatHolder == 0 then d("No items required") return end
 	table.sort(tempMatHolder, function(a, b) return a["Amount"]>b["Amount"]end)
 	
 	mailOutputTexts  = {}
@@ -705,7 +710,7 @@ function DolgubonSetCrafter.mailAllMats()
 		text =text.. tostring(tempMatHolder[i]["Amount"]).." "..tempMatHolder[i]["Name"].."\n"
 	end
 	mailOutputTexts[#mailOutputTexts + 1] = {text, "Material Requirements ".. (#mailOutputTexts + 1)}
-	local receiver = DolgubonSetCrafterWindowMaterialListInputBox:GetText()
+	local receiver = DolgubonSetCrafterWindowRightInputBox:GetText()
 	if #receiver < 3 then 
 		out("Invalid name")
 		return 
@@ -891,7 +896,7 @@ function DolgubonSetCrafter.setupBehaviourToggles()
 	end
 	if DolgubonSetCrafter.savedvars.saveLastChoice then
 		autoCraft:setState(DolgubonSetCrafter.savedvars["autoCraft"])
-		DolgubonSetCrafter.toggleCraftButton( DolgubonSetCrafter.savedvars["autoCraft"])
+		DolgubonSetCrafter.toggleCraftButton( false)
 		mimicStones:setState(DolgubonSetCrafter.savedvars["mimicStones"])
 	else
 	end
@@ -939,8 +944,8 @@ function DolgubonSetCrafter.initializeFunctions.setupUI()
 	DolgubonSetCrafterWindowComboboxes:anchoruiElements(DolgubonSetCrafterWindowInput,1 )
 	DolgubonSetCrafter.manager:RefreshData() -- Show the scroll
 	DolgubonSetCrafter.materialManager:RefreshData()
-
-	
+	local includeFlags = { AUTO_COMPLETE_FLAG_ALL}
+	ZO_AutoComplete:New(DolgubonSetCrafterWindowRightInputBox, includeFlags, {}, AUTO_COMPLETION_ONLINE_OR_OFFLINE, 5)
 
 end
 

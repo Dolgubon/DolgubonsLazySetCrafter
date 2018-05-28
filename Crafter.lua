@@ -323,7 +323,7 @@ local function addPatternToQueue(patternButton,i)
 	requestTable["Station"] = station
 
 	-- Pattern
-	pattern = patternButton:GetPattern()
+	pattern = patternButton:GetPattern(requestTable["Weight"][1])
 	requestTable["Pattern"] = {pattern,patternButton.tooltip}
 
 	-- Traits
@@ -377,6 +377,7 @@ local function addPatternToQueue(patternButton,i)
 	-- double checking one final time
 	if pattern and isCP ~= nil and requestTable["Level"][1] and (styleIndex or station == 7) and trait and station and setIndex and quality then
 		local craftMultiplier = DolgubonSetCrafter:GetMultiplier()
+		craftMultiplier = math.max(math.floor(craftMultiplier), 1) -- Make it an integer, also make it minimum of 1
 		for i = 1, craftMultiplier do
 			-- First, create a deep(er) copy. Tables only go down one deep so that's max depth we need to copy
 			local requestTableCopy = oneDeepCopy(requestTable)
