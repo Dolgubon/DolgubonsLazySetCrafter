@@ -59,6 +59,9 @@ SetCrafterUI.lua
 ; This file handles all the LLC crafting interaction
 Crafter.lua
 
+; This file handles mailing set requests
+Mail.lua
+
 ; Main file. Final setups, also the addon initialization function
 SetCrafter.lua
 
