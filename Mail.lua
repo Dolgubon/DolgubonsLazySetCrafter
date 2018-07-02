@@ -55,7 +55,7 @@ function DolgubonSetCrafter.ConvertRequest(curReq)
   local trait = curReq["Trait"] and curReq["Trait"][2] or "N/A"
   local quality = curReq["Quality"] and curReq["Quality"][2] or "N/A"
 
-  return pattern.." | "..level.." | "..style.." | "..trait.." | "..quality
+  return pattern.." || "..level.." || "..style.." || "..trait.." || "..quality
 end
 
 -- Reads mail. If it contain the right format, give a button to import it.
