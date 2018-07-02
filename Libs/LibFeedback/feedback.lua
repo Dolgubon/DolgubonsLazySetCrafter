@@ -45,7 +45,7 @@ local function createShowFeedbackWindow(owningWindow)
 end
 
 local function createFeedbackWindow(owningWindow)
-	local feedbackWindow = WINDOW_MANAGER:CreateControl(owningWindow:GetName().."FeedbackWindow", owningWindow, CT_CONTROL)
+	local feedbackWindow = WINDOW_MANAGER:CreateTopLevelWindow(owningWindow:GetName().."FeedbackWindow")
 	local c = feedbackWindow
 	c:SetDimensions(545, 150)
 	c:SetMouseEnabled(true)
@@ -85,7 +85,9 @@ function LibFeedback:initializeFeedbackWindow(parentAddonNameSpace, parentAddonN
 	feedbackWindow.mailDestination = mailDestination
 	feedbackWindow.parentAddonName = parentAddonName
 
-	feedbackWindow:SetAnchor(TOPRIGHT,owningWindow, TOPLEFT, -40,0)
+	ZO_PreHook(parentControl, "SetHidden", function(self, hidden) feedbackWindow:SetHidden(true) end )
+
+	feedbackWindow:SetAnchor(TOPRIGHT,parentControl, TOPLEFT, -40,0)
 	feedbackWindow:SetHidden(true)
 
 	feedbackWindow:SetDimensions(#buttonInfo*150 , 150)
