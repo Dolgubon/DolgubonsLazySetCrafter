@@ -34,15 +34,15 @@ DolgubonSetCrafter.weaponTraits[#DolgubonSetCrafter.weaponTraits + 1] = {[1] = I
 DolgubonSetCrafter.jewelryTraits = 
 {
 	{ITEM_TRAIT_TYPE_NONE + 1 , GetString( SI_ITEMTRAITTYPE0 )},
+	{ITEM_TRAIT_TYPE_JEWELRY_HEALTHY + 1 , GetString(SI_ITEMTRAITTYPE21)},
 	{ITEM_TRAIT_TYPE_JEWELRY_ARCANE + 1 , GetString(SI_ITEMTRAITTYPE22)},
-	{ITEM_TRAIT_TYPE_JEWELRY_HEALTHY + 1 , GetString(SI_ITEMTRAITTYPE23)},
-	{ITEM_TRAIT_TYPE_JEWELRY_ROBUST + 1 , GetString(SI_ITEMTRAITTYPE21)},
+	{ITEM_TRAIT_TYPE_JEWELRY_ROBUST + 1 ,  GetString(SI_ITEMTRAITTYPE23)},
 	{ITEM_TRAIT_TYPE_JEWELRY_SWIFT + 1 , GetString(SI_ITEMTRAITTYPE28)},
-	{ITEM_TRAIT_TYPE_JEWELRY_BLOODTHIRSTY + 1 , GetString(SI_ITEMTRAITTYPE31)},
 	{ITEM_TRAIT_TYPE_JEWELRY_HARMONY + 1 , GetString(SI_ITEMTRAITTYPE29)},
-	{ITEM_TRAIT_TYPE_JEWELRY_INFUSED + 1 , GetString(SI_ITEMTRAITTYPE33)},
-	{ITEM_TRAIT_TYPE_JEWELRY_PROTECTIVE + 1 , GetString(SI_ITEMTRAITTYPE32)},
 	{ITEM_TRAIT_TYPE_JEWELRY_TRIUNE + 1 , GetString(SI_ITEMTRAITTYPE30)},
+	{ITEM_TRAIT_TYPE_JEWELRY_BLOODTHIRSTY + 1 , GetString(SI_ITEMTRAITTYPE31)},
+	{ITEM_TRAIT_TYPE_JEWELRY_PROTECTIVE + 1 , GetString(SI_ITEMTRAITTYPE32)},
+	{ITEM_TRAIT_TYPE_JEWELRY_INFUSED + 1 , GetString(SI_ITEMTRAITTYPE33)},	
 }
 
 
@@ -154,5 +154,8 @@ table.insert(DolgubonSetCrafter.setIndexes,1, {[1] = 1, [2] = DolgubonSetCrafter
 6. Add new amount of item to the valuable reward text - Check
 7. Resizing - Check
 8. Save Window Size - Check
+9. Add pricing - Check
+10. Look into requirements weirdness - Fixed I think?
+11. Send Queue button (even if hidden)
 --WTS |H1:item:139405:30:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h(Swift) |H1:item:139407:30:1:0:0:0:0:0:0:0:0:0:0:0:0:0:1:0:0:0:0|h|h(Bloodthirsty) , WTB |H1:item:139411:30:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h PST
  --]]

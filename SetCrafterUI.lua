@@ -537,10 +537,41 @@ function DolgubonScroll:New(control)
 	return self
 	
 end
+--TamrielTradeCentrePrice:GetPriceInfo
 
+local function getPrice(itemLink)
+	if MasterMerchant then
+		local itemID = tonumber(string.match(itemLink, '|H.-:item:(.-):'))
+		local itemIndex = MasterMerchant.makeIndexFromLink(itemLink)
+		local price = MasterMerchant:toolTipStats(itemID, itemIndex, true, nil, false)['avgPrice']
+		if price then
+			return price
+		else
+			return GetItemLinkValue(itemLink)
+		end 
+	else
+		return GetItemLinkValue(itemLink)
+	end
+end
+
+local function round(price)
+	price = math.floor( price * 100 + 0.5)
+	price = price/100
+	return price
+end
+
+local function updateCost()
+	local cost = 0
+	for k, v in pairs(DolgubonSetCrafter.materialList) do
+		local link = v["Name"]
+		local price = round(getPrice(link))
+
+		cost = cost + price * v["Amount"]
+	end 
+	DolgubonSetCrafterWindowRightCost:SetText("Total Cost: "..cost.." |t20:20:esoui/art/currency/currency_gold_64.dds|t")
+end
 -- Create the scroll list for the materials
 function MaterialScroll:New(control)
-
 	ZO_SortFilterList.InitializeSortFilterList(self, control)
 	
 	local SorterKeys =
@@ -558,6 +589,15 @@ function MaterialScroll:New(control)
 	self.currentSortOrder = ZO_SORT_ORDER_DOWN
  	self.sortFunction = function(listEntry1, listEntry2) return ZO_TableOrderingFunction(listEntry1.data[1], listEntry2.data[1], "Amount", SorterKeys, self.currentSortOrder) end
 	self.data = DolgubonSetCrafter.materialList
+
+	local originalRefresh = self.RefreshData
+	self.RefreshData = function(...)
+		
+		originalRefresh(...)
+		updateCost()
+	end
+
+
 	return self
 	
 end
@@ -575,7 +615,7 @@ local function formatAmountEntry(self, amountRequired, current)
 	end
 	self:SetText(text)
 	local width = self:GetTextWidth()
-	self:SetWidth(width + 5)
+	
 end
 
 function MaterialScroll:SetupEntry(control, data)
@@ -914,9 +954,6 @@ function DolgubonSetCrafter.setupBehaviourToggles()
 	mimicStones.onToggle = function(self, newState) 
 		DolgubonSetCrafter.savedvars['mimicStones'] = newState 
 	end
-
-	
-
 end
 
 -- UI setup directing function

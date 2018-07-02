@@ -502,6 +502,9 @@ local function LLC_CraftSmithingItem(self, patternIndex, materialIndex, material
 	if reference == nil then reference = "" end
 	if not self then d("Please call with colon notation") end
 	if autocraft==nil then autocraft = self.autocraft end
+	if setIndex == nil then setIndex = 1 end
+	if quality == nil then quality = 1 end
+	
 	local station
 	if type(self) == "number" then
 		d("LLC: Please call using colon notation: e.g LLC:CraftSmithingItem(). If you are seeing this and you are not a developer please contact the author of the addon")

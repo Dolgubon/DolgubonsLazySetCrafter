@@ -4,10 +4,10 @@
 ; States and/or other countries. All rights reserved.
 ; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
 
-## Title: Dolgubon's Lazy Set Crafter v2.0.2
+## Title: Dolgubon's Lazy Set Crafter v2.0.4
 ## APIVersion: 100023
 ## Author: Dolgubon
-## Version: 2.0.2
+## Version: 2.0.4
 ## SavedVariables: dolgubonslazysetcraftersavedvars
 ; This optional depends on is so that in debugging you can use d before chat is loaded.
 ## OptionalDependsOn: pChat 
@@ -61,7 +61,6 @@ Crafter.lua
 
 ; This file handles mailing set requests
 Mail.lua
-
 ; Main file. Final setups, also the addon initialization function
 SetCrafter.lua
 

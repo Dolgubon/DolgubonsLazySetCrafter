@@ -306,10 +306,13 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="10" />
 							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="10" />
 						</Label>
+						<Label name="$(parent)Cost" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Total Cost:" inheritAlpha="false">
+							<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Label" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="20" />
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Label" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="20" />
+						</Label>
 						<Control name="$(grandparent)MaterialList" alpha="1"  mouseEnabled="false" inheritAlpha="false">
-							<Anchor point="TOPLEFT" relativeTo="$(parent)Label" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="10" />
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Cost" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="10" />
 							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="-180" />
-							
 							
 							<Controls>
 								

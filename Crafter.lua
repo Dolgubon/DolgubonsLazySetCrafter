@@ -506,15 +506,15 @@ function DolgubonSetCrafter.initializeFunctions.initializeCrafting()
 	DolgubonSetCrafter.LazyCrafter = LazyCrafter
 	for k, v in pairs(queue) do 
 		if not v.doNotKeep then
-			
-			local returnedTable = LazyCrafter:CraftSmithingItemByLevel(unpack(v["CraftRequestTable"])) 
+
+			local returnedTable = LazyCrafter:CraftSmithingItemByLevel(unpack(v["CraftRequestTable"]))
 			addRequirements(returnedTable, true)
 			if pcall(function()applyValidityFunctions(v)end) then else d("Request could not be displayed. However, you should still be able to craft it.") end
 		else
 			table.remove(queue, k)
 		end
 	end
-	LazyCrafter:SetAllAutoCraft(DolgubonSetCrafter:GetAutocraft())
+	LazyCrafter:SetAllAutoCraft(DolgubonSetCrafter:GetSettings().autocraft)
 end
 
 
