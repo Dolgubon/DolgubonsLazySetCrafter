@@ -14,14 +14,14 @@
 
 ; Libraries
 ; LibStub - used for library versioning
-Libs\LibStub\LibStub\LibStub.lua
+Libs\LibStub\LibStub.lua
 
 ; LibLazyCrafting - used for crafting the items
 Libs\LibLazyCrafting\LibLazyCrafting.lua
 Libs\LibLazyCrafting\Smithing.lua
 
 ; LibCustomTitles
-Libs\LibCustomTitle\LibCustomTitles.lua
+Libs\LibCustomTitles\LibCustomTitles.lua
 
 ; LibAddonMenu
 libs\LibAddonMenu-2.0\LibAddonMenu-2.0.lua
@@ -38,6 +38,9 @@ libs\LibAddonMenu-2.0\controls\header.lua
 libs\LibAddonMenu-2.0\controls\slider.lua
 libs\LibAddonMenu-2.0\controls\texture.lua
 libs\LibAddonMenu-2.0\controls\divider.lua
+
+; Feedback library
+LibFeedback/feedback.lua
 
 ; Localization files - Default (en) first
 Lang/en.lua
@@ -61,15 +64,12 @@ Crafter.lua
 
 ; This file handles mailing set requests
 Mail.lua
+
 ; Main file. Final setups, also the addon initialization function
 SetCrafter.lua
 
 ; Keybinding file
 bindings.xml
-
-; Two files for setting up the feedback window
-feedback.xml
-feedback.lua
 
 ; Settings menu - does what's on the can
 SettingsMenu.lua

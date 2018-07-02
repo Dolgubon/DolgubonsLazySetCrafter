@@ -456,6 +456,7 @@ function DolgubonSetCrafter.setupComboBoxes()
 	DolgubonSetCrafter.ComboBox.Armour.isTrait = true
 	DolgubonSetCrafter.ComboBox.Weapon.isTrait = true
 	DolgubonSetCrafter.ComboBox.Jewelry.isTrait = true
+	DolgubonSetCrafter.ComboBox.Style.isStyle = true
 	--DolgubonSetCrafterWindowComboboxes:anchoruiElements()
 end
 

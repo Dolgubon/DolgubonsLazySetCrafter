@@ -366,9 +366,11 @@ local function addPatternToQueue(patternButton,i)
 	end
 	-- Are all the combobox selections valid? We already checked traits though, so filter those out
 	for k, combobox in pairs(comboBoxes) do
-		if (not combobox.isTrait and combobox.invalidSelection()) and not DolgubonSetCrafter.savedvars.autofill then
-			out(combobox.selectPrompt)
-			return
+		if combobox.invalidSelection() and not DolgubonSetCrafter.savedvars.autofill then
+			if not combobox.isTrait and (combobox.isStyle and  patternButton:UseStyle() ) then
+				out(combobox.selectPrompt)
+				return
+			end
 		end
 	end
 
