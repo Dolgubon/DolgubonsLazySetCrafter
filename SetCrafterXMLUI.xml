@@ -331,8 +331,16 @@
 								
 							</OnClicked>
 				    	</Button>
+				    	<Button name="$(parent)MailQueue" alpha="1" topmost="true" text="Mail Request" inherits="ZO_DefaultButton" inheritAlpha="false">
+		     				<Anchor point="BOTTOM" relativeTo="$(parent)MailRequirements" relativePoint="TOP" offsetX="0" offsetY="-5" />
+		      				<Dimensions x="200" y="28" />
+							<OnClicked>
+								DolgubonSetCrafter.MailAsRequest()
+							</OnClicked>
+				    	</Button>
+				    	
 				    	<Backdrop name="$(parent)Input" tier="HIGH" inherits="ZO_EditBackdrop" inheritAlpha="false">
-							<Anchor point="BOTTOM" relativeTo="$(parent)MailRequirements" relativePoint="TOP" offsetX="0" offsetY="-5" />
+							<Anchor point="BOTTOM" relativeTo="$(parent)MailQueue" relativePoint="TOP" offsetX="0" offsetY="-5" />
 							<Dimensions x="200"/>
 							<Controls>
 								<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText">
