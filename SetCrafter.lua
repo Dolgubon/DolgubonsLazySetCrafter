@@ -107,7 +107,9 @@ function DolgubonSetCrafter:Initialize()
 	--if pcall(DolgubonSetCrafter.initializeFunctions.setupUI) then else d("Dolgubon's Lazy Set Crafter: UI not loaded") end
 	DolgubonSetCrafter.initializeFunctions.setupUI()
 	
-	DolgubonSetCrafter.initializeFeedbackWindow()
+	--DolgubonSetCrafter.initializeFeedbackWindow()
+	LibStub:GetLibrary("LibFeedback")
+	LibFeedback:initializeFeedbackWindow(DolgubonSetCrafter, "Dolgubon's Lazy Set Crafter",DolgubonSetCrafterWindow, "@Dolgubon", {TOPLEFT , owningWindow , TOPLEFT , 10, 10}, {0,5000,50000, "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7CZ3LW6E66NAU"})
 end
 
 local function closeWindow (optionalOverride)
