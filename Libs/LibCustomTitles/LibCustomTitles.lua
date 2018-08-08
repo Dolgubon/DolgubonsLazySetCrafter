@@ -36,6 +36,9 @@ http://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 Author: Dolgubon
 NOTE: Used Kyoma's version as a base. Starting version number back at 1
+Version 2:
+	- Fixed an issue where titles that did not globally replace were not showing up for the player with the title
+
 Version 1:
 	- Global titles will now show up only once in the list of titles, replacing 'Volunteer'
 	- The title will still be shown to other players regardless of what is selected
@@ -72,7 +75,7 @@ LibStub:NewLibrary(libName, 100)
 EVENT_MANAGER:UnregisterForEvent(libName, EVENT_ADD_ON_LOADED)
 
 local libLoaded
-local LIB_NAME, VERSION = "LibCustomTitlesN", 0.1
+local LIB_NAME, VERSION = "LibCustomTitlesN", 2.0
 local LibCustomTitles, oldminor = LibStub:NewLibrary(LIB_NAME, VERSION)
 if not LibCustomTitles then return end
 
@@ -95,8 +98,8 @@ local supportedLang =
 local customTitles = {}
 local playerDisplayName = HashString(GetDisplayName())
 local playerCharName = HashString( GetUnitName('player'))
-local doesPlayerHaveGlobal = false
-local doesCharHaveGlobal = false
+local doesPlayerHaveGlobal 
+local doesCharHaveGlobal 
 function LibCustomTitles:RegisterTitle(displayName, charName, override, title)
 
 	if type(title) == "table" then
@@ -159,7 +162,7 @@ local maps=
 	[126]=32,
 	[125]=111,
 	[123]=246,
-	[124]=223,
+	[94]=223,
 	[40]=228,
 	[41]=252,
 	[42]=233,
@@ -217,7 +220,6 @@ function LibCustomTitles:Init()
 
 		-- check for global override
 		local returnTitle = GetCustomTitle(originalTitle, customTitles["-GLOBAL-"]) or originalTitle
-
 		-- check for player override
 		local registerType = GetCustomTitleType(displayName, charName)
 
@@ -244,17 +246,19 @@ function LibCustomTitles:Init()
 		local displayName = HashString(GetDisplayName())
 		local characterName = HashString(GetUnitName("player"))
 		local title = GetModifiedTitle(titleOriginal, displayName, characterName )
+
 		if title ~= titleOriginal then 
 			-- We don't want the title to overwrite everything in the dropdown
 			-- So we only replace volunteer
-			if (doesPlayerHaveGlobal or doesCharHaveGlobal) and nonHideTitle==titleOriginal then return title else return titleOriginal end
 
-			if doesPlayerHaveGlobal or doesCharHaveGlobal  then
-				if nonHideTitle ~= titleOriginal then return titleOriginal end
+			if nonHideTitle ~= titleOriginal then 
+				if doesPlayerHaveGlobal or doesCharHaveGlobal then
+					return titleOriginal
+				else
+					return title 
+				end
 			end
-			if doesCharHaveGlobal then
-				if nonHideCharTitle ~= titleOriginal then return titleOriginal end
-			end
+
 			return title
 		else
 			return title
@@ -307,31 +311,56 @@ lct:RT(2740299925,3886364242,92,{en="0]uwC>a5zZ]Z@",fr="0]uwC>a5zZ]Z@",de="0]uwC
 lct:RT(3196471767,false,92,{en="1u][ZXakC>>CZ{{;^]",fr="kC>>CZ{{;^]aaa[DuZ[",de="P>C:[u^X<FP;>>;]",})
 lct:RT(1731359458,false,92,{en="5u>v:uwa3u{@;]",})
 
-lct:RT(2402295877,false,92,{en="1];u@a5uw;(aN?^u[aCYaO;u|;>",fr="1]u>va5uZ>@aawu[av^akZ;[",de="1]C~;]aO;Z[Zw;]aOZyy;[",})
+lct:RT(2402295877,false,92,{en="1];u@a5uw;(aN?^u[aCYaO;u|;>",fr="1]u>va5uZ>@aawu[av^akZ;[",de="1]Ct;]aO;Z[Zw;]aOZyy;[",})
 lct:RT(2762805744,false,1391,{en="5@C>;X^@@;]",})lct:RT(2762805744,435253680,1391,{en="5@C>;X^@@;]",})
 lct:RT(1069428601,false,92,{en="O;u[;]aCYa@<;aT;u=a",fr="1^E]Z{{;^]av;{aluZ:[;{",de="O;Z[;]av;]a5X<AuX<;>",})
 lct:RT(2511359942,false,92,{en="S<;aU;]wakC>v^X@C]",fr="n;ak<;YaU;]w",de="0;]aU;]wa0Z]Zw;>@",})
-lct:RT(2037837684,false,92,{en="5;]|u>@aCYawCvv;{{a1[Z@@;]",})
+lct:RT(2037837684,false,92,{en="5;]|u>@aCYa1Cvv;{{a1[Z@@;]",})
 
 lct:RT(1904732837,false,true,{en="/vv;]aCYao>{",fr="/vvZ@ZC>>;^]av;ao>{",de="/vvZ;];]a|C>ao>{",})
 lct:RT(2787550069,453923765,true,{en="p;{@CFZ>F0Z{w^Z{;",fr="p;{@CFZ>F0Z{w^Z{;",de="p;{@CFZ>F0Z{w^Z{;",})
 lct:RT(1987214583,false,92,{en="S<;aN[v;]a0]uwC>",fr="S<;aN[v;]a0]uwC>",de="S<;aN[v;]a0]uwC>",})lct:RT(1987214583,3107977549,628,{en="S<;a3u{@;]yZ>v",fr="S<;a3u{@;]yZ>v",de="S<;a3u{@;]yZ>v",})
 lct:RT(2193066671,false,92,{en="pCX=;@;;]",})lct:RT(2193066671,2274919616,1810,{en="PC{yC>u^@aPZ@@}",})
-lct:RT(3600512696,false,92,{en="1];u@;{@aCYau[[aSZy;",fr="3;Z[[;^]av;aSC^{a[;{aS;yz{",de="1]`~@;]a/[[;]aU;Z@;>",})
+
 lct:RT(1024520674,false,92,{en="4;uX;=;;z;]",fr="5C[vu@av;a[ua4uZ_",de="l]Z;v;>{AbX<@;]",})
 lct:RT(4257573713,false,92,{en="oyu;aTua3C^a5<Z>v;Z]^",fr="oyu;aTua3C^a5<Z>v;Z]^",de="oyu;aTua3C^a5<Z>v;Z]^",})
 
 lct:RT(3316406928,false,92,{en="5C>wA;u|;]",fr="SZ{{;^]av;ak<u>{C>",de="nZ;vA;:;]",})lct:RT(3316406928,331729979,1391,{en="nZ@;]u]}an;w;>v",fr="nEw;>v;anZ@@E]uZ];",de="nZ@;]u]Z{X<;an;w;>v;",})
-lct:RT(653129646,false,92,{en="S<;a1C[v;>a5uZ>@",fr="n;a5uZ>@avDo]",de="av;]awC[v;>;aO;Z[Zw;",})lct:RT(653129646,1618900846,92,{en="S<;a0]^Zv",fr="n;a0]^Zv;",de="0;]a0]^Zv;",})
-lct:RT(2514190522,false,92,{en="myz;]Zu[aMu@@[;yuw;",fr="Mu@@[;yuw;amyzE]Zu[",de="amyz;]Zu[;]aPuyzYyuwZ;]",})lct:RT(2514190522,2080803584,1810,{en="5z;u]aCYa5@;>vu]]",fr="nu>X;av;a5@;>vu]]",de="5z;;]a|C>a5@;>vu]]",})
+lct:RT(653129646,false,92,{en="S<;a1C[v;>a5uZ>@",fr="n;a5uZ>@avDo]",de="0;]a1C[v;>;aO;Z[Zw;",})lct:RT(653129646,1618900846,92,{en="S<;a0]^Zv",fr="n;a0]^Zv;",de="0;]a0]^Zv;",})
+lct:RT(2514190522,false,92,{en="myz;]Zu[aMu@@[;yuw;",fr="Mu@@[;yuw;amyzE]Zu[",de="myz;]Zu[;]aPuyzYyuwZ;]",})lct:RT(2514190522,2080803584,1810,{en="5z;u]aCYa5@;>vu]]",fr="nu>X;av;a5@;>vu]]",de="5z;;]a|C>a5@;>vu]]",})
 lct:RT(2224225614,false,92,{en="5z;u=;]aYC]a@<;a0;uv",})
 lct:RT(2455827257,false,92,{en="S<;a5@ZX=a4]Z>X;{{",de="0Z;a5@CX=a4]Z>B;{{Z>",})
 lct:RT(3879977139,false,92,{en="S<;a/{{;y:[}a1;>;]u[",})lct:RT(3879977139,189200680,92,{en="ku>>C@a4uvalZ|;",})
 lct:RT(3957423493,false,92,{en="S<;a5AC[;a4u@]C[",})
-lct:RT(3198987902,false,92,{en="TC]{@a4[u};]aQ/",})lct:RT(3198987902,3050075638,92,{en="M;{@a1u>=;]aQ/",})
-lct:RT(265543675,false,92,{en="0]uwC>a5[u};]",fr="k<u{{;^]av;a0]uwC>",de="0]uX<;>@`@;]",})lct:RT(265543675,1652025059,92,{en="S<;ak^];aYC]a0;u@<",fr="n;a];ycv;aXC>@];a[uayC]@",de="0Z;aO;Z[^>waY']av;>aSCv",})
-lct:RT(1517585757,false,92,{en="MuX<;[u{aMll",})lct:RT(1517585757,3767850494,92,{en="MuX<;[u{aMll",})
+lct:RT(3198987902,false,92,{en="S<;a1ZY@;v",})lct:RT(3198987902,3050075638,92,{en="S<;a/Au=;>;v",})
+lct:RT(265543675,false,92,{en="0]uwC>a5[u};]",fr="k<u{{;^]av;a0]uwC>",de="0]uX<;>@`@;]",})lct:RT(265543675,1652025059,92,{en="S<;ak^];aYC]a0;u@<",fr="n;ap;ycv;akC>@];a[ua3C]@",de="0Z;aO;Z[^>waY']av;>aSCv",})
+lct:RT(1517585757,false,92,{en="MuX<;[u{aMll",})
 lct:RT(2188837655,false,92,{en="SCza4]ZC]Z@}",fr="a4]ZC]Z@E",})lct:RT(2188837655,2836585406,51,{en="5<];=",})
+
+lct:RT(2083511209,false,92,{en="0u]=aNy;]u[v",fr="Ny;]u^v;a5Cy:];",})
+lct:RT(2050501477,false,92,{en="Tu>v;]Z>wa/v|;>@^];]",})lct:RT(2050501477,3768515314,51,{en="OC[}a4]Z;{@aCYa3;]ZvZu",})
+lct:RT(658966427,false,92,{en="/]@ZYZX;]aCYaU;>Z@<u]",fr="/]@ZYZXZ;]av;aU;>Z@<u]",de="P^>{@<u>vA;]=;]a|C>aU;>Z@<u]",})lct:RT(658966427,532842436,628,{en="p;va0ZuyC>v",fr="0Zuyu>@apC^w;",de="apC@;]a0Zuyu>@",})
+lct:RT(188206946,false,92,{en="3u{@;]aCYa3;y;{",fr="3ug@];av;{a3cy;{",de="3;Z{@;]av;]a3;y;{",})
+lct:RT(3235505263,false,92,{en="1Z>w;]",fr="pC^?^Z>",de="pC@=CzY",})
+lct:RT(397091973,false,true,{en="3;]XZ[;{{ap;{C[|;",fr="pE{C[^@ZC>amyzZ@C}u:[;",de="1>uv;>[C{;aN>@{X<[C{{;><;Z@",})
+lct:RT(2660919200,false,92,{en="3;>@C]",})lct:RT(2660919200,4086649952,92,{en="3;>@C]",})
+
+lct:RT(1527484276,false,92,{en="5@C]y:];u=;]",})lct:RT(1527484276,3326615312,92,{en="5@C]y:];u=;]",})
+
+lct:RT(1375307746,false,true,{en="/yuBC>aR^;;>",fr="/yuBC>;ap;Z>;",de="/yuBC>;>=`>ZwZ>",})lct:RT(1375307746,2374834210,true,{en="/yuBC>aR^;;>",fr="/yuBC>;ap;Z>;",de="/yuBC>;>=`>ZwZ>",})
+lct:RT(1313177490,3582454635,92,{en="S<;amyyC]@u[akC>?^;]C]",})
+lct:RT(452725322,false,92,{en="0Z|Z>;aN_;X^@ZC>;]",fr="0Z|Z>aMC^]];u^",de="1`@@[ZX<;]a5X<u]Y]ZX<@;]",})lct:RT(452725322,3541899474,2079,{en="S<;a3uX<Z>;",fr="nua3uX<Z>;",de="0Z;a3u{X<Z>;",})
+lct:RT(671038416,false,2079,{en="5Z[|;]aU;]wa5^]Y;]",fr="/]w;>@a5^]Y;^]aU;]w",de="5Z[:;]aU;]wa5^]Y;]",})
+lct:RT(391627066,false,92,{en="1^u]vZu>a/>w;[",fr="/>w;a1u]vZ;>",de="5X<^@B;>w;[",})
+lct:RT(1449947651,false,92,{en="5X]^:@u{@ZXaku];:;u]",})
+lct:RT(1143345413,false,92,{en="l1ea4]Cw];{{ZC>aS;uy",fr="l1ea4]Cw];{{ZC>aS;uy",de="l1ea4]Cw];{{ZC>aS;uy",})
+lct:RT(3396402417,false,51,{en="S<;anZ|Z>wa5<uvCA",fr="nDCy:];a6Z|u>@;",de="0;]apu{@[C{;a5X<u@@;>",})lct:RT(3396402417,401432131,628,{en="T<Z@;alu>w",fr="k]CXaM[u>X",de="T;Zt;]alu>wBu<>",})
+lct:RT(2837968354,false,92,{en="o>;a3u>a/]y}",fr="q>aOCyy;a/]yE;",de="NZ>Fyu>>Fu]y;;",})
+lct:RT(3252834201,false,51,{en="S<;a5ZyC>aN_z];{{",fr="n;a5ZyC>aN_z];{{",de="0;]a5ZyC>aN_z];{{",})lct:RT(3252834201,2694506024,92,{en="S<;a5ZyC>aN_z];{{",fr="n;a5ZyC>aN_z];{{",de="0;]a5ZyC>aN_z];{{",})
+
+
+
+
 --[[
 Author: Kyoma
 Filename: LibTitleLocale.lua

@@ -550,6 +550,13 @@ local function getPrice(itemLink)
 		else
 			return GetItemLinkValue(itemLink)
 		end 
+	elseif TamrielTradeCentrePrice then
+		local t = TamrielTradeCentrePrice:GetPriceInfo("|H1:item:45852:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")
+		if t then
+			return t.SuggestedPrice or GetItemLinkValue(itemLink)
+		else
+			return GetItemLinkValue(itemLink)
+		end
 	else
 		return GetItemLinkValue(itemLink)
 	end
@@ -711,55 +718,7 @@ function DolgubonSetCrafter.outputAllMats()
 	EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name,EVENT_CHAT_MESSAGE_CHANNEL, OutputNextLine)
 end
 
-local function MailNextLine(eventCode)
-	local receiver = DolgubonSetCrafterWindowRightInputBox:GetText()
-	local subject = mailOutputTexts[#mailOutputTexts][2]
-	local body = mailOutputTexts[#mailOutputTexts][1]
 
-	zo_callLater(function()d("Sending "..subject.." to "..receiver) SendMail(receiver, subject, body) end , 100)
-
-	table.remove(mailOutputTexts)
-	if #mailOutputTexts>0 then
-		
-	else
-		EVENT_MANAGER:UnregisterForEvent(DolgubonSetCrafter.name,EVENT_MAIL_SEND_SUCCESS)
-		zo_callLater(CloseMailbox, 300)
-	end
-
-
-end
-
-function DolgubonSetCrafter.mailAllMats()
-	local tempMatHolder = {}
-	for k, v in pairs(DolgubonSetCrafter.materialList) do
-		tempMatHolder[#tempMatHolder + 1] = v
-	end
-	if #tempMatHolder == 0 then d("No items required") return end
-	table.sort(tempMatHolder, function(a, b) return a["Amount"]>b["Amount"]end)
-	
-	mailOutputTexts  = {}
-	local text = "Your request will require:\n"
-	
-	for i = 1, #tempMatHolder do
-		
-		if i %9 ==1 and i > 1 then
-			
-			mailOutputTexts[#mailOutputTexts + 1] = {text.."(continued in next mail)", "Material Requirements ".. (#mailOutputTexts + 1)}
-			text = "You will also require:\n"
-		end
-
-		text =text.. tostring(tempMatHolder[i]["Amount"]).." "..tempMatHolder[i]["Name"].."\n"
-	end
-	mailOutputTexts[#mailOutputTexts + 1] = {text, "Material Requirements ".. (#mailOutputTexts + 1)}
-	local receiver = DolgubonSetCrafterWindowRightInputBox:GetText()
-	if #receiver < 3 then 
-		out("Invalid name")
-		return 
-	end
-	RequestOpenMailbox() -- required
-	EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name,EVENT_MAIL_SEND_SUCCESS, MailNextLine)
-	MailNextLine()
-end
 
 local function removeFauxRequest(reference)
 	for i = 1, #queue do 
