@@ -172,7 +172,7 @@ function LibFeedback:initializeFeedbackWindow(parentAddonNameSpace, parentAddonN
 	for i = 1, #buttonInfo do
 
 		buttons[#buttons+1] =  createFeedbackButton(feedbackWindow:GetName().."Button"..#buttons, feedbackWindow, feedbackWindowButtonWidth, feedbackWindowButtonHeight)
-		buttons[i]:SetAnchor(BOTTOM, feedbackWindow, BOTTOMLEFT, (i-1)*feedbackWindowHeight+70,-10)
+		buttons[i]:SetAnchor(BOTTOM, feedbackWindow, BOTTOMLEFT, (i-1)*feedbackWindowWidth+70,-10)
         local buttonData = buttonInfo[i]
         if buttonData ~= nil then
             local amount
@@ -240,6 +240,7 @@ function LibFeedback:initializeFeedbackWindow(parentAddonNameSpace, parentAddonN
 	showButton.feedbackWindow = feedbackWindow
 	showButton:SetAnchor(unpack(mailButtonPosition))
 	showButton:SetDimensions(40,40)
+	showButton.ToggleWindow = function(self) self.feedbackWindow:ToggleHidden() end
 
 	return showButton, feedbackWindow
 end

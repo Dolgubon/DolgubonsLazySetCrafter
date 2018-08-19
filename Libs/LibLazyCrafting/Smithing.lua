@@ -18,7 +18,7 @@
 local LibLazyCrafting = LibStub("LibLazyCrafting")
 
 local widgetType = 'smithing'
-local widgetVersion = 2.2
+local widgetVersion = 2.5
 if not LibLazyCrafting:RegisterWidget(widgetType, widgetVersion) then return  end
 
 local function dbug(...)
@@ -45,7 +45,7 @@ local abc = 1
 local improvementChances = {}
 
 local CRAFTING_TYPE_JEWELRYCRAFTING = CRAFTING_TYPE_JEWELRYCRAFTING or 7
-GetItemLinkItemId = GetItemLinkItemId or GetItemIDFromLink
+
 
 -- This is filled out after crafting. It's so we can make sure that:
 -- A: The item was crafted and
@@ -111,7 +111,8 @@ local requirementJumps = { -- At these material indexes, the material required c
 
 }
 
-additionalRequirements = -- Seperated by station. The additional amount of mats added to the base amount.
+-- Seperated by station. The additional amount of mats added to the base amount.
+local additionalRequirements =
 {
 	[CRAFTING_TYPE_BLACKSMITHING] =
 	{ 2, 2, 2, 4, 4, 4, 1, 6, 4, 4, 4, 5, 4, 4,
@@ -174,7 +175,7 @@ local JEWELY_MAT_REQUIREMENT = {
 }
 
 local currentStep = 1
-baseRequirements = {}
+local baseRequirements = {}
 for i = 1, 41 do
 	if i == 41 then
 		baseRequirements[i] = baseRequirements[40]
@@ -197,9 +198,10 @@ function enoughMaterials(craftRequestTable)
 	}
 	local missingSomething = false
 
-	if craftRequestTable["style"] and GetCurrentSmithingStyleItemCount(craftRequestTable["style"]) <= 0 and craftRequestTable['station']~= CRAFTING_TYPE_JEWELRYCRAFTING then
-			missing.materials["style"] = true
-			missingSomething = true
+	if craftRequestTable["style"] and GetCurrentSmithingStyleItemCount(craftRequestTable["style"]) <= 0
+		and craftRequestTable['station']~= CRAFTING_TYPE_JEWELRYCRAFTING and not craftRequestTable["useUniversalStyleItem"] then
+		missing.materials["style"] = true
+		missingSomething = true
 	end
 
 	-- Check trait mats
@@ -243,27 +245,50 @@ local function findMatTierByIndex(index)
 	return 10
 end
 
+local SKILL_LINE =
+{
+	[CRAFTING_TYPE_BLACKSMITHING] = {
+		skill_line_id = 79,
+		base_ability_id = 70041,		-- "Metalworking"
+		improve_ability_id = 48168,		-- "Temper Expertise"
+		},
+	[CRAFTING_TYPE_CLOTHIER] = {
+		skill_line_id = 81,
+		base_ability_id = 70044, 		-- "Tailoring"
+		improve_ability_id = 48198,		-- "Tannin Expertise"
+		},
+	[CRAFTING_TYPE_WOODWORKING] = {
+		skill_line_id = 80,
+		base_ability_id = 70046, 		-- "Woodworking"
+		improve_ability_id = 48177, 	-- "Resin Expertise"
+		},
+	[CRAFTING_TYPE_JEWELRYCRAFTING] = {
+		skill_line_id = 141,
+		base_ability_id = 103636, 		-- "Engraver"
+		improve_ability_id = 103648,	-- "Platings Expertise"
+		},
+	[CRAFTING_TYPE_ALCHEMY] = {
+		skill_line_id = 77,
+		base_ability_id = 70043,		-- "Solvent Expertise"
+		improve_ability_id = nil,		-- no blue/purple/gold in alchemy
+		},
+	[CRAFTING_TYPE_ENCHANTING] = {
+		skill_line_id = 78,
+		base_ability_id = 70045,		-- "Potency Improvement" -- glyph level
+		improve_ability_id = 46763,		-- "Aspect Improvement", allows gold Kuta
+		},
+	[CRAFTING_TYPE_PROVISIONING] = {
+		skill_line_id = 76,
+		base_ability_id = 44650, 		-- "Recipe Improvement" = recipe level
+		improve_ability_id = 69953, 	-- "Recipe Quality", allows use of gold recipes
+		},
+}
 
 local function getCraftLevel(station)
-	local SkillTextures = 
-	{
-		[CRAFTING_TYPE_BLACKSMITHING] = "/esoui/art/icons/ability_smith_007.dds", -- bs, temper expertise esoui/art/icons/ability_smith_004.dds
-		[CRAFTING_TYPE_CLOTHIER] = "/esoui/art/icons/ability_tradecraft_008.dds", -- cl, tannin expertise esoui/art/icons/ability_tradecraft_004.dds
-		[CRAFTING_TYPE_WOODWORKING] = "/esoui/art/icons/ability_tradecraft_009.dds", -- ww, rosin experise esoui/art/icons/ability_tradecraft_001.dds
-		[CRAFTING_TYPE_JEWELRYCRAFTING] = "/esoui/art/icons/passive_jewelerengraver.dds" -- jw, platings expertise /esoui/art/icons/passive_platingexpertise.dds
-	}
-	local skillType, skillIndex = GetCraftingSkillLineIndices(station)
-	local abilityIndex = nil
-	for i = 1, GetNumSkillAbilities(skillType, skillIndex) do
-		local _, texture = GetSkillAbilityInfo(skillType, skillIndex, i)
-		if texture == SkillTextures[station] then
-			abilityIndex = i
-		end
-	end
+	local skillLine = SKILL_LINE[station]
+	local skillType, skillIndex, abilityIndex, morphChoice, rankindex = GetSpecificSkillAbilityKeysByAbilityId(skillLine.base_ability_id)
 	if abilityIndex then
-
 		local currentSkill, maxSkill = GetSkillAbilityUpgradeInfo(skillType,skillIndex,abilityIndex)
-
 		return currentSkill , maxSkill
 	else
 		return 0,1
@@ -271,7 +296,7 @@ local function getCraftLevel(station)
 end
 
 
-function canCraftItem(craftRequestTable)
+local function canCraftItem(craftRequestTable)
 	local missing =
 	{
 		["knowledge"] = {},
@@ -296,10 +321,10 @@ function canCraftItem(craftRequestTable)
 	else
 		matIndex = findMatTierByIndex(craftRequestTable['materialIndex'])
 	end
-	
+
 	if level >= matIndex then
-		
-	
+
+
 
 		if traitsRequired<= traitsKnown then
 
@@ -327,9 +352,6 @@ function canCraftItem(craftRequestTable)
 	return false, missing
 
 end
-LibLazyCrafting.canCraftItemHere = canCraftItemHere
-
-
 
 -- Returns SetIndex, Set Full Name, Traits Required
 local function GetCurrentSetInteractionIndex()
@@ -349,7 +371,7 @@ local function GetCurrentSetInteractionIndex()
 		return nil , nil, nil, nil
 	end
 	-- If no set
-	if not sampleId then  
+	if not sampleId then
 		return 1, SetIndexes[1][1],  SetIndexes[1][3]
 	end
 	-- find set index
@@ -376,13 +398,13 @@ local function canCraftItemHere(station, setIndex)
 	return false
 
 end
-
+LibLazyCrafting.canCraftSmithingItemHere = canCraftItemHere
 
 ---------------------------------
 -- SMITHING HELPER FUNCTIONS
 
 local function GetMaxImprovementMats(bag, slot ,station)
-	local numBooster = 1
+	local numBooster = 0
 	local chance =0
 	if not CanItemBeSmithingImproved(bag, slot, station) then return false end
 	while chance<100 do
@@ -394,11 +416,7 @@ local function GetMaxImprovementMats(bag, slot ,station)
 end
 
 
-function LLC_GetSmithingPatternInfo(patternIndex, station, set)
-end
-
-function LLC_GetSetIndexTable()
-	return SetIndexes
+local function LLC_GetSmithingPatternInfo(patternIndex, station, set)
 end
 
 -- Finds the material index based on the level
@@ -451,7 +469,7 @@ end
 LibLazyCrafting.functionTable.GetMatRequirements = GetMatRequirements
 
 local function getImprovementLevel(station)
-	local SkillTextures = 
+	local SkillTextures =
 	{
 		[CRAFTING_TYPE_BLACKSMITHING] = "/esoui/art/icons/ability_smith_004.dds", -- bs, temper expertise esoui/art/icons/ability_smith_004.dds
 		[CRAFTING_TYPE_CLOTHIER] = "/esoui/art/icons/ability_tradecraft_004.dds", -- cl, tannin expertise esoui/art/icons/ability_tradecraft_004.dds
@@ -502,15 +520,12 @@ local function LLC_CraftSmithingItem(self, patternIndex, materialIndex, material
 	if reference == nil then reference = "" end
 	if not self then d("Please call with colon notation") end
 	if autocraft==nil then autocraft = self.autocraft end
-	if setIndex == nil then setIndex = 1 end
-	if quality == nil then quality = 1 end
-	
 	local station
 	if type(self) == "number" then
 		d("LLC: Please call using colon notation: e.g LLC:CraftSmithingItem(). If you are seeing this and you are not a developer please contact the author of the addon")
 	end
-  
-	local validStations = 
+
+	local validStations =
 	{
 		[CRAFTING_TYPE_BLACKSMITHING]  = true,
 		[CRAFTING_TYPE_WOODWORKING]  = true,
@@ -592,7 +607,7 @@ LibLazyCrafting.functionTable.CraftSmithingItemByLevel = LLC_CraftSmithingItemBy
 
 
 -- We do take the bag and slot index here, because we need to know what to upgrade
-function LLC_ImproveSmithingItem(self, BagIndex, SlotIndex, newQuality, autocraft, reference)
+local function LLC_ImproveSmithingItem(self, BagIndex, SlotIndex, newQuality, autocraft, reference)
 	dbug("FUNCTION:LLCImprove")
 	if reference == nil then reference = "" end
 	--abc = abc + 1 if abc>50 then d("improve")return end
@@ -1006,11 +1021,7 @@ SetIndexes =
 	{{136417 , 136437, [6] = 136424, [7] = 138730},9},  -- 44 nocturnal's favor
 	{{136067 , 136087, [6] = 136074, [7] = 138722},6},  -- 45 sload's semblance
 }
-if GetAPIVersion() == 100022 then
-	SetIndexes[43] = nil
-	SetIndexes[44] = nil
-	SetIndexes[45] = nil
-end
+
 for i = 1,#SetIndexes do
 	local _, a = GetItemLinkSetInfo(getItemLinkFromItemId(SetIndexes[i][1][1]),false)
 
@@ -1079,7 +1090,7 @@ local materialItemIDs =
 		46142,
 		64502,
 	},
-	[CRAFTING_TYPE_JEWELRYCRAFTING] = 
+	[CRAFTING_TYPE_JEWELRYCRAFTING] =
 	{
 		135138,
 		135140,
@@ -1092,21 +1103,6 @@ local materialItemIDs =
 -- Improvement mats
 -- Use GetSmithingImprovementItemLink(number TradeskillType craftingSkillType, number improvementItemIndex, number LinkStyle linkStyle)
 
-local improvementItemLinks = {}
-
-for _, v in pairs({1,2,6}) do
-	for i = 1, 4 do
-		improvementItemLinks[#improvementItemLinks + 1] = GetSmithingImprovementItemLink(v, i, 0)
-	end
-end
-
-local improvementSkillTextures =
-{
-	[CRAFTING_TYPE_BLACKSMITHING] = "/esoui/art/icons/ability_smith_004.dds",
-	[CRAFTING_TYPE_CLOTHIER] = "/esoui/art/icons/ability_tradecraft_004.dds",
-	[CRAFTING_TYPE_WOODWORKING] = "/esoui/art/icons/ability_tradecraft_001.dds",
-}
-
 local improvementChances =
 {
 	[0] = {5, 7,10,20},
@@ -1115,18 +1111,35 @@ local improvementChances =
 	[3] = {2,3,4,8},
 }
 
+local improvementChancesJewelry =
+{
+	[0] = {3,5,7,10},
+	[1] = {2,4,5,7},
+	[2] = {2,3,4,5},
+	[3] = {1,2,3,4},
+}
+
+local function getImprovementChancesTable(station)
+	if station == CRAFTING_TYPE_JEWELRYCRAFTING then
+		return improvementChancesJewelry
+	else
+		return improvementChances
+	end
+end
+
 local function compileImprovementRequirements(request, station)
 	local requirements = {}
 	local currentQuality = GetItemQuality(request.ItemBagID, request.ItemSlotID)
 	local improvementLevel = getImprovementLevel(station)
 
 	for i  = 1, request.quality - 1 do
-		requirements[GetItemLinkItemId( GetSmithingImprovementItemLink(station, i, 0) )] = improvementChances[improvementLevel][i]
+		requirements[GetItemLinkItemId( GetSmithingImprovementItemLink(station, i, 0) )] = getImprovementChancesTable(station)[improvementLevel][i]
 	end
 	return requirements
 end
 
 function compileRequirements(request, station)-- Ingot/style mat/trait mat/improvement mat
+
 	local requirements = {}
 	if request["type"] == "smithing" then
 
@@ -1157,7 +1170,7 @@ function compileRequirements(request, station)-- Ingot/style mat/trait mat/impro
 		local improvementLevel = getImprovementLevel(station)
 
 		for i  = 1, request.quality - 1 do
-			requirements[GetItemLinkItemId( GetSmithingImprovementItemLink(station, i, 0) )] = improvementChances[improvementLevel][i]
+			requirements[GetItemLinkItemId( GetSmithingImprovementItemLink(station, i, 0) )] = getImprovementChancesTable(station)[improvementLevel][i]
 		end
 
 		return requirements
@@ -1223,31 +1236,8 @@ end
 local function findItemId()
 end
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 -- This function takes the above table and returns a table of the item links.
-function createSetItemIdTable(setId)
+local function createSetItemIdTable(setId)
 	local start = itemSetIds[setId][1]
 	local start = 0
 	local table = {}
@@ -1266,7 +1256,7 @@ function createSetItemIdTable(setId)
 end
 -- Doubt these will ever again be needed but can't hurt to keep em
 
-function checkTable(table)
+local function checkTable(table)
 	local _, set = GetItemLinkSetInfo(table[1])
 	local test = true
 	for i = 1, #table do
@@ -1278,7 +1268,7 @@ function checkTable(table)
 	d(test)
 end
 
-function checkItemIds()
+local function checkItemIds()
 	for i = 1, #itemSetIds do
 		zo_callLater(function()checkTable(createSetItemIdTable(i)) end , 500*i)
 	end

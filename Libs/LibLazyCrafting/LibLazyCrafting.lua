@@ -15,18 +15,20 @@ local function dbug(...)
 	--DolgubonDebugRunningDebugString(...)
 end
 
+
 -- Initialize libraries
 local libLoaded
-local LIB_NAME, VERSION = "LibLazyCrafting", 2.1
+local LIB_NAME, VERSION = "LibLazyCrafting", 2.2
+
 local LibLazyCrafting, oldminor = LibStub:NewLibrary(LIB_NAME, VERSION)
 if not LibLazyCrafting then return end
-local LLC = LibLazyCrafting
+local LLC = LibLazyCrafting -- Short form version we can use if needed
 
 LLC.name, LLC.version = LIB_NAME, VERSION
 
 local CRAFTING_TYPE_JEWELRY = CRAFTING_TYPE_JEWELRY or 7
 
-LibLazyCrafting.craftInteractionTables =
+LibLazyCrafting.craftInteractionTables = LibLazyCrafting.craftInteractionTables or 
 {
 	["example"] =
 	{
@@ -38,7 +40,7 @@ LibLazyCrafting.craftInteractionTables =
 }
 
 LibLazyCrafting.isCurrentlyCrafting = {false, "", ""}
-LLC.widgets = LLC.widgets or {}
+LLC.widgets = LLC.widgets or {['initializers'] = {}}
 local widgets = LLC.widgets
 
 --METHOD: REGISTER WIDGET--
@@ -58,6 +60,13 @@ function LibLazyCrafting:RegisterWidget(widgetType, widgetVersion)
 	end
 end
 
+-- -- Re initialize crafts if this run of the library overwrote a previous one.
+-- if oldVersion then
+-- 	for k, reInitialize in pairs(LLC.widgets.initializers) do
+-- 		reInitialize()
+-- 	end
+-- end
+
 
 -- Index starts at 0 because that's how many upgrades are needed.
 local qualityIndexes =
@@ -75,7 +84,7 @@ local qualityIndexes =
 -- Thus, all that's needed to find the oldest request is cycle through each addon, and check only their first request.
 -- Unless a user has hundreds of addons using this library (unlikely) it shouldn't be a big strain. (shouldn't anyway)
 -- Not sure how to handle multiple stations for furniture. needs more research for that.
-craftingQueue =
+craftingQueue = craftingQueue or 
 {
 	--["GenericTesting"] = {}, -- This is for say, calling from chat.
 	["ExampleAddon"] = -- This contains examples of all the crafting requests. It is removed upon initialization. Most values are random/default.
@@ -151,21 +160,17 @@ LibLazyCrafting.craftingQueue = craftingQueue
 
 local craftResultFunctions = {[""]=function() end}
 
-LibLazyCrafting.functionTable = {}
+LibLazyCrafting.functionTable = LibLazyCrafting.functionTable or {}
 LibLazyCrafting.craftResultFunctions = craftResultFunctions
 
 
 --------------------------------------
 --- GENERAL HELPER FUNCTIONS
 
-function GetItemNameFromItemId(itemId)
+function GetItemNameFromItemId(itemId) -- Global due to the large general use.
 
 	return GetItemLinkName(ZO_LinkHandler_CreateLink("Test Trash", nil, ITEM_LINK_TYPE,itemId, 1, 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 10000, 0))
 end
-
--- Just a random help function; can probably be taken out but I'll leave it in for now
--- Pretty helpful function for exploration.
-function GetItemIDFromLink(itemLink) return tonumber(string.match(itemLink,"|H%d:item:(%d+)")) end
 
 -- Mostly a queue function, but kind of a helper function too
 local function isItemCraftable(request, station)
@@ -180,7 +185,6 @@ local function isItemCraftable(request, station)
 	end
 
 end
-
 
 function findItemLocationById(itemID)
 	for i=0, GetBagSize(BAG_BANK) do
@@ -333,7 +337,7 @@ LibLazyCrafting.sortCraftQueue = sortCraftQueue
 
 local abc = 1
 -- Finds the highest priority request.
-function findEarliestRequest(station)
+local function findEarliestRequest(station)
 	local earliest = {["timestamp"] = GetTimeStamp() + 100000} -- should be later than anything else, as it's 'in the future'
 	local addonName = nil
 	local position = 0
@@ -552,50 +556,7 @@ function LibLazyCrafting:Init()
 	function LibLazyCrafting:IsPerformingCraftProcess()
 		return unpack(LibLazyCrafting.isCurrentlyCrafting)
 	end
-
-	-- Probably has to be completely rewritten TODO
-	function LLC_CraftQueue()
-
-		local station = GetCraftingInteractionType()
-		if station == 0 then d("You must be at a crafting station") return end
-
-		if canCraftItemHere(station, craftingQueue[station][1]["setIndex"]) and not IsPerformingCraftProcess() then
-			local craftThis = craftingQueue[station][1]
-			if not craftThis then d("Nothing queued") return end
-			if canCraftItem(craftThis) then
-				local patternIndex, materialIndex, materialQuantity, styleIndex, traitIndex, quality = craftThis["pattern"], craftThis["materialIndex"], craftThis["materialQuantity"], craftThis["style"], craftThis["trait"], craftThis["quality"]
-				waitingOnSmithingCraftComplete = {}
-				waitingOnSmithingCraftComplete["slotID"] = FindFirstEmptySlotInBag(BAG_BACKPACK)
-				waitingOnSmithingCraftComplete["itemLink"] = GetSmithingPatternResultLink(patternIndex, materialIndex, materialQuantity, styleIndex, traitIndex, 0)
-				waitingOnSmithingCraftComplete["craftFunction"] =
-				function()
-					CraftSmithingItem(patternIndex, materialIndex, materialQuantity, styleIndex, traitIndex, useUniversalStyleItem)
-				end
-				waitingOnSmithingCraftComplete["craftFunction"]()
-				waitingOnSmithingCraftComplete["creater"] = GetDisplayName()
-				waitingOnSmithingCraftComplete["finalQuality"] = quality
-
-				return
-			else
-				d("User does not have the skill to craft this")
-			end
-
-		else
-			if IsPerformingCraftProcess() then d("Already Crafting") else d("Item cannot be crafted here") end
-		end
-	end
-
-
-	-- Why use this instead of the EVENT_CRAFT_COMPLETE?
-	-- Using this will allow the library to tell you how the craft failed, at least for some problems.
-	-- Or that the craft was completed.
-	-- AddonName is your addon. It will be used as a reference to the function
-	-- funct is the function that will be called where:
-	-- funct(event, station, extraLLCResultInfo)
-
-	function LLC_DesignateCraftCompleteFunction(AddonName, funct)
-		craftResultFunctions[AddonName] = funct
-	end
+	
 	-- Response codes
 	LLC_CRAFT_SUCCESS = "success" -- extra result: Position of item, item link, maybe other stuff?
 	LLC_ITEM_TO_IMPROVE_NOT_FOUND = "item not found" -- extra result: Improvement request table
