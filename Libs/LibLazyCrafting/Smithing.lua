@@ -18,7 +18,7 @@
 local LibLazyCrafting = LibStub("LibLazyCrafting")
 
 local widgetType = 'smithing'
-local widgetVersion = 2.5
+local widgetVersion = 2.6
 if not LibLazyCrafting:RegisterWidget(widgetType, widgetVersion) then return  end
 
 local function dbug(...)
@@ -833,7 +833,8 @@ local function smithingCompleteNewItemHandler(station)
 			removedRequest.bag = BAG_BACKPACK
 			removedRequest.slot = currentCraftAttempt.slot
 			LibLazyCrafting.SendCraftEvent(LLC_INITIAL_CRAFT_SUCCESS, station, currentCraftAttempt.Requester, removedRequest)
-			LLC_ImproveSmithingItem({["addonName"]=currentCraftAttempt.Requester}, BAG_BACKPACK, currentCraftAttempt.slot, currentCraftAttempt.quality, currentCraftAttempt.autocraft, currentCraftAttempt.reference)
+			local requestTable = LLC_ImproveSmithingItem({["addonName"]=currentCraftAttempt.Requester}, BAG_BACKPACK, currentCraftAttempt.slot, currentCraftAttempt.quality, currentCraftAttempt.autocraft, currentCraftAttempt.reference)
+			requestTable["craftNow"] = true
 		else
 			removedRequest.bag = BAG_BACKPACK
 			removedRequest.slot = currentCraftAttempt.slot

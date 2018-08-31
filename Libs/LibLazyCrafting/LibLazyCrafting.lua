@@ -18,7 +18,7 @@ end
 
 -- Initialize libraries
 local libLoaded
-local LIB_NAME, VERSION = "LibLazyCrafting", 2.2
+local LIB_NAME, VERSION = "LibLazyCrafting", 2.22
 
 local LibLazyCrafting, oldminor = LibStub:NewLibrary(LIB_NAME, VERSION)
 if not LibLazyCrafting then return end
@@ -373,7 +373,7 @@ end
 
 LibLazyCrafting.findEarliestRequest = findEarliestRequest
 
-local function LLC_CraftAllItems(self)
+local function LLC_StopCraftAllItems(self)
 	if GetCraftingInteractionType() == 0 then return end
 	for i = 1, #craftingQueue[self.addonName] do
 		for j = 1, #craftingQueue[self.addonName][i] do
