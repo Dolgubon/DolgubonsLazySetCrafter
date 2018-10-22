@@ -1,9 +1,10 @@
-<!-- Dolgubon's Lazy Set Crafter
--- Created December 2016
--- Last Modified: December 2016
--- 
--- Created by Dolgubon (Joseph Heinzle)
---------------------------------->
+<!-- 
+Dolgubon's Lazy Set Crafter
+Created December 2016
+Last Modified: December 2016
+
+Created by Dolgubon (Joseph Heinzle)
+-->
 
 <GuiXml> 
 	<Controls>
@@ -84,7 +85,7 @@
 		        			<Anchor point="TOPLEFT" relativeTo="$(grandparent)Title" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="5" />
 		        			<Anchor point="TOPRIGHT" relativeTo="$(grandparent)Title" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="5" />
 		    			</Label>
-		    			<!----------------------------------------------------------------->
+		    			<!--  -->
 		    			<!-- Creating XML controls for Input/-->
 		    			<!-- Creating the holder for the pieces Input/-->
 
@@ -300,6 +301,20 @@
 						self.GetName = function() return DolgubonSetCrafterWindow:GetName() end
 					</OnInitialized>
 					<Controls>
+						<Button name="$(parent)RefreshMaterials" alpha="1" clickSound="Default_Click" topmost="true" inheritAlpha="false">
+							<Textures 
+								normal		="esoui/art/help/help_tabicon_feedback_up.dds"
+								pressed		="esoui/art/hud/gamepad/gp_radialicon_trade_down.dds"
+								mouseOver	="esoui/art/help/help_tabicon_feedback_over.dds"
+							/>
+		     				<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="8" offsetY="18" />
+		      				<Dimensions x="36" y="36" />
+							<OnClicked>
+								DolgubonSetCrafter.compileMatRequirements()
+								DolgubonSetCrafter.materialManager:RefreshData()
+							</OnClicked>
+				    	</Button>
+						
 						<Label name="$(parent)Label" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Material Requirements" inheritAlpha="false">
 							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="10" />
 							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="10" />
@@ -350,7 +365,7 @@
 										ZO_EditDefaultText_Initialize(self, DolgubonSetCrafter.localizedStrings.UIStrings.defaultUserId)
 										local editControlGroup = ZO_EditControlGroup:New()
 										<!-- 
-											--Add new recipient and new subject into an edit group and add autocomplete for the recipient name
+											- -Add new recipient and new subject into an edit group and add autocomplete for the recipient name
 									        local editControlGroup = ZO_EditControlGroup:New()
 									        MailBuddy.autoCompleteRecipient = ZO_AutoComplete:New(MailBuddy_MailSendRecipientsBoxEditNewRecipient, { AUTO_COMPLETE_FLAG_ALL }, nil, AUTO_COMPLETION_ONLINE_OR_OFFLINE, MAX_AUTO_COMPLETION_RESULTS)
 

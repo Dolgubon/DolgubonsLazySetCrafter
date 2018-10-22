@@ -114,6 +114,22 @@ function DolgubonSetCrafter:Initialize()
 		{0,5000,50000, "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7CZ3LW6E66NAU"}, 
 		"If you found a bug, have a request or a suggestion, or simply wish to donate, send a mail.")
 	DolgubonSetCrafterWindowRightMailQueue:SetHidden(true)
+
+	local currentAPIVersionOfAddon = 100025
+
+	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" then 
+		d("Update your addons!") 
+		out("Your version of Dolgubon's Lazy Set Crafter is out of date. Please update your addons.")
+		out = function() end
+	end
+
+	if GetAPIVersion() > currentAPIVersionOfAddon and GetDisplayName()=="@Dolgubon" and GetWorldName()=="PTS"  then 
+		for i = 1 , 20 do 
+			d("Set a reminder to change the API version of addon in Set Crafter Initialization function when the game update comes out.") 
+		end
+		out("Set a reminder to change the API version of addon in Set Crafter Initialization function when the game update comes out.") 
+			out = function() end
+	end
 end
 
 local function closeWindow (optionalOverride)

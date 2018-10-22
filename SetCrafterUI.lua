@@ -62,7 +62,7 @@ local queue
  
 
 local spacingForButtons = 40
-
+DolgubonSetCrafter.isMurkmure = true
 -- A shortcut to output info to the user
 function DolgubonSetCrafter.out(text)
 	if text == "" then
@@ -541,6 +541,7 @@ end
 --TamrielTradeCentrePrice:GetPriceInfo
 
 local function getPrice(itemLink)
+	local default =GetItemLinkValue(itemLink)
 	if MasterMerchant then
 		local itemID = tonumber(string.match(itemLink, '|H.-:item:(.-):'))
 		local itemIndex = MasterMerchant.makeIndexFromLink(itemLink)
@@ -548,17 +549,17 @@ local function getPrice(itemLink)
 		if price then
 			return price
 		else
-			return GetItemLinkValue(itemLink)
+			return default
 		end 
 	elseif TamrielTradeCentrePrice then
-		local t = TamrielTradeCentrePrice:GetPriceInfo("|H1:item:45852:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")
+		local t = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
 		if t then
-			return t.SuggestedPrice or GetItemLinkValue(itemLink)
+			return t.SuggestedPrice or default
 		else
-			return GetItemLinkValue(itemLink)
+			return default
 		end
 	else
-		return GetItemLinkValue(itemLink)
+		return default
 	end
 end
 
@@ -915,6 +916,7 @@ function DolgubonSetCrafter.setupBehaviourToggles()
 		DolgubonSetCrafter.savedvars['mimicStones'] = newState 
 	end
 end
+
 
 -- UI setup directing function
 function DolgubonSetCrafter.initializeFunctions.setupUI()

@@ -18,8 +18,11 @@
 local LibLazyCrafting = LibStub("LibLazyCrafting")
 
 local widgetType = 'smithing'
-local widgetVersion = 2.6
+local widgetVersion = 2.7
 if not LibLazyCrafting:RegisterWidget(widgetType, widgetVersion) then return  end
+
+local LLC = LibLazyCrafting
+local throw = LLC.LLCThrowError
 
 local function dbug(...)
 	if DolgubonGlobalDebugOutput then
@@ -536,6 +539,7 @@ local function LLC_CraftSmithingItem(self, patternIndex, materialIndex, material
 		station = GetCraftingInteractionType()
 		if not validStations[station] then
 			d("LLC: No station specified, and you are not at a crafting station")
+			throw(self, "No station specified, and you are not at a crafting station")
 			return
 		end
 	else
@@ -1021,6 +1025,9 @@ SetIndexes =
 	{{135717 , 135737, [6] = 135724, [7] = 138714},3},  -- 43 adept rider
 	{{136417 , 136437, [6] = 136424, [7] = 138730},9},  -- 44 nocturnal's favor
 	{{136067 , 136087, [6] = 136074, [7] = 138722},6},  -- 45 sload's semblance
+	{{143161 , 143181, [6] = 143168, [7] = 143197},2},	-- 46 Naga Shaman
+	{{143531 , 143551, [7] = 143538, [7] = 143567},4},	-- 47 Might of the Lost Legion
+	{{142791 , 142811, [7] = 142798, [7] = 142827},7,}	-- 48 Grave-Stake Collector
 }
 
 for i = 1,#SetIndexes do

@@ -4,6 +4,7 @@
 -- Format is {  {subject1, body1 } , {subject2, body2 } } 
 local mailOutputTexts = {}
 
+local out = DolgubonSetCrafter.out
 
 local function MailNextLine(eventCode)
 	local receiver = DolgubonSetCrafterWindowRightInputBox:GetText()
@@ -40,7 +41,6 @@ local function compileMatText()
 	local numMails = 0
 
 	local nextAddition = ""	
-
 	for i = 1, #tempMatHolder do
 		
 		nextAddition = tostring(tempMatHolder[i]["Amount"]).." "..tempMatHolder[i]["Name"].."\n"
@@ -55,6 +55,9 @@ local function compileMatText()
 			--{text.."(continued in next mail)", "Material Requirements ".. numMails}
 			text = continuedFrom..reqStarter
 		end
+	end
+	if #mailOutputTexts == 0 then
+		mailOutputTexts[1] = {reqSubject ,text}
 	end
 
 end
@@ -77,11 +80,11 @@ end
 
 function DolgubonSetCrafter.mailAllMats(destinationOverride)
 	local destination = destinationOverride or DolgubonSetCrafterWindowRightInputBox:GetText()
-	if #destination < 3 then 
+	if #destination < 4 then 
 		out("Invalid name")
 		return 
 	end
-	if #DolgubonSetCrafter.materialList == 0 then 
+	if next(DolgubonSetCrafter.materialList) == nil then 
 		d("No items required, so no mail has been sent")
 		return 
 	end
@@ -200,3 +203,9 @@ function DolgubonSetCrafter.MailAsRequest(destinationOverride)
 	-- ZO_MailSendBodyField:SetText(bodyText)
 	-- ZO_MailSendBodyField:TakeFocus() end, 200)
 end
+
+
+--GetPlayerWorldPositionInHouse()
+--/script HousingEditorRequestModeChange( HOUSING_EDITOR_MODE_SELECTION ) d( HousingEditorCanSelectTargettedFurniture() ) HousingEditorRequestModeChange( HOUSING_EDITOR_MODE_DISABLED )
+
+
