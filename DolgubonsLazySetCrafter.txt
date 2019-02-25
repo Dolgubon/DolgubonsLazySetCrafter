@@ -4,21 +4,16 @@
 ; States and/or other countries. All rights reserved.
 ; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
 
-## Title: Dolgubon's Lazy Set Crafter v2.0.9
-## APIVersion: 100025
+## Title: Dolgubon's Lazy Set Crafter v2.0.11
+## APIVersion: 100026
 ## Author: Dolgubon
-## Version: 2.0.9
+## Version: 2.0.11
 ## SavedVariables: dolgubonslazysetcraftersavedvars
+## DependsOn: LibLazyCrafting LibStub
 ; This optional depends on is so that in debugging you can use d before chat is loaded.
-## OptionalDependsOn: pChat 
+## OptionalDependsOn: pChat LibAddonMenu-2.0 LibPrice
 
 ; Libraries
-; LibStub - used for library versioning
-Libs\LibStub\LibStub.lua
-
-; LibLazyCrafting - used for crafting the items
-Libs\LibLazyCrafting\LibLazyCrafting.lua
-Libs\LibLazyCrafting\Smithing.lua
 
 ; LibCustomTitles
 Libs\LibCustomTitles\LibCustomTitles.lua
@@ -56,6 +51,11 @@ ConstantSetup.lua
 ; Utility file
 Toggle.lua
 
+; These three files split up the UI code so there isn't one monstrous file
+SetupPatternUI.lua
+SetupDropdowns.lua
+SetupScrollLists.lua
+
 ; Fully sets up the UI
 SetCrafterUI.lua
 
@@ -73,3 +73,4 @@ bindings.xml
 
 ; Settings menu - does what's on the can
 SettingsMenu.lua
+Favourites.lua

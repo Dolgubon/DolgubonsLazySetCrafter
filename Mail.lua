@@ -8,8 +8,8 @@ local out = DolgubonSetCrafter.out
 
 local function MailNextLine(eventCode)
 	local receiver = DolgubonSetCrafterWindowRightInputBox:GetText()
-	local subject = mailOutputTexts[#mailOutputTexts][2]
-	local body = mailOutputTexts[#mailOutputTexts][1]
+	local subject = mailOutputTexts[#mailOutputTexts][1]
+	local body = mailOutputTexts[#mailOutputTexts][2]
 
 	zo_callLater(function()d("Sending "..subject.." to "..receiver) SendMail(receiver, subject, body) end , 100)
 
@@ -48,6 +48,9 @@ local function compileMatText()
 
 		text =text.. tostring(tempMatHolder[i]["Amount"]).." "..tempMatHolder[i]["Name"].."\n"
 		if (#text + #nextAddition + #continueNext) > 690 then
+			if #mailOutputTexts == 0 then
+				mailOutputTexts[1] = {reqSubject ,text}
+			end
 			mailOutputTexts[#mailOutputTexts][2] = text..continueNext
 			mailOutputTexts[#mailOutputTexts + 1] = {}
 			mailOutputTexts[#mailOutputTexts][1] = reqSubject.. (#mailOutputTexts + 1)
@@ -59,7 +62,7 @@ local function compileMatText()
 	if #mailOutputTexts == 0 then
 		mailOutputTexts[1] = {reqSubject ,text}
 	end
-
+	mailOutputTexts[#mailOutputTexts][2] = text
 end
 
 local function beginMailing(destination)

@@ -41,13 +41,56 @@ Created by Dolgubon (Joseph Heinzle)
 			</OnResizeStop>
 			<OnMoveStop>DolgubonSetCrafter.onWindowMove(self) </OnMoveStop>
 		    <Controls>
+		    	<Control name="$(parent)Favourites" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false">
+		    		<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="2" offsetY="0"/>
+		    		<Dimensions x="240" y="350" />
+		    		<OnInitialized>
+		    			if GetDisplayName() ~="@Dolgubon" then
+		    				self:SetHidden(true)
+		    			end
+		    		</OnInitialized>
+		    		<Controls>
+		    			<Label name="$(parent)Title" scale="1" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Favourites">
+
+		        			<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="10" />
+		        			<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="10" />
+		    			</Label>
+			    		<Backdrop name="$(parent)Backdrop" alpha="1" inherits="ZO_DefaultBackdrop" centerColor="666666">
+				    		<AnchorFill/>
+						</Backdrop>
+						<!-- Favourite Scroll list-->
+				    	<Control name="$(parent)Scroll" hidden="false" mouseEnabled="true" clampedToScreen="true" movable="false">
+							
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-3" offsetY="-5" />
+							<Controls>
+<!-- 								<Backdrop name="$(parent)Backdrop" alpha="1" centerColor="666666">
+						    		<AnchorFill/>
+								</Backdrop> -->
+								<Control name="$(parent)List" inherits="ZO_ScrollList">
+									
+<!-- 									<Controls>
+<Backdrop name="$(parent)Backdrop" alpha="0.5" centerColor="007733">
+						    		<AnchorFill/>
+								</Backdrop>
+							</Controls> -->
+									<Anchor point="TOPLET" relativeTo="$(parent)" offsetY="5" offsetX="5" relativePoint="TOPLET"/>
+									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" offsetY="-5" offsetX="8" relativePoint="BOTTOMRIGHT"/>
+
+								</Control>
+							</Controls>
+						</Control>
+						
+					</Controls>
+		    	</Control>
+
 		    	<Backdrop name="$(parent)Backdrop" alpha="1" inherits="ZO_DefaultBackdrop" centerColor="666666">
 		    		<AnchorFill/>
 				</Backdrop>
 		    	<Backdrop name="$(parent)Divider" edgeColor="696969">
 		    		<Edge edgeSize="2"/>
 					<Dimensions x="3" y="650" />
-					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="-3" offsetX="275" />
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="-4" offsetX="275" />
 				</Backdrop>
 				<Button name="$(parent)Close" alpha="1" clickSound="Default_Click" topmost="true">
 		    		<Textures normal="/esoui/art/hud/radialicon_cancel_up.dds" mouseOver="/esoui/art/hud/radialicon_cancel_over.dds" />
@@ -310,7 +353,6 @@ Created by Dolgubon (Joseph Heinzle)
 		     				<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="8" offsetY="18" />
 		      				<Dimensions x="36" y="36" />
 							<OnClicked>
-								DolgubonSetCrafter.compileMatRequirements()
 								DolgubonSetCrafter.materialManager:RefreshData()
 							</OnClicked>
 				    	</Button>

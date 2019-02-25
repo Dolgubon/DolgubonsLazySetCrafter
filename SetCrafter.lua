@@ -32,6 +32,7 @@ DolgubonSetCrafter.default = {
 	['toggleYPost'] = 50,
 	['width'] = 1050,
 	['height'] = 650,
+	['faves'] = {},
 }
 
 
@@ -112,10 +113,10 @@ function DolgubonSetCrafter:Initialize()
 	LibFeedback:initializeFeedbackWindow(DolgubonSetCrafter, "Dolgubon's Lazy Set Crafter",DolgubonSetCrafterWindow, "@Dolgubon", 
 		{TOPLEFT , DolgubonSetCrafterWindow , TOPLEFT , 10, 10}, 
 		{0,5000,50000, "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7CZ3LW6E66NAU"}, 
-		"If you found a bug, have a request or a suggestion, or simply wish to donate, send a mail.")
+		"If you found a bug, have a request or a suggestion, or wish to donate, you can send me a mail here.")
 	DolgubonSetCrafterWindowRightMailQueue:SetHidden(true)
 
-	local currentAPIVersionOfAddon = 100025
+	local currentAPIVersionOfAddon = 100026
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" then 
 		d("Update your addons!") 
@@ -134,6 +135,7 @@ end
 
 local function closeWindow (optionalOverride)
 	if optionalOverride==nil then optionalOverride = not DolgubonSetCrafterWindow:IsHidden() end
+	DolgubonSetCrafter.updateList()
 	DolgubonSetCrafterWindow:SetHidden(optionalOverride) 
 	CraftingQueueScroll:SetHidden(optionalOverride)
 
