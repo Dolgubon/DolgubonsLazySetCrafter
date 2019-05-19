@@ -1,10 +1,9 @@
-<!-- Dolgubon's Lazy Set Crafter
--- Created December 2016
--- Last Modified: December 2016
--- 
--- Created by Dolgubon (Joseph Heinzle)
----------------------------------
-esoui/art/icons/housing_dwe_inc_anvila001.dds
+<!-- 
+Dolgubon's Lazy Set Crafter
+Created December 2016
+Last Modified: December 2016
+
+Created by Dolgubon (Joseph Heinzle)
 -->
 
 <GuiXml> 
@@ -31,7 +30,7 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 		</TopLevelControl>
 
 		<TopLevelControl name="DolgubonSetCrafterWindow" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true" resizeHandleSize="10" >	
-			<Dimensions x="1050" y="650" />
+			<Dimensions x="1200" y="650" />
 			<DimensionConstraints minX="740" minY="470" />
 			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="300" offsetY="-100"/>
 			<OnResizeStart>
@@ -42,13 +41,56 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 			</OnResizeStop>
 			<OnMoveStop>DolgubonSetCrafter.onWindowMove(self) </OnMoveStop>
 		    <Controls>
+		    	<Control name="$(parent)Favourites" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false">
+		    		<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="2" offsetY="0"/>
+		    		<Dimensions x="240" y="350" />
+		    		<OnInitialized>
+		    			if GetDisplayName() ~="@Dolgubon" then
+		    				self:SetHidden(true)
+		    			end
+		    		</OnInitialized>
+		    		<Controls>
+		    			<Label name="$(parent)Title" scale="1" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Favourites">
+
+		        			<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="10" />
+		        			<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="10" />
+		    			</Label>
+			    		<Backdrop name="$(parent)Backdrop" alpha="1" inherits="ZO_DefaultBackdrop" centerColor="666666">
+				    		<AnchorFill/>
+						</Backdrop>
+						<!-- Favourite Scroll list-->
+				    	<Control name="$(parent)Scroll" hidden="false" mouseEnabled="true" clampedToScreen="true" movable="false">
+							
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-3" offsetY="-5" />
+							<Controls>
+<!-- 								<Backdrop name="$(parent)Backdrop" alpha="1" centerColor="666666">
+						    		<AnchorFill/>
+								</Backdrop> -->
+								<Control name="$(parent)List" inherits="ZO_ScrollList">
+									
+<!-- 									<Controls>
+<Backdrop name="$(parent)Backdrop" alpha="0.5" centerColor="007733">
+						    		<AnchorFill/>
+								</Backdrop>
+							</Controls> -->
+									<Anchor point="TOPLET" relativeTo="$(parent)" offsetY="5" offsetX="5" relativePoint="TOPLET"/>
+									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" offsetY="-5" offsetX="8" relativePoint="BOTTOMRIGHT"/>
+
+								</Control>
+							</Controls>
+						</Control>
+						
+					</Controls>
+		    	</Control>
+
 		    	<Backdrop name="$(parent)Backdrop" alpha="1" inherits="ZO_DefaultBackdrop" centerColor="666666">
 		    		<AnchorFill/>
 				</Backdrop>
 		    	<Backdrop name="$(parent)Divider" edgeColor="696969">
 		    		<Edge edgeSize="2"/>
 					<Dimensions x="3" y="650" />
-					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="-3" offsetX="275" />
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="-4" offsetX="275" />
 				</Backdrop>
 				<Button name="$(parent)Close" alpha="1" clickSound="Default_Click" topmost="true">
 		    		<Textures normal="/esoui/art/hud/radialicon_cancel_up.dds" mouseOver="/esoui/art/hud/radialicon_cancel_over.dds" />
@@ -86,7 +128,7 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 		        			<Anchor point="TOPLEFT" relativeTo="$(grandparent)Title" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="5" />
 		        			<Anchor point="TOPRIGHT" relativeTo="$(grandparent)Title" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="5" />
 		    			</Label>
-		    			<!----------------------------------------------------------------->
+		    			<!--  -->
 		    			<!-- Creating XML controls for Input/-->
 		    			<!-- Creating the holder for the pieces Input/-->
 
@@ -302,6 +344,19 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 						self.GetName = function() return DolgubonSetCrafterWindow:GetName() end
 					</OnInitialized>
 					<Controls>
+						<Button name="$(parent)RefreshMaterials" alpha="1" clickSound="Default_Click" topmost="true" inheritAlpha="false">
+							<Textures 
+								normal		="esoui/art/help/help_tabicon_feedback_up.dds"
+								pressed		="esoui/art/hud/gamepad/gp_radialicon_trade_down.dds"
+								mouseOver	="esoui/art/help/help_tabicon_feedback_over.dds"
+							/>
+		     				<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="8" offsetY="18" />
+		      				<Dimensions x="36" y="36" />
+							<OnClicked>
+								DolgubonSetCrafter.materialManager:RefreshData()
+							</OnClicked>
+				    	</Button>
+						
 						<Label name="$(parent)Label" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Material Requirements" inheritAlpha="false">
 							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="10" />
 							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="10" />
@@ -333,8 +388,16 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 								
 							</OnClicked>
 				    	</Button>
+				    	<Button name="$(parent)MailQueue" alpha="1" topmost="true" text="Mail Request" inherits="ZO_DefaultButton" inheritAlpha="false">
+		     				<Anchor point="BOTTOM" relativeTo="$(parent)MailRequirements" relativePoint="TOP" offsetX="0" offsetY="-5" />
+		      				<Dimensions x="200" y="28" />
+							<OnClicked>
+								DolgubonSetCrafter.MailAsRequest()
+							</OnClicked>
+				    	</Button>
+				    	
 				    	<Backdrop name="$(parent)Input" tier="HIGH" inherits="ZO_EditBackdrop" inheritAlpha="false">
-							<Anchor point="BOTTOM" relativeTo="$(parent)MailRequirements" relativePoint="TOP" offsetX="0" offsetY="-5" />
+							<Anchor point="BOTTOM" relativeTo="$(parent)MailQueue" relativePoint="TOP" offsetX="0" offsetY="-5" />
 							<Dimensions x="200"/>
 							<Controls>
 								<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText">
@@ -344,7 +407,7 @@ esoui/art/icons/housing_dwe_inc_anvila001.dds
 										ZO_EditDefaultText_Initialize(self, DolgubonSetCrafter.localizedStrings.UIStrings.defaultUserId)
 										local editControlGroup = ZO_EditControlGroup:New()
 										<!-- 
-											--Add new recipient and new subject into an edit group and add autocomplete for the recipient name
+											- -Add new recipient and new subject into an edit group and add autocomplete for the recipient name
 									        local editControlGroup = ZO_EditControlGroup:New()
 									        MailBuddy.autoCompleteRecipient = ZO_AutoComplete:New(MailBuddy_MailSendRecipientsBoxEditNewRecipient, { AUTO_COMPLETE_FLAG_ALL }, nil, AUTO_COMPLETION_ONLINE_OR_OFFLINE, MAX_AUTO_COMPLETION_RESULTS)
 

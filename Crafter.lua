@@ -6,6 +6,7 @@
 -----------------------------------
 --
 --local original = d local function d() original(pcall(function() error("There's a d() at this line!") end )) end
+DolgubonSetCrafter = DolgubonSetCrafter or {}
 
 function determineLine()
 	local a, b  = pcall( function() local a = nil a = a+ 1 end) return b,  tonumber(string.match (b, "^%D*%d+%D*%d+%D*%d+%D*%d+%D*(%d+)" ))
@@ -17,7 +18,7 @@ local function d(...)
 		originalD(...)
 	end
 end
-DolgubonSetCrafter = DolgubonSetCrafter or {}
+
 
 local queue
 
@@ -366,9 +367,11 @@ local function addPatternToQueue(patternButton,i)
 	end
 	-- Are all the combobox selections valid? We already checked traits though, so filter those out
 	for k, combobox in pairs(comboBoxes) do
-		if (not combobox.isTrait and combobox.invalidSelection()) and not DolgubonSetCrafter.savedvars.autofill then
-			out(combobox.selectPrompt)
-			return
+		if combobox.invalidSelection() and not DolgubonSetCrafter.savedvars.autofill then
+			if not combobox.isTrait and (combobox.isStyle and  patternButton:UseStyle() ) then
+				out(combobox.selectPrompt)
+				return
+			end
 		end
 	end
 

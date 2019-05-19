@@ -32,6 +32,7 @@ DolgubonSetCrafter.default = {
 	['toggleYPost'] = 50,
 	['width'] = 1050,
 	['height'] = 650,
+	['faves'] = {},
 }
 
 
@@ -107,11 +108,35 @@ function DolgubonSetCrafter:Initialize()
 	--if pcall(DolgubonSetCrafter.initializeFunctions.setupUI) then else d("Dolgubon's Lazy Set Crafter: UI not loaded") end
 	DolgubonSetCrafter.initializeFunctions.setupUI()
 	
-	DolgubonSetCrafter.initializeFeedbackWindow()
+	--DolgubonSetCrafter.initializeFeedbackWindow()
+	LibFeedback = LibStub:GetLibrary("LibFeedback")
+	local button, window = LibFeedback:initializeFeedbackWindow(DolgubonSetCrafter, "Dolgubon's Lazy Set Crafter",DolgubonSetCrafterWindow, "@Dolgubon", 
+		{TOPLEFT , DolgubonSetCrafterWindow , TOPLEFT , 10, 10}, 
+		{0,5000,50000, "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7CZ3LW6E66NAU"}, 
+		"If you found a bug, have a request or a suggestion, or wish to donate, you can send me a mail here.")
+
+	DolgubonSetCrafterWindowRightMailQueue:SetHidden(true)
+
+	local currentAPIVersionOfAddon = 100027
+
+	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" then 
+		d("Update your addons!") 
+		out("Your version of Dolgubon's Lazy Set Crafter is out of date. Please update your addons.")
+		out = function() end
+	end
+
+	if GetAPIVersion() > currentAPIVersionOfAddon and GetDisplayName()=="@Dolgubon" and GetWorldName()=="PTS"  then 
+		for i = 1 , 20 do 
+			d("Set a reminder to change the API version of addon in Set Crafter Initialization function when the game update comes out.") 
+		end
+		out("Set a reminder to change the API version of addon in Set Crafter Initialization function when the game update comes out.") 
+			out = function() end
+	end
 end
 
 local function closeWindow (optionalOverride)
 	if optionalOverride==nil then optionalOverride = not DolgubonSetCrafterWindow:IsHidden() end
+	DolgubonSetCrafter.updateList()
 	DolgubonSetCrafterWindow:SetHidden(optionalOverride) 
 	CraftingQueueScroll:SetHidden(optionalOverride)
 

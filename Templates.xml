@@ -62,7 +62,7 @@
 				</Label>
 				<Control name="$(parent)ComboBox" inherits="ZO_ScrollableComboBox"><!--ZO_ScrollableComboBox-->
 					<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" offsetY="0" />
-					<Dimensions x="150" y="30" />
+					<Dimensions x="175" y="30" />
 				</Control>
 			</Controls>
 		</Label>
@@ -78,7 +78,7 @@
 				</Label>
 				<Control name="$(parent)ComboBox" inherits="ZO_ComboBox">
 					<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" offsetY="0" />
-					<Dimensions x="150" y="30" />
+					<Dimensions x="175" y="30" />
 				</Control>
 			</Controls>
 		</Label>
@@ -88,16 +88,15 @@
 				local original = self.SetColor
 				self.ApplyColour = function(self, isKnown)
 					if isKnown then
-						if self:GetParent().usesMimicStone then
-							original(self, 1, 1, 0.4)
-						else
-							original(self,0.46,0.73,0.76)
-						end
+						local colour  = GetItemQualityColor(self:GetParent().data[1].CraftRequestTable[9])
+						original(self, colour:UnpackRGB())
 					elseif isKnown==nil then
 
-						self.SetColor = function(...) if self:GetParent().usesMimicStone then
-							original(self, 1, 1, 0.4)
-						else original(...) end end return
+						self.SetColor = function(...) 
+							local colour  = GetItemQualityColor(self:GetParent().data[1].CraftRequestTable[9])
+							original(self, colour:UnpackRGB())
+						end 
+						return
 					else
 						original(self,1,0.75,0.75,0.75)
 					end
@@ -114,6 +113,7 @@
 					self:GetParent():GetHandler("OnMouseEnter")(self:GetParent(), true)
 					return
 				end
+
 
 				self:GetParent():GetHandler("OnMouseEnter")(self:GetParent(), false)
 				--DolgubonSetCrafter.scroll:Row_OnMouseEnter(self:GetParent())
@@ -162,21 +162,69 @@
 				
 			</Controls>
 		</Button>
+		<Control name="SetCrafterFavouriteTemplate" virtual="true" mouseEnabled="true">
+			<OnMouseEnter>
+				DolgubonSetCrafter.scroll:Row_OnMouseEnter(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				DolgubonSetCrafter.scroll:Row_OnMouseExit(self)
+			</OnMouseExit>
+			<OnInitialized>
+				self.setCurrent = function(self, fave) self.fave = fave end
+				self.getCurrent = function(self) return self.fave end
+			</OnInitialized>
+			<Dimensions x="220" y="30" />
+			<!-- <OnClicked>
+				DolgubonSetCrafter.loadFavourite(self:getCurrent())
+				DolgubonSetCrafter.FavouriteScroll.RefreshData()
+			</OnClicked> -->
+			<Controls>
+<!-- 				<Backdrop name="$(parent)BG" >
+					<AnchorFill/>
+					<OnClicked>
+						DolgubonSetCrafter.loadFavourite(self:GetParent():getCurrent())
+						DolgubonSetCrafter.FavouriteScroll.RefreshData()
+					</OnClicked>
+				</Backdrop> -->
+
+				<Label name="$(parent)Name" font="ZoFontGame" verticalAlignment="CENTER" color="76BCC3" mouseEnabled="false" wrapMode="TEXT_WRAP_MODE_TRUNCATE">
+
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" color="000000" />
+					<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" color="000000" />
+
+				</Label>
+
+				<Button name="$(parent)Delete" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-10" offsetY="0" />
+					<Dimensions x="44" y="44" />
+					<Textures normal="/esoui/art/hud/radialicon_cancel_up.dds" mouseOver="/esoui/art/hud/radialicon_cancel_over.dds" />
+					<OnClicked>
+						DolgubonSetCrafter.deleteFavourite(self:GetParent():getCurrent())
+						DolgubonSetCrafter.FavouriteScroll.RefreshData()
+					</OnClicked>
+				</Button>
+				<Button name="$(parent)Rename" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-40" offsetY="0" />
+					<Dimensions x="44" y="44" />
+					<Textures normal="/esoui/art/hud/radialicon_cancel_up.dds" mouseOver="/esoui/art/hud/radialicon_cancel_over.dds" />
+					
+				</Button>
+				
+			</Controls>
+		</Control>
 		<!-- This template is for the craft request rows. It has the close button, and copies of all of the labels-->
 		<Button name="CraftingRequestTemplate" virtual="true" mouseEnabled="true" >
 			<OnMouseEnter>
 				DolgubonSetCrafter.scroll:Row_OnMouseEnter(self)
 				local added = false
 				local parameters = {...}
-				if self.usesMimicStone then
-					if not parameters[2] then
-						InitializeTooltip(InformationTooltip, self, TOP, 0, 0)
-					end
-					if not added then
-						InformationTooltip:AddLine(DolgubonSetCrafter.localizedStrings.UIStrings.usesMimicStone)
-						added = true
-					end
+				if not parameters[2] then
+					InitializeTooltip(InformationTooltip, self, TOP, 0, 0)
 				end
+				if self.usesMimicStone then
+					InformationTooltip:AddLine(DolgubonSetCrafter.localizedStrings.UIStrings.usesMimicStone)
+				end
+				InformationTooltip:AddLine(self.qualityString)
 			</OnMouseEnter>
 
 			<OnMouseExit>
@@ -210,16 +258,30 @@
 					<OnClicked>
 						self:onClickety()
 					</OnClicked>
+					<OnMouseExit>
+						ClearTooltip(InformationTooltip)
+						DolgubonSetCrafter.scroll:Row_OnMouseExit(self:GetParent())
+					</OnMouseExit>
+					
 				</Button>
 				<Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
-				
+
+				<Button name="$(parent)MimicStone" >
+					<Dimensions x="24" y="24" />
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)" offsetX="0"  />
+					<Textures normal="/esoui/art/icons/crafing_universal_item.dds" />
+					<OnInitialized>
+						self.tooltip = DolgubonSetCrafter.localizedStrings.UIStrings.usesMimicStone
+					</OnInitialized>
+				</Button>
+
 				<Label name="$(parent)Pattern" inherits="QueueRowLabelTemplate" color="76BCC3">
 					<Dimensions x="140" y="48" />
-					<Anchor point="LEFT" relativeTo="$(parent)" offsetX="0" color="000000" />
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)MimicStone" offsetX="0" />
 				</Label>
 				<Label name="$(parent)Weight" inherits="QueueRowLabelTemplate">
 					<Dimensions x="70" y="48" />
-					<Anchor point="CENTER" relativeTo="$(parent)Pattern" relativePoint="RIGHT" offsetX="0" />
+					<Anchor point="CENTER" relativeTo="$(parent)Pattern" relativePoint="RIGHT" offsetX="-10" />
 				</Label>
 				<Label name="$(parent)Level" inherits="QueueRowLabelTemplate">
 					<Dimensions x="50" y="48" />
@@ -237,10 +299,10 @@
 					<Dimensions x="140" y="48" />
 					<Anchor point="LEFT" relativeTo="$(parent)Trait" relativePoint="RIGHT" offsetX="0" />
 				</Label>
-				<Label name="$(parent)Quality" inherits="QueueRowLabelTemplate">
+				<!-- <Label name="$(parent)Quality" inherits="QueueRowLabelTemplate">
 					<Dimensions x="90" y="48" />
 					<Anchor point="LEFT" relativeTo="$(parent)Set" relativePoint="RIGHT" offsetX="0" />
-				</Label>
+				</Label> -->
 				<Label name="$(parent)Reference" inherits="QueueRowLabelTemplate">
 					<Dimensions x="30" y="48" />
 					<Anchor point="LEFT" relativeTo="$(parent)Set" relativePoint="RIGHT" offsetX="0" />
@@ -249,6 +311,10 @@
 							self:SetHidden(true)
 						end
 					</OnInitialized>
+					<OnMouseExit>
+						ClearTooltip(InformationTooltip)
+						DolgubonSetCrafter.scroll:Row_OnMouseExit(self:GetParent())
+					</OnMouseExit>
 				</Label>
 				
 			</Controls>
