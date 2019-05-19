@@ -53,7 +53,7 @@ local function compileMatText()
 			end
 			mailOutputTexts[#mailOutputTexts][2] = text..continueNext
 			mailOutputTexts[#mailOutputTexts + 1] = {}
-			mailOutputTexts[#mailOutputTexts][1] = reqSubject.. (#mailOutputTexts + 1)
+			mailOutputTexts[#mailOutputTexts][1] = reqSubject.. (#mailOutputTexts )
 			numMails = numMails + 1
 			--{text.."(continued in next mail)", "Material Requirements ".. numMails}
 			text = continuedFrom..reqStarter

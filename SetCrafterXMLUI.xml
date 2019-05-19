@@ -30,7 +30,7 @@ Created by Dolgubon (Joseph Heinzle)
 		</TopLevelControl>
 
 		<TopLevelControl name="DolgubonSetCrafterWindow" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true" resizeHandleSize="10" >	
-			<Dimensions x="1050" y="650" />
+			<Dimensions x="1200" y="650" />
 			<DimensionConstraints minX="740" minY="470" />
 			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="300" offsetY="-100"/>
 			<OnResizeStart>

@@ -6,6 +6,7 @@
 -----------------------------------
 --
 --local original = d local function d() original(pcall(function() error("There's a d() at this line!") end )) end
+DolgubonSetCrafter = DolgubonSetCrafter or {}
 
 function determineLine()
 	local a, b  = pcall( function() local a = nil a = a+ 1 end) return b,  tonumber(string.match (b, "^%D*%d+%D*%d+%D*%d+%D*%d+%D*(%d+)" ))
@@ -17,7 +18,7 @@ local function d(...)
 		originalD(...)
 	end
 end
-DolgubonSetCrafter = DolgubonSetCrafter or {}
+
 
 local queue
 

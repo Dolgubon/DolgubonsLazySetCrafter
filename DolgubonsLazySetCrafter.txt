@@ -11,7 +11,7 @@
 ## SavedVariables: dolgubonslazysetcraftersavedvars
 ## DependsOn: LibLazyCrafting LibStub
 ; This optional depends on is so that in debugging you can use d before chat is loaded.
-## OptionalDependsOn: pChat LibAddonMenu-2.0 LibPrice
+## OptionalDependsOn: pChat LibAddonMenu-2.0 LibLazyCrafting LibStub LibFeedback LibCustomMenu LibPrice
 
 ; Libraries
 
@@ -33,6 +33,9 @@ libs\LibAddonMenu-2.0\controls\header.lua
 libs\LibAddonMenu-2.0\controls\slider.lua
 libs\LibAddonMenu-2.0\controls\texture.lua
 libs\LibAddonMenu-2.0\controls\divider.lua
+
+libs\LibPrice\LibPrice.lua
+libs\LibPrice\LibPrice_Internal.lua
 
 ; Feedback library
 libs\LibFeedback\feedback.lua
@@ -74,3 +77,4 @@ bindings.xml
 ; Settings menu - does what's on the can
 SettingsMenu.lua
 Favourites.lua
+RightClick.lua

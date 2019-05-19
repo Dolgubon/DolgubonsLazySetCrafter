@@ -8,8 +8,8 @@ function DolgubonSetCrafterWindowComboboxes:anchoruiElements()
 	for i = 1, #self.elements do
 		self.elements[i]:ClearAnchors()
 	end
-	local minLeftSize = 1000
-	local minRightSize = 1000
+	local minLeftSize = 1
+	local minRightSize = 1
 	local lastControlRight = nil
 	local lastControlLeft = nil
 	for i = 1, #self.elements do
@@ -27,7 +27,7 @@ function DolgubonSetCrafterWindowComboboxes:anchoruiElements()
 				self.elements[i]:GetNamedChild("ComboBox"):SetWidth(230)
 			end
 			if self.elements[i]:GetNamedChild("Name") then
-				minLeftSize = math.min(self.elements[i]:GetNamedChild("Name"):GetTextWidth() + 230, minLeftSize)
+				-- minLeftSize = math.min(self.elements[i]:GetNamedChild("Name"):GetTextWidth() + 230, minLeftSize)
 
 			end
 		else -- RIGHT SIDE
@@ -42,13 +42,13 @@ function DolgubonSetCrafterWindowComboboxes:anchoruiElements()
 				self.elements[i]:GetNamedChild("ComboBox"):SetWidth(160)
 			end
 			if self.elements[i]:GetNamedChild("Name") then
-				minRightSize = math.min(self.elements[i]:GetNamedChild("Name"):GetTextWidth() + 130, minRightSize)
+				-- minRightSize = math.min(self.elements[i]:GetNamedChild("Name"):GetTextWidth() + 130, minRightSize)
 			end
 		end
 		lastControl = self.elements[i]
 	end
 
-	DolgubonSetCrafterWindow.minWidth = ( DolgubonSetCrafterWindow.minWidth or 0) + minRightSize + minLeftSize
+	-- DolgubonSetCrafterWindow.minWidth = ( DolgubonSetCrafterWindow.minWidth or 0) + minRightSize + minLeftSize
 	self:SetDimensions(800,math.ceil(#self.elements/2)*vSpacing + 25)
 	self.height = math.ceil(#self.elements/2)*vSpacing + 25
 	DolgubonSetCrafterWindowLeftInteractionButtons:ClearAnchors()
@@ -85,8 +85,8 @@ local function makeDropdownSelections(comboBoxContainer, tableInfo , text , x, y
 	comboBoxContainer:GetChild((comboBoxLocation+2)%2+1):SetText(text..":")
 	if not comboBox.m_comboBox then 
 		comboBox.m_comboBox =comboBox.dropdown
-		comboBox.dropdown.m_container:SetDimensions(200,30)
-		comboBox.dropdown.m_dropdown:SetDimensions(200,370)
+		comboBox.dropdown.m_container:SetDimensions(225,30)
+		comboBox.dropdown.m_dropdown:SetDimensions(225,370)
 	end
 	--Function called when an option is selected
 	function comboBox:setSelected( selectedInfo)
@@ -175,11 +175,23 @@ function DolgubonSetCrafter.setupComboBoxes()
 	DolgubonSetCrafter.ComboBox.Jewelry		= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Jewelry_Trait", DolgubonSetCrafterWindowComboboxes, "ComboboxTemplate")
 	DolgubonSetCrafter.ComboBox.Set			= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Set", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
 	DolgubonSetCrafter.ComboBox.Style 		= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Style", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
+	if GetDisplayName()=="@Dolgubon" then
+		DolgubonSetCrafter.ComboBox.WeaponEnchant = WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_WeaponEnchant", DolgubonSetCrafterWindowComboboxes, "ComboboxTemplate")
+		DolgubonSetCrafter.ComboBox.JewelEnchant = WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_JewelEnchant", DolgubonSetCrafterWindowComboboxes, "ComboboxTemplate")
+		DolgubonSetCrafter.ComboBox.ArmourEnchant = WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_ArmourEnchant", DolgubonSetCrafterWindowComboboxes, "ComboboxTemplate")
+		DolgubonSetCrafter.ComboBox.EnchantQuality = WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_EnchantQuality", DolgubonSetCrafterWindowComboboxes, "ComboboxTemplate")
+	end
 	
 	for k, v in pairs(DolgubonSetCrafter.ComboBox) do
 		v.name = k
 	end
-	
+	local armourEnchant = 
+	{
+		{"Frozen Weapon Enchantment","health2"},
+		{"stsam","Frozen Weapon Enchantment"}
+	}--GetItemLinkEnchantInfo(string itemLink)
+
+
 	local UIStrings = langStrings.UIStrings
 	--Three calls to make dropdown selections, as well as further setup the comboboxes.
 	makeDropdownSelections( DolgubonSetCrafter.ComboBox.Style  	   	, DolgubonSetCrafter.styleNames   , UIStrings.style 		, -160, 80, 2, "style")
@@ -188,9 +200,39 @@ function DolgubonSetCrafter.setupComboBoxes()
 	makeDropdownSelections( DolgubonSetCrafter.ComboBox.Weapon 		, DolgubonSetCrafter.weaponTraits , UIStrings.weaponTrait 	, 240 , 120, 1, "weaponTrait")
 	makeDropdownSelections( DolgubonSetCrafter.ComboBox.Set  	   	, DolgubonSetCrafter.setIndexes   , UIStrings.gearSet 		, 240, 40, 2, "set")
 	makeDropdownSelections( DolgubonSetCrafter.ComboBox.Jewelry	   	, DolgubonSetCrafter.jewelryTraits, UIStrings.jewelryTrait	, -160, 160, 1, "jewelryTraits")
+	if GetDisplayName()=="@Dolgubon" then
+		makeDropdownSelections( DolgubonSetCrafter.ComboBox.WeaponEnchant, DolgubonSetCrafter.jewelryTraits, "Weapon Enchant"	, -160, 160, 1, "weaponEnchant")
+		makeDropdownSelections( DolgubonSetCrafter.ComboBox.JewelEnchant, DolgubonSetCrafter.quality, "Jewelry Enchant"	, -160, 160, 1, "jewelEnchant")
+		makeDropdownSelections( DolgubonSetCrafter.ComboBox.ArmourEnchant, armourEnchant, "Armour Enchant"	, -160, 160, 1, "armourEnchant")
+		makeDropdownSelections( DolgubonSetCrafter.ComboBox.EnchantQuality, DolgubonSetCrafter.quality, "Glyph Quality"	, -160, 160, 1, "enchantQuality")
+	end
 	DolgubonSetCrafter.ComboBox.Armour.isTrait = true
 	DolgubonSetCrafter.ComboBox.Weapon.isTrait = true
 	DolgubonSetCrafter.ComboBox.Jewelry.isTrait = true
 	DolgubonSetCrafter.ComboBox.Style.isStyle = true
 	--DolgubonSetCrafterWindowComboboxes:anchoruiElements()
 end
+
+
+
+--[[
+Scenario 1:
+Game crashes: Too bad. So Sad. You were gonna make it a second time anyway unless you cancel it. You won't make the glyph but eh
+Scenario 2:
+Glyph made: Well we won't requeue that glyph, but we will make the armour
+Scenario 3:
+Gear made: We won't requeue anything!
+scenario 4:
+Nothing made: No issues here
+
+
+Save unique Item Id!!
+On Login:
+If it's found at the same place, great
+If it's not found at the same place, search bags
+If it's in inventory, great
+If it's not in inventory, then do not remake item, only queue partially
+
+
+
+]]

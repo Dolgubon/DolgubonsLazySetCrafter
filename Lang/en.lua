@@ -37,6 +37,7 @@ DolgubonSetCrafter.localizedStrings.UIStrings.chatRequirements      = "Requireme
 DolgubonSetCrafter.localizedStrings.UIStrings.defaultUserId         = "Enter @UserId"
 DolgubonSetCrafter.localizedStrings.UIStrings.noSet                 = "No Set"
 DolgubonSetCrafter.localizedStrings.UIStrings.usesMimicStone        = "This item will be made using a Mimic Stone"
+DolgubonSetCrafter.localizedStrings.UIStrings.qualityString         = "This item will be created with <<1>> quality"
 
 
 DolgubonSetCrafter.localizedStrings.SettingsStrings = {}

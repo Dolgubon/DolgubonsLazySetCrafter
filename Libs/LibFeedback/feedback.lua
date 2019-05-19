@@ -55,6 +55,8 @@ local function SendNote(self)
 	local p = self.parent
 	if type(self.amount)=="string" then
 		RequestOpenUnsafeURL(self.amount)
+	elseif type(self.amount)=="function" then
+		self.amount()
 	else
 		p.parentControl:SetHidden(true)
 		p:SetHidden(true)

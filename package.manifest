@@ -20,6 +20,9 @@ libs\LibAddonMenu-2.0\controls\header.lua
 libs\LibAddonMenu-2.0\controls\slider.lua
 libs\LibAddonMenu-2.0\controls\texture.lua
 
+libs\LibPrice\LibPrice_Internal.lua
+libs\LibPrice\LibPrice.lua
+
 Templates.xml
 SetCrafterXMLUI.xml
 

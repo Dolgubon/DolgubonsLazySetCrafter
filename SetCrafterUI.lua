@@ -272,9 +272,10 @@ function DolgubonSetCrafter.onWindowMove(window)
 	DolgubonSetCrafter.savedvars.xPos = window:GetLeft()
 	DolgubonSetCrafter.savedvars.yPos = window:GetTop()
 end
-
+local totalWindowWidth = 1200
+local leftHalfWindowWidth = totalWindowWidth - 250
 local function getDividerPosition(window, a)
-	local DIVIDER_RATIO = 800/1050
+	local DIVIDER_RATIO = leftHalfWindowWidth/totalWindowWidth
 	local width = window:GetWidth()
 	local divider = window:GetNamedChild("Divider")
 
@@ -293,11 +294,11 @@ local a = 1
 --<DimensionConstraints minX="700" minY="460" />
 -- 700
 local function SetWindowScale(window, scale)
-	local LeftRightRatio =  800/1050
+	local LeftRightRatio =  leftHalfWindowWidth/totalWindowWidth
 	local divider = window:GetNamedChild("divider")
 	local left = window:GetNamedChild("Left")
 	local right = window:GetNamedChild("Right")
-	local newScale = window:GetWidth()/1050
+	local newScale = window:GetWidth()/totalWindowWidth
 	newScale = math.min(newScale, 1) -- after 1, don't rescale it anymore
 	-- Rather than changing the scale of the whole window (which will change the size and call this again)
 	-- we scale the two main elements of the window so that they match the size
@@ -325,10 +326,10 @@ function DolgubonSetCrafter.dynamicResize(window)
 	DolgubonSetCrafter.materialManager:RefreshData()
 	
 	-- Resize method 2
-	local newScale = (1050 - window:GetWidth())*(-0.0008) + 1
-	local scale = math.sqrt(window:GetWidth()/1050)
+	local newScale = (totalWindowWidth - window:GetWidth())*(-0.0008) + 1
+	local scale = math.sqrt(window:GetWidth()/totalWindowWidth)
 	SetWindowScale(window, scale)
-	if true or window:GetWidth() > 1050 then return end
+	if true or window:GetWidth() > totalWindowWidth then return end
 	newScale = math.min(newScale, 1.5)
 	newScale = math.max(newScale, 0.8)
 

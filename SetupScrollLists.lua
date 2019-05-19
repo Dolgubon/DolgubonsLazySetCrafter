@@ -145,7 +145,6 @@ end
 
 function FavouriteScroll:SetupEntry(control, data)
 	--d("Setting up")
-
 	control.data = data
 	control:setCurrent(data[1])
 	control.label = control:GetNamedChild("Name")
@@ -219,21 +218,27 @@ end
 outputTexts = {}
 --@nighn_9, 38
 
-local function OutputNextLine(eventCode,  channelType, fromName, text, isCustomerService, fromDisplayName)
+
+
+local function outputMultipleLinesChat(textToOutput)
+	StartChatInput(textToOutput[1])
+	local function OutputNextLine(eventCode,  channelType, fromName, text, isCustomerService, fromDisplayName)
 	
-	if fromDisplayName == GetDisplayName() or channelType == CHAT_CHANNEL_WHISPER_SENT then
-		testActualOutput = text
-		testAssume = outputTexts[1]
-		if text == outputTexts[1] then
-			table.remove(outputTexts, 1)
-			if #outputTexts>0 then
-				StartChatInput(outputTexts[1])
+		if fromDisplayName == GetDisplayName() or channelType == CHAT_CHANNEL_WHISPER_SENT then
+			testActualOutput = text
+			testAssume = textToOutput[1]
+			if text == textToOutput[1] then
+				table.remove(textToOutput, 1)
+				if #textToOutput>0 then
+					StartChatInput(textToOutput[1])
+				else
+					EVENT_MANAGER:UnregisterForEvent(DolgubonSetCrafter.name,EVENT_CHAT_MESSAGE_CHANNEL)
+				end
 			else
-				EVENT_MANAGER:UnregisterForEvent(DolgubonSetCrafter.name,EVENT_CHAT_MESSAGE_CHANNEL)
 			end
-		else
 		end
 	end
+	EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name,EVENT_CHAT_MESSAGE_CHANNEL, OutputNextLine)
 end
 
 function DolgubonSetCrafter.outputAllMats()
@@ -260,8 +265,7 @@ function DolgubonSetCrafter.outputAllMats()
 		text =text.. tostring(tempMatHolder[i]["Amount"]).." "..tempMatHolder[i]["Name"]
 	end
 	outputTexts[#outputTexts + 1] = text
-	StartChatInput(outputTexts[1])
-	EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name,EVENT_CHAT_MESSAGE_CHANNEL, OutputNextLine)
+	outputMultipleLinesChat(outputTexts)
 end
 
 
@@ -279,10 +283,11 @@ end
 function DolgubonScroll:SetupEntry(control, data)
 
 	control.data = data
-	if data[1].CraftRequestTable[7] ~= 7 then
+	if data[1].CraftRequestTable[7] ~= CRAFTING_TYPE_JEWELRYCRAFTING then
 		control.usesMimicStone = data[1].CraftRequestTable[6]
+		GetControl(control, "MimicStone"):SetHidden(not data[1].CraftRequestTable[6])
 	end
-
+	control.qualityString = zo_strformat(DolgubonSetCrafter.localizedStrings.UIStrings.qualityString, data[1].Quality[2])
 	for k , v in pairs (data[1]) do
 		control[k] = GetControl(control, k)
 
