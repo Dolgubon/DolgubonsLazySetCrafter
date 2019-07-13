@@ -96,7 +96,11 @@ function DolgubonSetCrafter:Initialize()
 			DolgubonSetCrafter.savedvars.notifyWiped = false
 		end end)]]
 
-	LLC = LibStub:GetLibrary("LibLazyCrafting")
+	LLC, version = LibStub:GetLibrary("LibLazyCrafting")
+	if version <2.6 then
+		out("Your version of LibLazyCrafting is incompatible with this version of Dolgubon's Lazy Set Crafter. Please update the library.")
+		out = function() end
+	end
 	if DolgubonSetCrafter.savedvars.debug then
 		DolgubonSetCrafterWindow:SetHidden(false)
 	end

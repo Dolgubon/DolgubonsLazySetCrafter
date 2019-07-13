@@ -132,18 +132,79 @@ for i = 1, 41 do
 end
 
 DolgubonSetCrafter.setIndexes = {}
-local t = GetSetIndexes()
+local LibLazyCrafting =  LibStub:GetLibrary("LibLazyCrafting")
+local t = LibLazyCrafting.GetSetIndexes()
 for i, value in pairs(t) do
-	DolgubonSetCrafter.setIndexes[i] = {}
-	DolgubonSetCrafter.setIndexes[i][2] = t[i][1]
-	DolgubonSetCrafter.setIndexes[i][1] = i
-	
+	if i ~=LibLazyCrafting.INDEX_NO_SET then -- don't want to sort the no set table in
+		DolgubonSetCrafter.setIndexes[#DolgubonSetCrafter.setIndexes + 1] = {}
+		DolgubonSetCrafter.setIndexes[#DolgubonSetCrafter.setIndexes][2] = t[i][1]
+		DolgubonSetCrafter.setIndexes[#DolgubonSetCrafter.setIndexes][1] = i
+	end
 end
 
-table.remove(DolgubonSetCrafter.setIndexes,1)
-
 table.sort(DolgubonSetCrafter.setIndexes, function(a,b) return a[2]<b[2] end)
-table.insert(DolgubonSetCrafter.setIndexes,1, {[1] = 1, [2] = DolgubonSetCrafter.localizedStrings.UIStrings.noSet})
+table.insert(DolgubonSetCrafter.setIndexes,1, {[1] = LibLazyCrafting.INDEX_NO_SET, [2] = DolgubonSetCrafter.localizedStrings.UIStrings.noSet})
+
+DolgubonSetCrafter.weaponEnchantments = {{0, "No Enchantment"}}
+DolgubonSetCrafter.jewelryEnchantments = {{0, "No Enchantment"}}
+DolgubonSetCrafter.armourEnchantments  = {{0, "No Enchantment"}}
+
+local function addGlyphInfo(enchantId, glyphResultId, enchantName, typeOfEnchant)
+	local tableToAddTo 
+	if ITEMTYPE_GLYPH_WEAPON == typeOfEnchant then
+		tableToAddTo = DolgubonSetCrafter.weaponEnchantments
+	elseif ITEMTYPE_GLYPH_JEWELRY == typeOfEnchant then
+		tableToAddTo = DolgubonSetCrafter.jewelryEnchantments
+	elseif ITEMTYPE_GLYPH_ARMOR == typeOfEnchant then
+		tableToAddTo = DolgubonSetCrafter.armourEnchantments 
+	end
+	table.insert(tableToAddTo, {enchantId, enchantName, glyphResultId})
+end
+
+
+local glyphInfo = LibLazyCrafting.getGlyphInfo()
+for _,v in pairs(glyphInfo) do
+	addGlyphInfo(v[1], v[3], v[5], v[7])
+	addGlyphInfo(v[2], v[4], v[6], v[8])
+end
+
+
+
+
+
+
+-- }|H1:item:45839:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h
+-- DolgubonSetCrafter.armourEnchants = {GetString(SI_ENCHANTMENTSEARCHCATEGORYTYPE11), GetString(SI_ENCHANTMENTSEARCHCATEGORYTYPE13), GetString(SI_ENCHANTMENTSEARCHCATEGORYTYPE17)}
+-- "Befouled", -- SI_ENCHANTMENTSEARCHCATEGORYTYPE1
+-- "Shock", -- SI_ENCHANTMENTSEARCHCATEGORYTYPE3
+-- "Crushing", -- SI_ENCHANTMENTSEARCHCATEGORYTYPE4
+-- "Flame", -- SI_ENCHANTMENTSEARCHCATEGORYTYPE6
+-- "Frost", -- SI_ENCHANTMENTSEARCHCATEGORYTYPE9
+-- "Hardening", -- SI_ENCHANTMENTSEARCHCATEGORYTYPE10
+-- "Poison", -- SI_ENCHANTMENTSEARCHCATEGORYTYPE16
+-- "Weakening", -- SI_ENCHANTMENTSEARCHCATEGORYTYPE19
+-- "Absorb Health", -- SI_ENCHANTMENTSEARCHCATEGORYTYPE20
+-- "Absorb Stamina", -- SI_ENCHANTMENTSEARCHCATEGORYTYPE22
+-- "Absorb Magicka", -- SI_ENCHANTMENTSEARCHCATEGORYTYPE23
+-- "Decrease Health", -- SI_ENCHANTMENTSEARCHCATEGORYTYPE24
+-- "Prismatic Onslaught", -- SI_ENCHANTMENTSEARCHCATEGORYTYPE35
+
+-- |H1:item:54484:310:50:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h
+
+
+-- "Rage", -- SI_ENCHANTMENTSEARCHCATEGORYTYPE2
+
+
+
+
+
+
+
+
+
+
+
+
 
 --[[ TODO: 
 1 make the toggle button moveable - Check
@@ -152,7 +213,7 @@ table.insert(DolgubonSetCrafter.setIndexes,1, {[1] = 1, [2] = DolgubonSetCrafter
 4. Add crown mimic stone toggle - Check
 5. Reticle colouring - Check
 6. Add new amount of item to the valuable reward text - Check
-7. Resizing - Check
+7. Resizing - Check	
 8. Save Window Size - Check
 9. Add pricing - Check
 10. Look into requirements weirdness - Fixed I think?
