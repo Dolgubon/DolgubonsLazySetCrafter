@@ -62,7 +62,7 @@ DolgubonSetCrafter.localizedStrings.weaponNames =
 }
 DolgubonSetCrafter.localizedStrings.jewelryNames = 
 {
-    "Ring" , "Halskette",
+    "Ring","Ring" , "Halskette",
 }
 DolgubonSetCrafter.localizedStrings.pieceNames = 
 {

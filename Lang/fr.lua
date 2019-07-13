@@ -66,7 +66,7 @@ DolgubonSetCrafter.localizedStrings.armourTypes =
 }
 DolgubonSetCrafter.localizedStrings.jewelryNames = 
 {
-    "Anneau" , "Collier",
+    "Anneau" ,"Anneau", "Collier",
 }
 
 

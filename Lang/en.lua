@@ -38,6 +38,10 @@ DolgubonSetCrafter.localizedStrings.UIStrings.defaultUserId         = "Enter @Us
 DolgubonSetCrafter.localizedStrings.UIStrings.noSet                 = "No Set"
 DolgubonSetCrafter.localizedStrings.UIStrings.usesMimicStone        = "This item will be made using a Mimic Stone"
 DolgubonSetCrafter.localizedStrings.UIStrings.qualityString         = "This item will be created with <<1>> quality"
+DolgubonSetCrafter.localizedStrings.UIStrings.armourEnchant         = "Armour Enchantment"
+DolgubonSetCrafter.localizedStrings.UIStrings.jewelryEnchant        = "Jewelry Enchantment"
+DolgubonSetCrafter.localizedStrings.UIStrings.weaponEnchant         = "Weapon Enchantment"
+DolgubonSetCrafter.localizedStrings.UIStrings.enchantQuality        = "Enchantment Quality"
 
 
 DolgubonSetCrafter.localizedStrings.SettingsStrings = {}
@@ -70,13 +74,17 @@ DolgubonSetCrafter.localizedStrings.pieceNames =
 }
 DolgubonSetCrafter.localizedStrings.jewelryNames = 
 {
-    "Ring" , "Necklace",
+    "Ring" , "Ring", "Necklace",
 }
 DolgubonSetCrafter.localizedStrings.armourTypes = 
 {
     "Heavy", "Medium", "Light"
 }
 ZO_CreateStringId("SI_BINDING_NAME_SET_CRAFTER_OPEN", "Open/close the Set Crafter")
+
+
+
+
 
 
 -- TODO List:

@@ -103,6 +103,10 @@
 					self.isKnown = isKnown
 					--d(self:GetParent().data[1].Pattern)
 				end
+				self.ApplyEnchantColour = function(self)
+					local colour  = GetItemQualityColor(self:GetParent().data[1].EnchantQuality)
+					original(self, colour:UnpackRGB())
+				end
 				
 				self.SetColor = function(self,...)  end
 			</OnInitialized>
@@ -145,7 +149,7 @@
 			</OnClicked>
 			<Dimensions x="850" y="30" />
 			<Controls>
-				<Backdrop name="$(parent)BG" />
+				<Backdrop name="$(parent)BG" mouseEnabled="false"/>
 
 				
 				<Label name="$(parent)Name" inherits="QueueRowLabelTemplate" color="76BCC3" mouseEnabled="false" wrapMode="TEXT_WRAP_MODE_TRUNCATE">
@@ -229,6 +233,8 @@
 
 			<OnMouseExit>
 				ClearTooltip(ItemTooltip)
+				ClearTooltip(InformationTooltip)
+				
 				DolgubonSetCrafter.scroll:Row_OnMouseExit(self)
 			</OnMouseExit>
 			<OnClicked>
@@ -247,7 +253,7 @@
 				-- remove highlight
 			</OnClicked>
 			<OnInitialized>
-				self.errorTooltip = DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughKnowledge 
+				self.errorTooltip = DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughKnowledge
 			</OnInitialized>
 			<Dimensions x="850" y="30" />
 			<Controls>
@@ -259,8 +265,12 @@
 						self:onClickety()
 					</OnClicked>
 					<OnMouseExit>
+						self:GetParent():GetHandler("OnMouseEnter")(self:GetParent(), true)
+					</OnMouseExit>
+					<OnMouseExit>
 						ClearTooltip(InformationTooltip)
 						DolgubonSetCrafter.scroll:Row_OnMouseExit(self:GetParent())
+						self:GetParent():GetHandler("OnMouseExit")(self:GetParent(), true)
 					</OnMouseExit>
 					
 				</Button>
@@ -299,10 +309,10 @@
 					<Dimensions x="140" y="48" />
 					<Anchor point="LEFT" relativeTo="$(parent)Trait" relativePoint="RIGHT" offsetX="0" />
 				</Label>
-				<!-- <Label name="$(parent)Quality" inherits="QueueRowLabelTemplate">
-					<Dimensions x="90" y="48" />
+				<Label name="$(parent)Enchant" inherits="QueueRowLabelTemplate">
+					<Dimensions x="200" y="48" />
 					<Anchor point="LEFT" relativeTo="$(parent)Set" relativePoint="RIGHT" offsetX="0" />
-				</Label> -->
+				</Label>
 				<Label name="$(parent)Reference" inherits="QueueRowLabelTemplate">
 					<Dimensions x="30" y="48" />
 					<Anchor point="LEFT" relativeTo="$(parent)Set" relativePoint="RIGHT" offsetX="0" />
@@ -314,6 +324,7 @@
 					<OnMouseExit>
 						ClearTooltip(InformationTooltip)
 						DolgubonSetCrafter.scroll:Row_OnMouseExit(self:GetParent())
+						self:GetParent():GetHandler("OnMouseExit")(self:GetParent(), true)
 					</OnMouseExit>
 				</Label>
 				
