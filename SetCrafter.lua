@@ -10,6 +10,7 @@
 DolgubonSetCrafter = DolgubonSetCrafter or {}
 DolgubonSetCrafter.initializeFunctions = DolgubonSetCrafter.initializeFunctions or {}
 --77 81 91
+
 DolgubonSetCrafter.defaultCharacter = 
 {
 	["OpenAtCraftStation"] = true,
@@ -30,8 +31,8 @@ DolgubonSetCrafter.default = {
 	['autoCraft'] = true,
 	['toggleXPos'] = 50,
 	['toggleYPost'] = 50,
-	['width'] = 1050,
-	['height'] = 650,
+	['width'] = DolgubonSetCrafter.defaultWidth,
+	['height'] = DolgubonSetCrafter.defaultHeight,
 	['faves'] = {},
 }
 
@@ -96,7 +97,11 @@ function DolgubonSetCrafter:Initialize()
 			DolgubonSetCrafter.savedvars.notifyWiped = false
 		end end)]]
 
-	LLC = LibStub:GetLibrary("LibLazyCrafting")
+	LLC, version = LibStub:GetLibrary("LibLazyCrafting")
+	if version <2.7 then
+		out("Your version of LibLazyCrafting is incompatible with this version of Dolgubon's Lazy Set Crafter. Please update the library.")
+		out = function() end
+	end
 	if DolgubonSetCrafter.savedvars.debug then
 		DolgubonSetCrafterWindow:SetHidden(false)
 	end
@@ -117,7 +122,7 @@ function DolgubonSetCrafter:Initialize()
 
 	DolgubonSetCrafterWindowRightMailQueue:SetHidden(true)
 
-	local currentAPIVersionOfAddon = 100027
+	local currentAPIVersionOfAddon = 100028
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" then 
 		d("Update your addons!") 

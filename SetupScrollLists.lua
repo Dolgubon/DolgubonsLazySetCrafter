@@ -286,19 +286,31 @@ function DolgubonScroll:SetupEntry(control, data)
 	if data[1].CraftRequestTable[7] ~= CRAFTING_TYPE_JEWELRYCRAFTING then
 		control.usesMimicStone = data[1].CraftRequestTable[6]
 		GetControl(control, "MimicStone"):SetHidden(not data[1].CraftRequestTable[6])
+	else
+		control:GetNamedChild("Style"):SetHidden(true)
+		GetControl(control, "MimicStone"):SetHidden(true)
 	end
 	control.qualityString = zo_strformat(DolgubonSetCrafter.localizedStrings.UIStrings.qualityString, data[1].Quality[2])
 	for k , v in pairs (data[1]) do
 		control[k] = GetControl(control, k)
-
 		if control[k] then
 			if type(v)=="table" then
 				control[k]:SetText(v[2])
 				control[k]:SetColor(1,1,0)
 
-				control[k]:ApplyColour(v[3])
+				
+				if k == "Enchant" then
+					control[k]:ApplyEnchantColour()
+				else
+					control[k]:ApplyColour(v[3])
+				end
 			else
-				control[k]:SetText(v)
+				if k == "Enchant" then
+					control[k]:SetText(v)
+					control[k]:ApplyEnchantColour()
+				else
+					control[k]:SetText(v)
+				end
 			end
 		end
 	end

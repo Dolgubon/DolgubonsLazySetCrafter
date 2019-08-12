@@ -223,7 +223,6 @@ local function findMatIndex(level, champion)
 end
 
 local function getPatternIndex(patternButton,weight)
-	d(patternButton.selectedIndex, weight)
 	--d(patternButton.selectedIndex)
 	local candidate = patternButton.selectedIndex
 	if weight == nil then
@@ -328,9 +327,13 @@ local function addPatternToQueue(patternButton,i)
 	requestTable["Pattern"] = {pattern,patternButton.tooltip}
 
 	-- Traits
-	local traitTable = patternButton:TraitsToUse()
+	local traitTable, enchantTable = patternButton:TraitsToUse()
 	if traitTable.invalidSelection() and not DolgubonSetCrafter.savedvars.autofill then
 		out(traitTable.selectPrompt)
+		return
+	end
+	if enchantTable.invalidSelection() and not DolgubonSetCrafter.savedvars.autofill then
+		out(enchantTable.selectPrompt)
 		return
 	end
 	trait = traitTable.selected[1]
@@ -368,9 +371,18 @@ local function addPatternToQueue(patternButton,i)
 	-- Are all the combobox selections valid? We already checked traits though, so filter those out
 	for k, combobox in pairs(comboBoxes) do
 		if combobox.invalidSelection() and not DolgubonSetCrafter.savedvars.autofill then
-			if not combobox.isTrait and (combobox.isStyle and  patternButton:UseStyle() ) then
-				out(combobox.selectPrompt)
-				return
+			if combobox.isTrait or combobox.isGlyph then
+			elseif (combobox.isStyle and  patternButton:UseStyle()) or not combobox.isStyle  then
+				if combobox.isGlyphQuality then
+					if enchantTable.selected[1] == 0 then
+					else
+						out(combobox.selectPrompt)
+						return
+					end
+				else
+					out(combobox.selectPrompt)
+					return
+				end
 			end
 		end
 	end
@@ -387,6 +399,8 @@ local function addPatternToQueue(patternButton,i)
 			-- increment counter for unique reference
 			requestTableCopy["Reference"]	= DolgubonSetCrafter.savedvars.counter
 			DolgubonSetCrafter.savedvars.counter = DolgubonSetCrafter.savedvars.counter + 1
+			local enchantRequestTable
+			
 
 			local CraftRequestTable = {
 				pattern, 
@@ -399,11 +413,26 @@ local function addPatternToQueue(patternButton,i)
 				setIndex, 
 				quality, 
 				DolgubonSetCrafter:GetAutocraft(),
-				requestTableCopy["Reference"]
+				requestTableCopy["Reference"],
 			}
 
 			local returnedTable = LazyCrafter:CraftSmithingItemByLevel(unpack(CraftRequestTable))
-			
+			if enchantTable.selected[1] ~= 0 then
+				local enchantLevel = LibLazyCrafting.closestGlyphLevel(isCP, CraftRequestTable[3])
+				local enchantRequestTable = LazyCrafter:CraftEnchantingGlyphByAttributes(isCP, enchantLevel, 
+					enchantTable.selected[1], DolgubonSetCrafter.ComboBox.EnchantQuality.selected[1], 
+					DolgubonSetCrafter:GetAutocraft(), requestTableCopy["Reference"], returnedTable)
+
+				requestTableCopy["Enchant"] = enchantTable.selected
+				requestTableCopy["EnchantQuality"] = DolgubonSetCrafter.ComboBox.EnchantQuality.selected[1]
+				table.insert(CraftRequestTable,enchantRequestTable.potencyItemID)
+				table.insert(CraftRequestTable,enchantRequestTable.essenceItemID)
+				table.insert(CraftRequestTable,enchantRequestTable.aspectItemID)
+			else
+				requestTableCopy["Enchant"] = ""
+				requestTableCopy["EnchantQuality"] =1
+			end
+
 			--LLC_CraftSmithingItemByLevel(self, patternIndex, isCP , level, styleIndex, traitIndex, useUniversalStyleItem, stationOverride, setIndex, quality, autocraft)
 			if not DolgubonSetCrafterWindowInputToggleChampion.toggleValue then
 				requestTableCopy["Level"][2] = "CP ".. requestTableCopy["Level"][2]

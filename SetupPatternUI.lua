@@ -8,7 +8,7 @@ local pieceNames =
 
 local jewelryNames =
 {
-	"Ring", "Neck", "space", "space"
+	"Ring", "Ring", "Neck", "space", "space"
 }
 
 local weaponNames = 
@@ -53,7 +53,7 @@ local function setupPatternButtonFunctions(patternButtons)
 			end
 		end
 		patternButtons[i].UseStyle = function() return true end
-		patternButtons[i].TraitsToUse = function()return DolgubonSetCrafter.ComboBox.Armour end
+		patternButtons[i].TraitsToUse = function()return DolgubonSetCrafter.ComboBox.Armour, DolgubonSetCrafter.ComboBox.ArmourEnchant end
 		patternButtons[i].HaveWeights = function() return true end
 		patternButtons[i].GetPattern = function(self, weightOverride)
 
@@ -73,31 +73,36 @@ local function setupPatternButtonFunctions(patternButtons)
 
 		end
 	end
-	for i = 9, 10 do -- ring + neck
+
+	for i = 9, 11 do -- ring + neck
 		patternButtons[i].GetStation = function() return CRAFTING_TYPE_JEWELRYCRAFTING end
 		patternButtons[i].UseStyle = function() return false end
-		patternButtons[i].TraitsToUse = function() return DolgubonSetCrafter.ComboBox.Jewelry end
+		patternButtons[i].TraitsToUse = function() return DolgubonSetCrafter.ComboBox.Jewelry, DolgubonSetCrafter.ComboBox.JewelEnchant end
 		patternButtons[i].HaveWeights = function() return false end
-		patternButtons[i].GetPattern = function() return i - 8 end
+		if i == 11 then
+			patternButtons[i].GetPattern = function() return 2 end
+		else
+			patternButtons[i].GetPattern = function() return 1 end
+		end
 	end
-	for i = 11, 17 do -- blacksmithing weapons
+	for i = 12, 18 do -- blacksmithing weapons
 		patternButtons[i].GetStation = function() return CRAFTING_TYPE_BLACKSMITHING end
 		patternButtons[i].UseStyle = function() return true end
-		patternButtons[i].TraitsToUse = function() return DolgubonSetCrafter.ComboBox.Weapon end
+		patternButtons[i].TraitsToUse = function() return DolgubonSetCrafter.ComboBox.Weapon, DolgubonSetCrafter.ComboBox.WeaponEnchant end
 		patternButtons[i].HaveWeights = function() return false end
-		patternButtons[i].GetPattern = function() return i - 10 end
+		patternButtons[i].GetPattern = function() return i - 11 end
 	end
-	for i = 18, 22 do -- woodworking weapons
+	for i = 19, 23 do -- woodworking weapons
 		patternButtons[i].GetStation = function() return CRAFTING_TYPE_WOODWORKING end
 		patternButtons[i].UseStyle = function() return true end
-		patternButtons[i].TraitsToUse = function() return DolgubonSetCrafter.ComboBox.Weapon end
+		patternButtons[i].TraitsToUse = function() return DolgubonSetCrafter.ComboBox.Weapon, DolgubonSetCrafter.ComboBox.WeaponEnchant end
 		patternButtons[i].HaveWeights = function() return false end
-		patternButtons[i].GetPattern = function() if i == 18 then return 1 else return i - 16 end end
+		patternButtons[i].GetPattern = function() if i == 19 then return 1 else return i - 17 end end
 	end
-	local i = 23
+	local i = 24 -- shield
 	patternButtons[i].GetStation = function() return CRAFTING_TYPE_WOODWORKING end
 	patternButtons[i].UseStyle = function() return true end
-	patternButtons[i].TraitsToUse = function()return DolgubonSetCrafter.ComboBox.Armour end
+	patternButtons[i].TraitsToUse = function()return DolgubonSetCrafter.ComboBox.Armour, DolgubonSetCrafter.ComboBox.ArmourEnchant end
 	patternButtons[i].HaveWeights = function() return false end
 	patternButtons[i].GetPattern = function() return 2 end
 end
@@ -123,7 +128,7 @@ local function setupPatternButtonOneTable(table,nameTable, initialX, initialY, p
 			numSpacers = numSpacers + 1
 			button:SetWidth(24)
 		else
-			positionToSave[index] = WINDOW_MANAGER:CreateControlFromVirtual(parent:GetName()..v, 
+			positionToSave[index] = WINDOW_MANAGER:CreateControlFromVirtual(parent:GetName()..v..count, 
 				parent, "PieceButtonTemplate")
 			count = count + 1
 			-- Easy reference
@@ -224,10 +229,10 @@ function DolgubonSetCrafter.setupPatternButtons()
 			if onOverTexture then self:SetMouseOverTexture(self.onOverTexture) end
 			setOtherArmourTypesToZero(i)
 			if i == 3 then
-				DolgubonSetCrafterWindowPatternInputArmourJerkin:SetHidden(false)
+				DolgubonSetCrafterWindowPatternInputArmourJerkin7:SetHidden(false)
 			else
-				DolgubonSetCrafterWindowPatternInputArmourJerkin:toggleOff()
-				DolgubonSetCrafterWindowPatternInputArmourJerkin:SetHidden(true)
+				DolgubonSetCrafterWindowPatternInputArmourJerkin7:toggleOff()
+				DolgubonSetCrafterWindowPatternInputArmourJerkin7:SetHidden(true)
 			end
 
 		end

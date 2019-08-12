@@ -272,7 +272,9 @@ function DolgubonSetCrafter.onWindowMove(window)
 	DolgubonSetCrafter.savedvars.xPos = window:GetLeft()
 	DolgubonSetCrafter.savedvars.yPos = window:GetTop()
 end
-local totalWindowWidth = 1200
+DolgubonSetCrafter.defaultWidth = 1150
+DolgubonSetCrafter.defaultHeight = 650
+local totalWindowWidth = DolgubonSetCrafter.defaultWidth
 local leftHalfWindowWidth = totalWindowWidth - 250
 local function getDividerPosition(window, a)
 	local DIVIDER_RATIO = leftHalfWindowWidth/totalWindowWidth

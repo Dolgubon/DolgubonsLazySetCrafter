@@ -39,7 +39,7 @@ function DolgubonSetCrafterWindowComboboxes:anchoruiElements()
 				self.elements[i]:SetAnchor(LEFT, self, BOTTOM, 15, vPad  + 7)
 			end
 			if self.elements[i]:GetNamedChild("ComboBox") then
-				self.elements[i]:GetNamedChild("ComboBox"):SetWidth(160)
+				self.elements[i]:GetNamedChild("ComboBox"):SetWidth(230)
 			end
 			if self.elements[i]:GetNamedChild("Name") then
 				-- minRightSize = math.min(self.elements[i]:GetNamedChild("Name"):GetTextWidth() + 130, minRightSize)
@@ -76,13 +76,14 @@ end
 
 
 -- Creates one dropdown box using the passed information
-local function makeDropdownSelections(comboBoxContainer, tableInfo , text , x, y, comboBoxLocation, selectionTypes, isArmourCombobox)
+local function makeDropdownSelections(comboBoxContainer, tableInfo , text , x, y, comboBoxLocation, selectionTypes, noDefault)
 
 	if selectionTypes == "armourTrait" then isArmourCombobox = true elseif selectionTypes == "weaponTrait" then isArmourCombobox = false end
 	local comboBox = comboBoxContainer:GetChild(comboBoxLocation)
 	-- if location is 1 then get child number 2 and if location is 2 get child number 1
 	-- It was a fun exercise to not have to write an if statement
-	comboBoxContainer:GetChild((comboBoxLocation+2)%2+1):SetText(text..":")
+	-- comboBoxContainer:GetChild((comboBoxLocation+2)%2+1):SetText(text..":")
+	comboBoxContainer:GetNamedChild("Name"):SetText(text..":")
 	if not comboBox.m_comboBox then 
 		comboBox.m_comboBox =comboBox.dropdown
 		comboBox.dropdown.m_container:SetDimensions(225,30)
@@ -108,17 +109,20 @@ local function makeDropdownSelections(comboBoxContainer, tableInfo , text , x, y
 	-- We want to keep the original order of the stuff listed. However, the style and set boxes are sorted before anyway
 	comboBox.m_comboBox:SetSortsItems(false) 
 	-- Set the default entry
-	comboBox.itemEntryDefault = ZO_ComboBox:CreateItemEntry(zo_strformat(langStrings.UIStrings.comboboxDefault,text), function() 
-		comboBox:setSelected( {-1,zo_strformat(langStrings.UIStrings.comboboxDefault ,text)})
-			end )
-	comboBox.m_comboBox:AddItem(comboBox.itemEntryDefault)
-	comboBoxContainer.selectPrompt = zo_strformat(langStrings.UIStrings.selectPrompt,text)
+	if not noDefault then
+		comboBox.itemEntryDefault = ZO_ComboBox:CreateItemEntry(zo_strformat(langStrings.UIStrings.comboboxDefault,text), function() 
+			comboBox:setSelected( {-1,zo_strformat(langStrings.UIStrings.comboboxDefault ,text)})
+				end )
+		comboBox.m_comboBox:AddItem(comboBox.itemEntryDefault)
+		comboBoxContainer.selectPrompt = zo_strformat(langStrings.UIStrings.selectPrompt,text)
+		function comboBoxContainer:SelectFirstItem()
+			comboBox.m_comboBox:SelectItem(comboBox.itemEntryDefault) 
+		end
+		comboBoxContainer:SelectFirstItem()
+	end
 
 	-- Select the first/default item
-	function comboBoxContainer:SelectFirstItem()
-		comboBox.m_comboBox:SelectItem(comboBox.itemEntryDefault) 
-	end
-	comboBoxContainer:SelectFirstItem()
+	
 	comboBoxContainer.idSelectors = {}
 	for i, value in pairs(tableInfo) do
 		local itemEntry = ZO_ComboBox:CreateItemEntry(zo_strformat("<<t:1>>",tableInfo[i][2]), function() comboBox:setSelected( tableInfo[i])end )
@@ -126,6 +130,7 @@ local function makeDropdownSelections(comboBoxContainer, tableInfo , text , x, y
 		comboBox.m_comboBox:AddItem(itemEntry)
 		if i == 1 then
 			-- Debug selection
+
 			function comboBoxContainer:SelectDebug()
 				comboBox.m_comboBox:SelectItem(itemEntry)
 			end
@@ -138,8 +143,16 @@ local function makeDropdownSelections(comboBoxContainer, tableInfo , text , x, y
 			DolgubonSetCrafter.debugSelections[#DolgubonSetCrafter.debugSelections+1] = function() comboBoxContainer:SelectDebug() end
 
 			DolgubonSetCrafter.autofillFunctionTable [#DolgubonSetCrafter.autofillFunctionTable  + 1] = function() comboBoxContainer:SelectAutoFill() end
+			if noDefault then
+				comboBox.itemEntryDefault = itemEntry
+				function comboBoxContainer:SelectFirstItem()
+					comboBox.m_comboBox:SelectItem(comboBox.itemEntryDefault) 
+				end
+			end
+			if (noDefault and  DolgubonSetCrafter.savedvars[selectionTypes]==nil) then
+				comboBoxContainer:SelectFirstItem()
+			end
 		end
-		
 		if tableInfo[i][1] == DolgubonSetCrafter.savedvars[selectionTypes] and DolgubonSetCrafter.savedvars.saveLastChoice then
 			comboBox.m_comboBox:SelectItem(itemEntry)
 		end
@@ -169,18 +182,18 @@ function DolgubonSetCrafter.setupComboBoxes()
 	-- Note: Could be combined into a loop or something, but left like this for clarity
 	DolgubonSetCrafter.ComboBox = {}
 
+	DolgubonSetCrafter.ComboBox.ArmourEnchant = WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_ArmourEnchant", DolgubonSetCrafterWindowComboboxes, "ComboboxTemplate")
+	DolgubonSetCrafter.ComboBox.EnchantQuality = WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_EnchantQuality", DolgubonSetCrafterWindowComboboxes, "ComboboxTemplate")
+	DolgubonSetCrafter.ComboBox.WeaponEnchant = WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_WeaponEnchant", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
+	DolgubonSetCrafter.ComboBox.JewelEnchant = WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_JewelEnchant", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
+
 	DolgubonSetCrafter.ComboBox.Armour 		= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Armour_Trait", DolgubonSetCrafterWindowComboboxes, "ComboboxTemplate")
 	DolgubonSetCrafter.ComboBox.Weapon 		= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Weapon_Trait", DolgubonSetCrafterWindowComboboxes, "ComboboxTemplate")
 	DolgubonSetCrafter.ComboBox.Quality		= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Quality", DolgubonSetCrafterWindowComboboxes, "ComboboxTemplate")
 	DolgubonSetCrafter.ComboBox.Jewelry		= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Jewelry_Trait", DolgubonSetCrafterWindowComboboxes, "ComboboxTemplate")
 	DolgubonSetCrafter.ComboBox.Set			= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Set", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
 	DolgubonSetCrafter.ComboBox.Style 		= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Style", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
-	if GetDisplayName()=="@Dolgubon" then
-		DolgubonSetCrafter.ComboBox.WeaponEnchant = WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_WeaponEnchant", DolgubonSetCrafterWindowComboboxes, "ComboboxTemplate")
-		DolgubonSetCrafter.ComboBox.JewelEnchant = WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_JewelEnchant", DolgubonSetCrafterWindowComboboxes, "ComboboxTemplate")
-		DolgubonSetCrafter.ComboBox.ArmourEnchant = WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_ArmourEnchant", DolgubonSetCrafterWindowComboboxes, "ComboboxTemplate")
-		DolgubonSetCrafter.ComboBox.EnchantQuality = WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_EnchantQuality", DolgubonSetCrafterWindowComboboxes, "ComboboxTemplate")
-	end
+	
 	
 	for k, v in pairs(DolgubonSetCrafter.ComboBox) do
 		v.name = k
@@ -200,16 +213,18 @@ function DolgubonSetCrafter.setupComboBoxes()
 	makeDropdownSelections( DolgubonSetCrafter.ComboBox.Weapon 		, DolgubonSetCrafter.weaponTraits , UIStrings.weaponTrait 	, 240 , 120, 1, "weaponTrait")
 	makeDropdownSelections( DolgubonSetCrafter.ComboBox.Set  	   	, DolgubonSetCrafter.setIndexes   , UIStrings.gearSet 		, 240, 40, 2, "set")
 	makeDropdownSelections( DolgubonSetCrafter.ComboBox.Jewelry	   	, DolgubonSetCrafter.jewelryTraits, UIStrings.jewelryTrait	, -160, 160, 1, "jewelryTraits")
-	if GetDisplayName()=="@Dolgubon" then
-		makeDropdownSelections( DolgubonSetCrafter.ComboBox.WeaponEnchant, DolgubonSetCrafter.jewelryTraits, "Weapon Enchant"	, -160, 160, 1, "weaponEnchant")
-		makeDropdownSelections( DolgubonSetCrafter.ComboBox.JewelEnchant, DolgubonSetCrafter.quality, "Jewelry Enchant"	, -160, 160, 1, "jewelEnchant")
-		makeDropdownSelections( DolgubonSetCrafter.ComboBox.ArmourEnchant, armourEnchant, "Armour Enchant"	, -160, 160, 1, "armourEnchant")
-		makeDropdownSelections( DolgubonSetCrafter.ComboBox.EnchantQuality, DolgubonSetCrafter.quality, "Glyph Quality"	, -160, 160, 1, "enchantQuality")
-	end
+	makeDropdownSelections( DolgubonSetCrafter.ComboBox.WeaponEnchant, DolgubonSetCrafter.weaponEnchantments, UIStrings.weaponEnchant	, -160, 160, 2, "weaponEnchant", true)
+	makeDropdownSelections( DolgubonSetCrafter.ComboBox.JewelEnchant, DolgubonSetCrafter.jewelryEnchantments, UIStrings.jewelryEnchant	, -160, 160, 2, "jewelEnchant", true)
+	makeDropdownSelections( DolgubonSetCrafter.ComboBox.ArmourEnchant, DolgubonSetCrafter.armourEnchantments, UIStrings.armourEnchant	, -160, 160, 1, "armourEnchant", true)
+	makeDropdownSelections( DolgubonSetCrafter.ComboBox.EnchantQuality, DolgubonSetCrafter.quality, UIStrings.enchantQuality	, -160, 160, 1, "enchantQuality")
 	DolgubonSetCrafter.ComboBox.Armour.isTrait = true
 	DolgubonSetCrafter.ComboBox.Weapon.isTrait = true
 	DolgubonSetCrafter.ComboBox.Jewelry.isTrait = true
 	DolgubonSetCrafter.ComboBox.Style.isStyle = true
+	DolgubonSetCrafter.ComboBox.WeaponEnchant.isGlyph = true
+	DolgubonSetCrafter.ComboBox.JewelEnchant.isGlyph = true
+	DolgubonSetCrafter.ComboBox.ArmourEnchant.isGlyph = true
+	DolgubonSetCrafter.ComboBox.EnchantQuality.isGlyphQuality = true
 	--DolgubonSetCrafterWindowComboboxes:anchoruiElements()
 end
 
