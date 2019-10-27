@@ -252,7 +252,7 @@ function LibFeedback:initializeFeedbackWindow(parentAddonNameSpace, parentAddonN
 	showButton:SetAnchor(unpack(mailButtonPosition))
 	showButton:SetDimensions(40,40)
 	showButton.ToggleWindow = function(self) self.feedbackWindow:ToggleHidden() end
-
+	feedbackWindow:SetHidden(true)
 	return showButton, feedbackWindow
 end
 

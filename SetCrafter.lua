@@ -102,9 +102,6 @@ function DolgubonSetCrafter:Initialize()
 		out("Your version of LibLazyCrafting is incompatible with this version of Dolgubon's Lazy Set Crafter. Please update the library.")
 		out = function() end
 	end
-	if DolgubonSetCrafter.savedvars.debug then
-		DolgubonSetCrafterWindow:SetHidden(false)
-	end
 
 	--if pcall(DolgubonSetCrafter.initializeFunctions.initializeSettingsMenu) then else d("Dolgubon's Lazy Set Crafter: USettings not loaded") end
 	DolgubonSetCrafter.initializeFunctions.initializeSettingsMenu()
@@ -119,10 +116,10 @@ function DolgubonSetCrafter:Initialize()
 		{TOPLEFT , DolgubonSetCrafterWindow , TOPLEFT , 10, 10}, 
 		{0,5000,50000, "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7CZ3LW6E66NAU"}, 
 		"If you found a bug, have a request or a suggestion, or wish to donate, you can send me a mail here.")
-
+	window:SetHidden(true)
 	DolgubonSetCrafterWindowRightMailQueue:SetHidden(true)
 
-	local currentAPIVersionOfAddon = 100028
+	local currentAPIVersionOfAddon = 100029
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" then 
 		d("Update your addons!") 
@@ -136,6 +133,9 @@ function DolgubonSetCrafter:Initialize()
 		end
 		out("Set a reminder to change the API version of addon in Set Crafter Initialization function when the game update comes out.") 
 			out = function() end
+	end
+	if DolgubonSetCrafter.savedvars.debug then
+		DolgubonSetCrafterWindow:SetHidden(false)
 	end
 end
 

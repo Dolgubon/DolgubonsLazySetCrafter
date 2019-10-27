@@ -136,8 +136,14 @@ function FavouriteScroll:New(control)
 	
 	self.currentSortKey = "name"
 	self.currentSortOrder = ZO_SORT_ORDER_DOWN
- 	self.sortFunction = function(listEntry1, listEntry2) return ZO_TableOrderingFunction(listEntry1.data[1], listEntry2.data[1], "name", SorterKeys, self.currentSortOrder) end
+ 	self.sortFunction = function(listEntry1, listEntry2) return 1 end
 	self.data = DolgubonSetCrafter.savedvars.faves
+	local originalRefresh = self.RefreshData
+	self.RefreshData = function(...)
+		-- updateCurrentAmounts()
+		originalRefresh(...)
+		-- updateCost()
+	end
 	--d("Setting up 1")
 	return self
 	
@@ -358,7 +364,6 @@ MaterialScroll.SortScrollList = DolgubonScroll.SortScrollList
 MaterialScroll.FilterScrollList = DolgubonScroll.FilterScrollList
 
 FavouriteScroll.BuildMasterList = DolgubonScroll.BuildMasterList
-FavouriteScroll.SortScrollList = DolgubonScroll.SortScrollList
 FavouriteScroll.FilterScrollList = DolgubonScroll.FilterScrollList
 
 function DolgubonSetCrafter.setupScrollLists()

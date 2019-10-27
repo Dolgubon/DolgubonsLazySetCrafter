@@ -44,12 +44,15 @@ Created by Dolgubon (Joseph Heinzle)
 		    	<Control name="$(parent)Favourites" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false">
 		    		<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="2" offsetY="0"/>
 		    		<Dimensions x="240" y="350" />
-		    		<OnInitialized>
-		    			if GetDisplayName() ~="@Dolgubon" then
-		    				self:SetHidden(true)
-		    			end
-		    		</OnInitialized>
 		    		<Controls>
+		    			<Button name="$(parent)AddFave" alpha="1" clickSound="Default_Click" topmost="true">
+				    		<Textures normal="/esoui/art/progression/addpoints_up.dds" mouseOver="/esoui/art/progression/addpoints_over.dds" mouseDown="/esoui/art/progression/addpoints_down.dds" />
+			 				<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-20" offsetY="20" />
+			  				<Dimensions x="36" y="36" />
+							<OnClicked>
+								DolgubonSetCrafter.addFavourite()
+							</OnClicked>
+				    	</Button>
 		    			<Label name="$(parent)Title" scale="1" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Favourites">
 
 		        			<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="10" />
@@ -64,16 +67,8 @@ Created by Dolgubon (Joseph Heinzle)
 							<Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
 							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-3" offsetY="-5" />
 							<Controls>
-<!-- 								<Backdrop name="$(parent)Backdrop" alpha="1" centerColor="666666">
-						    		<AnchorFill/>
-								</Backdrop> -->
 								<Control name="$(parent)List" inherits="ZO_ScrollList">
 									
-<!-- 									<Controls>
-<Backdrop name="$(parent)Backdrop" alpha="0.5" centerColor="007733">
-						    		<AnchorFill/>
-								</Backdrop>
-							</Controls> -->
 									<Anchor point="TOPLET" relativeTo="$(parent)" offsetY="5" offsetX="5" relativePoint="TOPLET"/>
 									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" offsetY="-5" offsetX="8" relativePoint="BOTTOMRIGHT"/>
 
