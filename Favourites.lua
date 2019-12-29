@@ -84,7 +84,7 @@ local function addFavourite()
 		end
 		faveTable.name = faveTable.level.name.." "..faveTable.set.name
 	else
-		faveTable.level = {name = "", isChampion = nil, lvl = nil}
+		faveTable.level = {name = "", isChampion = false, lvl = nil}
 		faveTable.name = faveTable.set.name
 	end
 

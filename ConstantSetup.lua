@@ -56,7 +56,7 @@ DolgubonSetCrafter.jewelryTraits =
 local styles = {}
 for i = 1, GetNumValidItemStyles() do
 	local styleItemIndex = GetValidItemStyleId(i)
-	local  styleName = GetItemStyleName(styleItemIndex)
+	local styleName = GetItemStyleName(styleItemIndex)
 	local styleItem = GetSmithingStyleItemInfo(styleItemIndex)
 	if styleItemIndex ~= 36 then
 		table.insert(styles,{styleItemIndex,styleName, styleItem, GetItemStyleMaterialLink(styleItemIndex, 0 )})

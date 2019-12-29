@@ -285,7 +285,7 @@ Created by Dolgubon (Joseph Heinzle)
 									</OnClicked>
 						    	</Button>
 								
-								<Label name="$(parent)CPLabel"  height="25" alpha="1" text="CP" color="FFFFFF" font="ZoFontGameLargeBold">
+								<Label name="$(parent)CPLabel"  height="25" alpha="1" text="CP" color="FFFFFF" font="ZoFontGameLargeBold" hidden="true">
 									<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)ToggleChampion" offsetX="-15"/>
 
 								</Label>

@@ -45,7 +45,7 @@ local out = DolgubonSetCrafter.out
 
 function DolgubonSetCrafter:GetLevel()
 	local level = DolgubonSetCrafterWindowInputInputBox:GetText()
-	local isCP = not DolgubonSetCrafterWindowInputToggleChampion.toggleValue
+	local isCP = DolgubonSetCrafterWindowInputToggleChampion.toggleValue
 	if level == "" then
 		return nil, isCP
 	end
@@ -67,10 +67,10 @@ end
 function DolgubonSetCrafter.setupLevelSelector()
 	DolgubonSetCrafterWindowInputInputBox:SetTextType(2) -- Set it so it takes only numbers
 	DolgubonSetCrafterWindowMultiplierInputInputBox:SetTextType(2)
-	createToggle( DolgubonSetCrafterWindowInputToggleChampion , [[esoui\art\treeicons\achievements_indexicon_champion_up.dds]] , [[esoui\art\treeicons\achievements_indexicon_champion_down.dds]], false)
+	createToggle( DolgubonSetCrafterWindowInputToggleChampion ,  [[esoui\art\treeicons\achievements_indexicon_champion_down.dds]], [[esoui\art\treeicons\achievements_indexicon_champion_up.dds]] )
 
-	DolgubonSetCrafterWindowInputToggleChampion.onToggle = function(self, newState) 
-		DolgubonSetCrafterWindowInputCPLabel:SetHidden(newState)
+	DolgubonSetCrafterWindowInputToggleChampion.onToggle = function(self, newState)
+		DolgubonSetCrafterWindowInputCPLabel:SetHidden(not newState)
 		DolgubonSetCrafter.savedvars["champion"] = newState
 	end
 

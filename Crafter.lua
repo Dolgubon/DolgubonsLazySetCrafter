@@ -449,7 +449,7 @@ local function addPatternToQueue(patternButton,i)
 			end
 
 			--LLC_CraftSmithingItemByLevel(self, patternIndex, isCP , level, styleIndex, traitIndex, useUniversalStyleItem, stationOverride, setIndex, quality, autocraft)
-			if not DolgubonSetCrafterWindowInputToggleChampion.toggleValue then
+			if isCP then
 				requestTableCopy["Level"][2] = "CP ".. requestTableCopy["Level"][2]
 			end
 			requestTableCopy["CraftRequestTable"] = CraftRequestTable
