@@ -42,6 +42,7 @@ DolgubonSetCrafter.localizedStrings.UIStrings.armourEnchant         = "Armour En
 DolgubonSetCrafter.localizedStrings.UIStrings.jewelryEnchant        = "Jewelry Enchantment"
 DolgubonSetCrafter.localizedStrings.UIStrings.weaponEnchant         = "Weapon Enchantment"
 DolgubonSetCrafter.localizedStrings.UIStrings.enchantQuality        = "Enchantment Quality"
+DolgubonSetCrafter.localizedStrings.UIStrings.inProgressCrafting    = "This item is in progress. You can cancel it, but some items have already been created"
 
 
 DolgubonSetCrafter.localizedStrings.SettingsStrings = {}
@@ -61,6 +62,7 @@ DolgubonSetCrafter.localizedStrings.SettingsStrings.useCharacterSettings        
 DolgubonSetCrafter.localizedStrings.SettingsStrings.useCharacterSettingsTooltip  = "Use character specific settings on this character only"
 DolgubonSetCrafter.localizedStrings.SettingsStrings.showToggleButton              = "Always show toggle button"
 DolgubonSetCrafter.localizedStrings.SettingsStrings.showToggleButtonTooltip       = "Show the UI toggle button at all times"
+
 
 
 

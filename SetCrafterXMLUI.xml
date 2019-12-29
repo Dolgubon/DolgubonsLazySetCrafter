@@ -43,7 +43,7 @@ Created by Dolgubon (Joseph Heinzle)
 		    <Controls>
 		    	<Control name="$(parent)Favourites" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false">
 		    		<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="2" offsetY="0"/>
-		    		<Dimensions x="240" y="350" />
+		    		<Dimensions x="240" y="600" />
 		    		<Controls>
 		    			<Button name="$(parent)AddFave" alpha="1" clickSound="Default_Click" topmost="true">
 				    		<Textures normal="/esoui/art/progression/addpoints_up.dds" mouseOver="/esoui/art/progression/addpoints_over.dds" mouseDown="/esoui/art/progression/addpoints_down.dds" />
@@ -264,7 +264,7 @@ Created by Dolgubon (Joseph Heinzle)
 									<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" offsetY="0" />
 									<Dimensions x="50"/>
 									<Controls>
-										<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" textType="number" horizontalAlignment="RIGHT">
+										<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" textType="NUMERIC_UNSIGNED_INT" horizontalAlignment="RIGHT">
 
 											<OnInitialized>
 												ZO_EditDefaultText_Initialize(self, "")
@@ -310,7 +310,7 @@ Created by Dolgubon (Joseph Heinzle)
 									<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" offsetY="0" />
 									<Dimensions x="150"/>
 									<Controls>
-										<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" textType="number" text="1">
+										<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" textType="NUMERIC_UNSIGNED_INT" text="1">
 
 											<OnInitialized>
 												ZO_EditDefaultText_Initialize(self, "")

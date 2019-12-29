@@ -268,7 +268,6 @@ local function addRequirements(returnedTable, addAmounts)
 	local parity = -1
 	if addAmounts then parity = 1 end
 
-
 	local requirements = LazyCrafter:getMatRequirements(returnedTable)
 
 	for itemId, amount in pairs(requirements) do
@@ -281,6 +280,21 @@ local function addRequirements(returnedTable, addAmounts)
 			DolgubonSetCrafter.materialList[itemId] = {["Name"] = link ,["Amount"] = amount*parity,["Current"] = bag + bank + craft }
 		end
 		if DolgubonSetCrafter.materialList[itemId]["Amount"] <= 0 then DolgubonSetCrafter.materialList[itemId] = nil end
+	end
+end
+
+local function clearTable (t)
+	for k, v in pairs(t) do
+		t[k] = nil
+	end
+end
+
+function DolgubonSetCrafter.recompileMatRequirements()
+	clearTable(DolgubonSetCrafter.materialList)
+	for station, stationQueue in pairs( LazyCrafter.personalQueue) do
+		for queuePosition, request in pairs(stationQueue) do
+			addRequirements(request, true)
+		end
 	end
 end
 
@@ -417,9 +431,10 @@ local function addPatternToQueue(patternButton,i)
 			}
 
 			local returnedTable = LazyCrafter:CraftSmithingItemByLevel(unpack(CraftRequestTable))
+			local enchantRequestTable
 			if enchantTable.selected[1] ~= 0 then
 				local enchantLevel = LibLazyCrafting.closestGlyphLevel(isCP, CraftRequestTable[3])
-				local enchantRequestTable = LazyCrafter:CraftEnchantingGlyphByAttributes(isCP, enchantLevel, 
+				enchantRequestTable = LazyCrafter:CraftEnchantingGlyphByAttributes(isCP, enchantLevel, 
 					enchantTable.selected[1], DolgubonSetCrafter.ComboBox.EnchantQuality.selected[1], 
 					DolgubonSetCrafter:GetAutocraft(), requestTableCopy["Reference"], returnedTable)
 
@@ -438,6 +453,12 @@ local function addPatternToQueue(patternButton,i)
 				requestTableCopy["Level"][2] = "CP ".. requestTableCopy["Level"][2]
 			end
 			requestTableCopy["CraftRequestTable"] = CraftRequestTable
+			if enchantRequestTable then
+				requestTableCopy["Link"] = LazyCrafter.getItemLinkFromParticulars(setIndex,trait, pattern, station, CraftRequestTable[3], isCP,  quality, styleIndex,
+					enchantRequestTable.potencyItemID,enchantRequestTable.essenceItemID,  enchantRequestTable.aspectItemID)
+			else
+				requestTableCopy["Link"] = LazyCrafter.getItemLinkFromParticulars(setIndex,trait, pattern, station, CraftRequestTable[3], isCP,  quality, styleIndex)
+			end
 			applyValidityFunctions(requestTableCopy)
 			if returnedTable then
 				addRequirements(returnedTable, true)
@@ -512,12 +533,12 @@ end
 
 local function LLCCraftCompleteHandler(event, station, resultTable)	
 	if event ==LLC_CRAFT_SUCCESS then 
-		if resultTable.type == "improvement" then resultTable.station = GetRearchLineInfoFromRetraitItem(BAG_BACKPACK, resultTable.ItemSlotID) end
+		if resultTable.type == "improvement" then 
+			resultTable.station = GetRearchLineInfoFromRetraitItem(BAG_BACKPACK, resultTable.ItemSlotID) 
+		end
 		DolgubonSetCrafter.removeFromScroll(resultTable.reference, resultTable)
 	elseif event == LLC_INITIAL_CRAFT_SUCCESS then
-
-		resultTable.quality = 1
-		addRequirements(resultTable , false)
+		-- DolgubonSetCrafter.recompileMatRequirements()
 		DolgubonSetCrafter.updateList()
 	end
 end
@@ -658,6 +679,11 @@ function DolgubonSetCrafter.AddSmithingRequest(pattern, isCP, level, styleIndex,
 	local t = AddForiegnSmithingRequest(pattern, isCP, level, styleIndex, traitIndex, useUniversalStyleItem, station, setIndex, quality, autocraft, nil, LazyCrafter)
 	
 	return t.Reference
+end
+
+function DolgubonSetCrafter.isRequestInProgressByReference(referenceId)
+	local requestTable = LazyCrafter:findItemByReference(referenceId)
+	return requestTable and requestTable[1] and (requestTable[1].type ~= "smithing" or requestTable[1].glyphCreated)
 end
 
 function DolgubonSetCrafter.AddSmithingRequestWithReference(pattern, isCP, level, styleIndex, traitIndex, useUniversalStyleItem, station, setIndex, quality, autocraft, optionalReference, optionalCraftingObject)

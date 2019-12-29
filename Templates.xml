@@ -112,9 +112,13 @@
 			</OnInitialized>
 			<OnMouseEnter>
 				if self.isKnown == false then
+					
+
 					InitializeTooltip(InformationTooltip, self, TOP, 0, 0)
 					SetTooltipText(InformationTooltip, self:GetParent().errorTooltip)
+
 					self:GetParent():GetHandler("OnMouseEnter")(self:GetParent(), true)
+
 					return
 				end
 
@@ -122,8 +126,12 @@
 				self:GetParent():GetHandler("OnMouseEnter")(self:GetParent(), false)
 				--DolgubonSetCrafter.scroll:Row_OnMouseEnter(self:GetParent())
 			</OnMouseEnter>
+			<OnMouseUp>
+				self:GetParent():GetHandler("OnClicked")(self:GetParent())
+			</OnMouseUp>
 			<OnMouseExit>
 				ClearTooltip(InformationTooltip)
+				ClearTooltip(ItemTooltip)
 				DolgubonSetCrafter.scroll:Row_OnMouseExit(self:GetParent())
 			</OnMouseExit>
 		</Label>
@@ -181,26 +189,11 @@
 				DolgubonSetCrafter.loadFavourite(self:getCurrent())
 			</OnMouseDown>
 			<Dimensions x="220" y="30" />
-			<!-- <OnClicked>
-				DolgubonSetCrafter.loadFavourite(self:getCurrent())
-				DolgubonSetCrafter.FavouriteScroll:RefreshData()
-			</OnClicked> -->
 			<Controls>
-<!-- 				<Backdrop name="$(parent)BG" >
-					<AnchorFill/>
-					<OnClicked>
-						DolgubonSetCrafter.loadFavourite(self:GetParent():getCurrent())
-						DolgubonSetCrafter.FavouriteScroll:RefreshData()
-					</OnClicked>
-				</Backdrop> -->
 
 				<Label name="$(parent)Name" font="ZoFontGame" verticalAlignment="CENTER" color="76BCC3" mouseEnabled="false" wrapMode="TEXT_WRAP_MODE_TRUNCATE">
 
 					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" color="000000" />
-	<!-- 				<Anchor point="RIGHT" relativeTo="$(parent)Rename" relativePoint="LEFT" offsetX="0" color="000000" />
-					<OnMouseDown>
-						DolgubonSetCrafter.loadFavourite(self:GetParent():getCurrent())
-					</OnMouseDown> -->
 				</Label>
 
 				<Button name="$(parent)Delete" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
@@ -234,9 +227,7 @@
 						self:GetParent():GetNamedChild("Name"):SetText(self:GetText())
 						self:GetParent():GetNamedChild("Name"):SetHidden(false)
 					</OnFocusLost>
-<!-- 					<OnTextChanged>
-						DolgubonSetCrafter.savedvars["level"] = self:GetText()
-					</OnTextChanged> -->
+
 				</EditBox>
 				
 			</Controls>
@@ -254,6 +245,10 @@
 					InformationTooltip:AddLine(DolgubonSetCrafter.localizedStrings.UIStrings.usesMimicStone)
 				end
 				InformationTooltip:AddLine(self.qualityString)
+				if self.data[1].Link ~= nil then
+					InitializeTooltip(ItemTooltip, self, RIGHT, 0, -40)
+					ItemTooltip:SetLink(self.data[1].Link)
+				end
 			</OnMouseEnter>
 
 			<OnMouseExit>
@@ -263,6 +258,8 @@
 				DolgubonSetCrafter.scroll:Row_OnMouseExit(self)
 			</OnMouseExit>
 			<OnClicked>
+				local prevText = ZO_ChatWindowTextEntryEditBox:GetText()
+				StartChatInput(prevText..self.data[1].Link)
 				-- Get Reference
 				-- Refer to LLC to find the request Table
 				-- Get the mat requirements
@@ -356,6 +353,26 @@
 				
 			</Controls>
 		</Button>
-		
+		<Button name="SetCrafterRequestInProgress" virtual="true" >
+			<Textures
+				normal="esoui/art/icons/achievements_indexicon_crafting_up.dds"
+				pressed="esoui/art/icons/achievements_indexicon_crafting_down.dds"
+				mouseOver="esoui/art/icons/achievements_indexicon_crafting_over.dds"
+			/>
+			<OnMouseEnter>
+				if self.tooltip then
+					InitializeTooltip(InformationTooltip, self, BOTTOM, 0, -5)
+					SetTooltipText(InformationTooltip, self.tooltip)
+				end
+			</OnMouseEnter>
+					
+		</Button>
+		<Button name="SetCrafterRequestNotInProgress" virtual="true" >
+			<Textures normal="/esoui/art/hud/radialicon_cancel_up.dds" mouseOver="/esoui/art/hud/radialicon_cancel_over.dds" pressed="" />
+			<OnMouseEnter>
+				
+			</OnMouseEnter>
+					
+		</Button>
 	</Controls>
 </GuiXml>

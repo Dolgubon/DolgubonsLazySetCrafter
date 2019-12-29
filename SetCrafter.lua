@@ -98,7 +98,7 @@ function DolgubonSetCrafter:Initialize()
 		end end)]]
 
 	LLC, version = LibStub:GetLibrary("LibLazyCrafting")
-	if version <2.7 then
+	if version <2.96 then
 		out("Your version of LibLazyCrafting is incompatible with this version of Dolgubon's Lazy Set Crafter. Please update the library.")
 		out = function() end
 	end
@@ -162,7 +162,7 @@ end
 
 EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name, EVENT_CRAFTING_STATION_INTERACT, 
 	function(event, station) 
-		if station <3 or station >5 then
+		if station <=3 or station >5 then
 			if not DolgubonSetCrafter:GetAutocraft() then
 				DolgubonSetCrafter.toggleCraftButton(true)
 			end
@@ -176,7 +176,7 @@ EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name, EVENT_CRAFTING_STATION_I
 
 EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name, EVENT_END_CRAFTING_STATION_INTERACT, 
 	function(event, station) 
-		if (station <3 or station >5) then
+		if (station <=3 or station >5) then
 			DolgubonSetCrafter.toggleCraftButton(false)
 			if DolgubonSetCrafter:GetSettings().closeOnExit then closeWindow(true) 
 			end 

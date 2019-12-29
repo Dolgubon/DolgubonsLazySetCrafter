@@ -198,12 +198,6 @@ function DolgubonSetCrafter.setupComboBoxes()
 	for k, v in pairs(DolgubonSetCrafter.ComboBox) do
 		v.name = k
 	end
-	local armourEnchant = 
-	{
-		{"Frozen Weapon Enchantment","health2"},
-		{"stsam","Frozen Weapon Enchantment"}
-	}--GetItemLinkEnchantInfo(string itemLink)
-
 
 	local UIStrings = langStrings.UIStrings
 	--Three calls to make dropdown selections, as well as further setup the comboboxes.

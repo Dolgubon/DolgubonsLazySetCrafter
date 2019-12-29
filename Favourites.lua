@@ -70,7 +70,6 @@ local function addFavourite()
 	addComboBoxValueToFavourite(faveTable, "armourTrait", comboBoxes.Armour)
 	addComboBoxValueToFavourite(faveTable, "jewelryTrait", comboBoxes.Jewelry)
 	addComboBoxValueToFavourite(faveTable, "style", comboBoxes.Style)
-	addComboBoxValueToFavourite(faveTable, "style", comboBoxes.Style)
 	addComboBoxValueToFavourite(faveTable, "armourEnchant", comboBoxes.ArmourEnchant)
 	addComboBoxValueToFavourite(faveTable, "enchantQuality", comboBoxes.EnchantQuality)
 	addComboBoxValueToFavourite(faveTable, "weaponEnchant", comboBoxes.WeaponEnchant)
@@ -78,10 +77,10 @@ local function addFavourite()
 
 	local level, isChampion = DolgubonSetCrafter:GetLevel()
 	if level ~= "" and level then
-		if not isCP then 
-			faveTable.level = {name = "CP"..level , isChampion = isCP, lvl = level}
+		if isChampion then 
+			faveTable.level = {name = "CP"..level , isChampion = isChampion, lvl = level}
 		else
-			faveTable.level = {name = level, isChampion = isCP, lvl = level}
+			faveTable.level = {name = level, isChampion = isChampion, lvl = level}
 		end
 		faveTable.name = faveTable.level.name.." "..faveTable.set.name
 	else
@@ -105,10 +104,14 @@ DolgubonSetCrafter.addFavourite = addFavourite
 local function loadFavourite(selectedFavourite)
 	-- Load the favourite selection with that Id
 	d("LOADING Set Crafter selection: '"..selectedFavourite.name.."'")
-	if not selectedFavourite then d("error no fave here") return end
-
-	for k, v in pairs(selectedFavourite.selectedPatterns) do
-		DolgubonSetCrafter.patternButtons[v.id]:toggleOn()
+	if not selectedFavourite then d("error no favourite table passed") return end
+	if #selectedFavourite.selectedPatterns>0 then
+		for i = 1, #DolgubonSetCrafter.patternButtons do
+			DolgubonSetCrafter.patternButtons[i]:toggleOff()
+		end
+		for k, v in pairs(selectedFavourite.selectedPatterns) do
+			DolgubonSetCrafter.patternButtons[v.id]:toggleOn()
+		end
 	end
 
 	local comboBoxes = DolgubonSetCrafter.ComboBox
@@ -122,7 +125,7 @@ local function loadFavourite(selectedFavourite)
 	comboBoxes.EnchantQuality:setID(selectedFavourite.enchantQuality.id)
 	comboBoxes.WeaponEnchant:setID(selectedFavourite.weaponEnchant.id)
 	comboBoxes.JewelEnchant :setID(selectedFavourite.jewelEnchant.id)
-	DolgubonSetCrafter.CPToggle:setState(selectedFavourite.level.isCP)
+	DolgubonSetCrafter.CPToggle:setState(selectedFavourite.level.isChampion)
 	DolgubonSetCrafter.levelInput:SetText(selectedFavourite.level.lvl)
 	DolgubonSetCrafter.armourTypes[selectedFavourite.weight.id]:toggleOn()
 
@@ -151,7 +154,4 @@ DolgubonSetCrafter.renameFavourite = renameFavourite
 
 function DolgubonSetCrafter.clearFavourites()
 	DolgubonSetCrafter.savedvars.faves = {}
-end
-
-function DolgubonSetCrafter.loadSelection(tableSelections)
 end

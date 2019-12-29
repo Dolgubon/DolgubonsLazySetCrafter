@@ -80,7 +80,10 @@ local function updateCost()
 	end 
 	DolgubonSetCrafterWindowRightCost:SetText("Total Cost: "..cost.." |t20:20:esoui/art/currency/currency_gold_64.dds|t")
 end
+
 local function updateCurrentAmounts()
+	DolgubonSetCrafter.recompileMatRequirements(DolgubonSetCrafter.materialList)
+
 	for k, v in pairs(DolgubonSetCrafter.materialList) do
 		local link = v["Name"]
 		local bag, bank, craft = GetItemLinkStacks(link)
@@ -140,11 +143,8 @@ function FavouriteScroll:New(control)
 	self.data = DolgubonSetCrafter.savedvars.faves
 	local originalRefresh = self.RefreshData
 	self.RefreshData = function(...)
-		-- updateCurrentAmounts()
 		originalRefresh(...)
-		-- updateCost()
 	end
-	--d("Setting up 1")
 	return self
 	
 end
@@ -321,7 +321,16 @@ function DolgubonScroll:SetupEntry(control, data)
 		end
 	end
 
-	button = control:GetNamedChild( "RemoveButton")
+	local button = control:GetNamedChild( "RemoveButton")
+	if DolgubonSetCrafter.isRequestInProgressByReference(data[1].Reference) then
+
+		button.tooltip = DolgubonSetCrafter.localizedStrings.UIStrings.inProgressCrafting
+		WINDOW_MANAGER:ApplyTemplateToControl(button, "SetCrafterRequestInProgress")
+	else
+		WINDOW_MANAGER:ApplyTemplateToControl(button, "SetCrafterRequestNotInProgress")
+		
+		button.tooltip = nil
+	end
 
 	function button:onClickety ()   DolgubonSetCrafter.removeFromScroll(data[1].Reference)  end
 	--function control:onClicked () DolgubonsGuildBlacklistWindowInputBox:SetText(data.name) end
