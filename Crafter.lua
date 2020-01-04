@@ -267,7 +267,6 @@ local function addRequirements(returnedTable, addAmounts)
 	DolgubonSetCrafter.materialList = DolgubonSetCrafter.materialList or {}
 	local parity = -1
 	if addAmounts then parity = 1 end
-
 	local requirements = LazyCrafter:getMatRequirements(returnedTable)
 
 	for itemId, amount in pairs(requirements) do
@@ -292,8 +291,11 @@ end
 function DolgubonSetCrafter.recompileMatRequirements()
 	clearTable(DolgubonSetCrafter.materialList)
 	for station, stationQueue in pairs( LazyCrafter.personalQueue) do
+		
 		for queuePosition, request in pairs(stationQueue) do
-			addRequirements(request, true)
+			if not (station == CRAFTING_TYPE_ENCHANTING and not request.equipCreated) then
+				addRequirements(request, true)
+			end
 		end
 	end
 end
@@ -537,7 +539,7 @@ local function LLCCraftCompleteHandler(event, station, resultTable)
 			resultTable.station = GetRearchLineInfoFromRetraitItem(BAG_BACKPACK, resultTable.ItemSlotID) 
 		end
 		DolgubonSetCrafter.removeFromScroll(resultTable.reference, resultTable)
-	elseif event == LLC_INITIAL_CRAFT_SUCCESS then
+	elseif event == LLC_INITIAL_CRAFT_SUCCESS or event == LLC_CRAFT_PARTIAL_IMPROVEMENT then
 		-- DolgubonSetCrafter.recompileMatRequirements()
 		DolgubonSetCrafter.updateList()
 	end
@@ -683,7 +685,7 @@ end
 
 function DolgubonSetCrafter.isRequestInProgressByReference(referenceId)
 	local requestTable = LazyCrafter:findItemByReference(referenceId)
-	return requestTable and requestTable[1] and (requestTable[1].type ~= "smithing" or requestTable[1].glyphCreated)
+	return requestTable and requestTable[1] and (requestTable[1].equipCreated or requestTable[1].glyphCreated)
 end
 
 function DolgubonSetCrafter.AddSmithingRequestWithReference(pattern, isCP, level, styleIndex, traitIndex, useUniversalStyleItem, station, setIndex, quality, autocraft, optionalReference, optionalCraftingObject)
