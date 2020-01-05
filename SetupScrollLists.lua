@@ -292,6 +292,7 @@ function DolgubonScroll:SetupEntry(control, data)
 	if data[1].CraftRequestTable[7] ~= CRAFTING_TYPE_JEWELRYCRAFTING then
 		control.usesMimicStone = data[1].CraftRequestTable[6]
 		GetControl(control, "MimicStone"):SetHidden(not data[1].CraftRequestTable[6])
+		control:GetNamedChild("Style"):SetHidden(false)
 	else
 		control:GetNamedChild("Style"):SetHidden(true)
 		GetControl(control, "MimicStone"):SetHidden(true)

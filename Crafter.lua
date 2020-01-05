@@ -315,6 +315,78 @@ local function oneDeepCopy(t)
 	return newTable
 end
 
+local function addToQueue(requestTable, craftMultiplier )
+	local pattern = requestTable["Pattern"][1]
+	local isCP = requestTable["Level"][3]
+	local styleIndex = requestTable["Style"] and requestTable["Style"][1] or 0
+	local station = requestTable["Station"]
+	local trait = requestTable["Trait"][1]
+	local setIndex = requestTable["Set"][1]
+	local quality = requestTable["Quality"][1]
+	local level = tonumber(requestTable["Level"][1])
+
+	-- double checking one final time
+	if pattern and isCP ~= nil and level and (styleIndex or station == CRAFTING_TYPE_JEWELRYCRAFTING) and trait and station and setIndex and quality then
+		craftMultiplier = math.max(math.floor(craftMultiplier), 1) -- Make it an integer, also make it minimum of 1
+		for i = 1, craftMultiplier do
+			-- First, create a deep(er) copy. Tables only go down one deep so that's max depth we need to copy
+			local requestTableCopy = oneDeepCopy(requestTable)
+			-- increment counter for unique reference
+			requestTableCopy["Reference"]	= DolgubonSetCrafter.savedvars.counter
+			DolgubonSetCrafter.savedvars.counter = DolgubonSetCrafter.savedvars.counter + 1
+			local enchantRequestTable
+
+			local CraftRequestTable = {
+				pattern,
+				isCP,
+				level,
+				styleIndex,
+				trait,
+				DolgubonSetCrafter:GetMimicStoneUse(), 
+				station,  
+				setIndex, 
+				quality, 
+				DolgubonSetCrafter:GetAutocraft(),
+				requestTableCopy["Reference"],
+			}
+
+			local returnedTable = LazyCrafter:CraftSmithingItemByLevel(unpack(CraftRequestTable))
+			local enchantRequestTable
+			if type(requestTable["Enchant"])=="table" and requestTable["Enchant"][1]~=0 then
+				local enchantLevel = LibLazyCrafting.closestGlyphLevel(isCP, level)
+				enchantRequestTable = LazyCrafter:CraftEnchantingGlyphByAttributes(isCP, enchantLevel, 
+					requestTable["Enchant"][1], requestTable["EnchantQuality"] , 
+					DolgubonSetCrafter:GetAutocraft(), requestTableCopy["Reference"], returnedTable)
+
+				table.insert(CraftRequestTable,enchantRequestTable.potencyItemID)
+				table.insert(CraftRequestTable,enchantRequestTable.essenceItemID)
+				table.insert(CraftRequestTable,enchantRequestTable.aspectItemID)
+			else
+				requestTableCopy["Enchant"] = ""
+				requestTableCopy["EnchantQuality"] =1
+			end
+
+			--LLC_CraftSmithingItemByLevel(self, patternIndex, isCP , level, styleIndex, traitIndex, useUniversalStyleItem, stationOverride, setIndex, quality, autocraft)
+			if isCP then
+				requestTableCopy["Level"][2] = "CP ".. requestTableCopy["Level"][2]
+			end
+			requestTableCopy["CraftRequestTable"] = CraftRequestTable
+			if enchantRequestTable then
+				requestTableCopy["Link"] = LazyCrafter.getItemLinkFromParticulars(setIndex,trait, pattern, station, CraftRequestTable[3], isCP,  quality, styleIndex,
+					enchantRequestTable.potencyItemID,enchantRequestTable.essenceItemID,  enchantRequestTable.aspectItemID)
+			else
+				requestTableCopy["Link"] = LazyCrafter.getItemLinkFromParticulars(setIndex,trait, pattern, station, CraftRequestTable[3], isCP,  quality, styleIndex)
+			end
+			applyValidityFunctions(requestTableCopy)
+			if returnedTable then
+				addRequirements(returnedTable, true)
+			end
+			if requestTableCopy then
+				queue[#queue+1] = requestTableCopy
+			end
+		end
+	end
+end
 
 local function addPatternToQueue(patternButton,i)
 	local function shallowTwoItemCopy(t)
@@ -348,6 +420,14 @@ local function addPatternToQueue(patternButton,i)
 		out(traitTable.selectPrompt)
 		return
 	end
+	if enchantTable.selected[1] ~= 0 then
+		requestTable["Enchant"] = enchantTable.selected
+		requestTable["EnchantQuality"] = DolgubonSetCrafter.ComboBox.EnchantQuality.selected[1]
+	else
+		requestTable["Enchant"] = ""
+		requestTable["EnchantQuality"] =1
+	end
+
 	if enchantTable.invalidSelection() and not DolgubonSetCrafter.savedvars.autofill then
 		out(enchantTable.selectPrompt)
 		return
@@ -360,13 +440,12 @@ local function addPatternToQueue(patternButton,i)
 		requestTable["Style"] 	= shallowTwoItemCopy(comboBoxes.Style.selected)
 		styleIndex 				= comboBoxes.Style.selected[1]
 	else
-		styleIndex 				= 0 
+		styleIndex 				= 0
 	end
 
 	local level, isCP = DolgubonSetCrafter:GetLevel()
 	
-	requestTable["Level"] = {level, level} -- doubled to simplify code in other areas
-
+	requestTable["Level"] = {level, level, isCP} -- doubled to simplify code in other areas
 
 	requestTable["Set"]			= shallowTwoItemCopy(comboBoxes.Set.selected)
 	local setIndex 				= comboBoxes.Set.selected[1]
@@ -402,77 +481,199 @@ local function addPatternToQueue(patternButton,i)
 			end
 		end
 	end
-
 	-- Some names are just so long, we need to shorten it
 	shortenNames(requestTable)
-	-- double checking one final time
-	if pattern and isCP ~= nil and requestTable["Level"][1] and (styleIndex or station == 7) and trait and station and setIndex and quality then
-		local craftMultiplier = DolgubonSetCrafter:GetMultiplier()
-		craftMultiplier = math.max(math.floor(craftMultiplier), 1) -- Make it an integer, also make it minimum of 1
-		for i = 1, craftMultiplier do
-			-- First, create a deep(er) copy. Tables only go down one deep so that's max depth we need to copy
-			local requestTableCopy = oneDeepCopy(requestTable)
-			-- increment counter for unique reference
-			requestTableCopy["Reference"]	= DolgubonSetCrafter.savedvars.counter
-			DolgubonSetCrafter.savedvars.counter = DolgubonSetCrafter.savedvars.counter + 1
-			local enchantRequestTable
-			
+	local craftMultiplier = DolgubonSetCrafter:GetMultiplier()
+	addToQueue(requestTable, craftMultiplier)
+end
+local weaponTypes={
+	[WEAPONTYPE_BOW] = {CRAFTING_TYPE_WOODWORKING, 1,8},
+	[WEAPONTYPE_FIRE_STAFF] = {CRAFTING_TYPE_WOODWORKING, 3, 9},
+	[WEAPONTYPE_FROST_STAFF] = {CRAFTING_TYPE_WOODWORKING, 4, 10},
+	[WEAPONTYPE_HEALING_STAFF] = {CRAFTING_TYPE_WOODWORKING, 6, 12},
+	[WEAPONTYPE_LIGHTNING_STAFF] = {CRAFTING_TYPE_WOODWORKING, 5, 11},
+	[WEAPONTYPE_SHIELD] = {CRAFTING_TYPE_WOODWORKING,2, 13},
+	[WEAPONTYPE_AXE] = {CRAFTING_TYPE_BLACKSMITHING , 1 ,1},
+	[WEAPONTYPE_DAGGER] = {CRAFTING_TYPE_BLACKSMITHING , 7, 7},
+	[WEAPONTYPE_HAMMER] = {CRAFTING_TYPE_BLACKSMITHING , 2, 2},
+	[WEAPONTYPE_SWORD] = {CRAFTING_TYPE_BLACKSMITHING , 3, 3},
+	[WEAPONTYPE_TWO_HANDED_AXE] = {CRAFTING_TYPE_BLACKSMITHING , 4, 4},
+	[WEAPONTYPE_TWO_HANDED_HAMMER] = {CRAFTING_TYPE_BLACKSMITHING , 5, 5},
+	[WEAPONTYPE_TWO_HANDED_SWORD] = {CRAFTING_TYPE_BLACKSMITHING , 6, 6},
+}
+local equipTypes = {
+	[EQUIP_TYPE_CHEST] = {1, 1},
+	[EQUIP_TYPE_FEET] = {2, 2},
+	[EQUIP_TYPE_HAND] = {3, 3},
+	[EQUIP_TYPE_HEAD] = {4, 4},
+	[EQUIP_TYPE_LEGS] = {5, 5},
+	[EQUIP_TYPE_NECK] = {2, 3},
+	[EQUIP_TYPE_RING] = {1, 1},
+	[EQUIP_TYPE_SHOULDERS] = {6, 6},
+	[EQUIP_TYPE_WAIST] = {7, 7},
+}
+local function getPatternInfo(link, weight)
+	local equipType = GetItemLinkEquipType(link)
+	local patternDirectorInfo = equipTypes[equipType]
+	local patternName
+	local patternId
+	if weight==0 then
+		patternName = DolgubonSetCrafter.localizedStrings.jewelryNames[patternDirectorInfo[2]]
+		patternId = patternDirectorInfo[1]
+	else
+		patternId = patternDirectorInfo[1]
+		patternName = DolgubonSetCrafter.localizedStrings.pieceNames[patternDirectorInfo[2]]
+		if weight == ARMORTYPE_LIGHT then
+			if not IsItemLinkRobe(link) then
+				patternId = patternId + 1
+				if patternId == 2 then
+					patternName = DolgubonSetCrafter.localizedStrings.pieceNames[8]
+				end
+			end
+		end
+		if weight == ARMORTYPE_MEDIUM then
+			patternId = patternId + 8
+		end
+		if weight == ARMORTYPE_HEAVY then
+			patternId = patternId + 7
+		end
+	end
+	return { patternId, patternName,}
+end
 
-			local CraftRequestTable = {
-				pattern, 
-				isCP,
-				tonumber(requestTableCopy["Level"][1]),
-				styleIndex,
-				trait, 
-				DolgubonSetCrafter:GetMimicStoneUse(), 
-				station,  
-				setIndex, 
-				quality, 
-				DolgubonSetCrafter:GetAutocraft(),
-				requestTableCopy["Reference"],
-			}
-
-			local returnedTable = LazyCrafter:CraftSmithingItemByLevel(unpack(CraftRequestTable))
-			local enchantRequestTable
-			if enchantTable.selected[1] ~= 0 then
-				local enchantLevel = LibLazyCrafting.closestGlyphLevel(isCP, CraftRequestTable[3])
-				enchantRequestTable = LazyCrafter:CraftEnchantingGlyphByAttributes(isCP, enchantLevel, 
-					enchantTable.selected[1], DolgubonSetCrafter.ComboBox.EnchantQuality.selected[1], 
-					DolgubonSetCrafter:GetAutocraft(), requestTableCopy["Reference"], returnedTable)
-
-				requestTableCopy["Enchant"] = enchantTable.selected
-				requestTableCopy["EnchantQuality"] = DolgubonSetCrafter.ComboBox.EnchantQuality.selected[1]
-				table.insert(CraftRequestTable,enchantRequestTable.potencyItemID)
-				table.insert(CraftRequestTable,enchantRequestTable.essenceItemID)
-				table.insert(CraftRequestTable,enchantRequestTable.aspectItemID)
-			else
-				requestTableCopy["Enchant"] = ""
-				requestTableCopy["EnchantQuality"] =1
-			end
-
-			--LLC_CraftSmithingItemByLevel(self, patternIndex, isCP , level, styleIndex, traitIndex, useUniversalStyleItem, stationOverride, setIndex, quality, autocraft)
-			if isCP then
-				requestTableCopy["Level"][2] = "CP ".. requestTableCopy["Level"][2]
-			end
-			requestTableCopy["CraftRequestTable"] = CraftRequestTable
-			if enchantRequestTable then
-				requestTableCopy["Link"] = LazyCrafter.getItemLinkFromParticulars(setIndex,trait, pattern, station, CraftRequestTable[3], isCP,  quality, styleIndex,
-					enchantRequestTable.potencyItemID,enchantRequestTable.essenceItemID,  enchantRequestTable.aspectItemID)
-			else
-				requestTableCopy["Link"] = LazyCrafter.getItemLinkFromParticulars(setIndex,trait, pattern, station, CraftRequestTable[3], isCP,  quality, styleIndex)
-			end
-			applyValidityFunctions(requestTableCopy)
-			if returnedTable then
-				addRequirements(returnedTable, true)
-			end
-			if requestTableCopy then
-				queue[#queue+1] = requestTableCopy
-			end
+local function findMatchingSelected(searchArea, searchKey)
+	for k, v in pairs(searchArea) do
+		if v[1] == searchKey then
+			return v
 		end
 	end
 end
+local subIdToQuality = { }
+function GetEnchantQuality(itemLink)
+	local itemId, itemIdSub, enchantSub = itemLink:match("|H[^:]+:item:([^:]+):([^:]+):[^:]+:[^:]+:([^:]+):")
+	if not itemId then return 0 end
+	enchantSub = tonumber(enchantSub)
+	if enchantSub == 0 and not IsItemLinkCrafted(itemLink) then
+		local hasSet = GetItemLinkSetInfo(itemLink, false)
+		-- For non-crafted sets, the "built-in" enchantment has the same quality as the item itself
+		if hasSet then enchantSub = tonumber(itemIdSub) end
+	end
+	if enchantSub > 0 then
+		local quality = subIdToQuality[enchantSub]
+		if not quality then
+			-- Create a fake itemLink to get the quality from built-in function
+			local itemLink = string.format("|H1:item:%i:%i:50:0:0:0:0:0:0:0:0:0:0:0:0:1:1:0:0:10000:0|h|h", itemId, enchantSub)
+			quality = GetItemLinkQuality(itemLink)
+			subIdToQuality[enchantSub] = quality
+		end
+		return quality
+	end
+	return 0
+end
 
+local function verifyLinkIsValid(link)
+	local _,_,_,_,_,setIndex=GetItemLinkSetInfo(link)
+	if setIndex > 0 and not LibLazyCrafting.GetSetIndexes()[setIndex] then
+		return false
+	end
+	local itemType = GetItemLinkItemType(link)
+	if itemType ~= ITEMTYPE_ARMOR and itemType ~= ITEMTYPE_WEAPON then
+		return false
+	end
+	return true
+end
 
+DolgubonSetCrafter.verifyLinkIsValid = verifyLinkIsValid
+
+local function addByItemLinkToQueue(itemLink)
+	if not verifyLinkIsValid(itemLink) then
+		return
+	end
+
+	local requestTable = {}
+	
+	local weight = GetItemLinkArmorType(itemLink)
+	if weight == 0 then
+		requestTable["Weight"] = {nil, ""}
+	else
+		requestTable["Weight"] = {weight, DolgubonSetCrafter.localizedStrings.armourTypes[4-weight]}
+	end
+	
+	if weight == ARMORTYPE_NONE then -- weapon OR shield
+		local weaponType = GetItemLinkWeaponType(itemLink)
+		local itemFilterType = GetItemLinkFilterTypeInfo(itemLink)
+		if itemFilterType == ITEMFILTERTYPE_JEWELRY then
+			requestTable["Station"] = CRAFTING_TYPE_JEWELRYCRAFTING
+			requestTable["Pattern"] = getPatternInfo(itemLink, weight)
+		else
+			requestTable["Station"] = weaponTypes[weaponType][1]
+			requestTable["Pattern"] = {weaponTypes[weaponType][2], DolgubonSetCrafter.localizedStrings.weaponNames[weaponTypes[weaponType][3]]}
+		end
+	else
+		requestTable["Station"] = DolgubonSetCrafter.patternButtons[1]:GetStation(weight)
+		requestTable["Pattern"] = getPatternInfo(itemLink, weight)
+	end
+	local isCP = GetItemLinkRequiredChampionPoints(itemLink)~=0
+	local level
+	if isCP then
+		level = GetItemLinkRequiredChampionPoints(itemLink)
+	else
+		level = GetItemLinkRequiredLevel(itemLink)
+	end
+
+	requestTable["Level"] = {level, level, isCP}
+
+	local styleIndex = GetItemLinkItemStyle(itemLink)
+	requestTable["Style"] = findMatchingSelected(DolgubonSetCrafter.styleNames, styleIndex)
+
+	local traitIndex = GetItemLinkTraitInfo(itemLink)+1
+
+	requestTable["Trait"] = findMatchingSelected(DolgubonSetCrafter.jewelryTraits, traitIndex) or 
+		findMatchingSelected(DolgubonSetCrafter.armourTraits, traitIndex) or 
+		findMatchingSelected(DolgubonSetCrafter.weaponTraits, traitIndex)
+
+	local _,_,_,_,_,setIndex = GetItemLinkSetInfo(itemLink)
+	requestTable["Set"] = findMatchingSelected(DolgubonSetCrafter.setIndexes, setIndex)
+
+	local quality = GetItemLinkQuality(itemLink)
+	requestTable["Quality"] = findMatchingSelected(DolgubonSetCrafter.quality, quality)
+
+	local enchantId = GetItemLinkAppliedEnchantId(itemLink)
+	requestTable["Enchant"] = findMatchingSelected(DolgubonSetCrafter.weaponEnchantments, enchantId) or
+		findMatchingSelected(DolgubonSetCrafter.jewelryEnchantments, enchantId) or
+		findMatchingSelected(DolgubonSetCrafter.armourEnchantments, enchantId)
+	local enchantQuality = GetEnchantQuality(itemLink)
+	requestTable["EnchantQuality"] = findMatchingSelected(DolgubonSetCrafter.quality,enchantQuality)
+	requestTable["EnchantQuality"] = requestTable["EnchantQuality"] and requestTable["EnchantQuality"][1] or 1
+	-- GetItemLinkSetInfo
+	--  GetItemLinkRequiredChampionPoints(string itemLink)
+	shortenNames(requestTable)
+	addToQueue(requestTable, 1)
+	DolgubonSetCrafter.updateList()
+end
+
+DolgubonSetCrafter.addByItemLinkToQueue = addByItemLinkToQueue
+
+--Contextmenu from chat/link handler
+local function InitializeItemLinkRightClick(link, button, a, b, linkType, ...)
+	if button ~= MOUSE_BUTTON_INDEX_RIGHT then
+		return
+	end
+	if not verifyLinkIsValid(link) then
+		return
+	end
+	if linkType == ITEM_LINK_TYPE then
+--		d(debug.traceback())
+		zo_callLater(function()
+			AddCustomMenuItem("Lazy Set Crafter: Add to Queue" , function()
+				-- addItemLinkSearchContextMenuEntry(link, nil)
+				addByItemLinkToQueue(link)
+			end, MENU_ADD_OPTION_LABEL)
+			--Show the context menu entries at the itemlink handler now
+			ShowMenu()
+		end, 50)
+	end
+end
 
 function DolgubonSetCrafter.compileMatRequirements()
 	out("")
@@ -570,6 +771,7 @@ function DolgubonSetCrafter.initializeFunctions.initializeCrafting()
 		end
 	end
 	LazyCrafter:SetAllAutoCraft(DolgubonSetCrafter:GetSettings().autocraft)
+	LINK_HANDLER:RegisterCallback(LINK_HANDLER.LINK_MOUSE_UP_EVENT, InitializeItemLinkRightClick)
 end
 
 

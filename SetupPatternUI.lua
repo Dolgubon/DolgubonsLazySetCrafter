@@ -39,14 +39,15 @@ end
 
 function DolgubonSetCrafter:GetWeight()
 	local weight = DolgubonSetCrafter.armourTypes.weight
-	return weight, DolgubonSetCrafter.armourTypes[weight].tooltip
+	return weight, DolgubonSetCrafter.armourTypes[4 - weight].tooltip
 end
 
 
 local function setupPatternButtonFunctions(patternButtons)
 	for i = 1, 8 do -- Armour, made to fit
-		patternButtons[i].GetStation = function() 
-			if DolgubonSetCrafter:GetWeight() == 1 then 
+		patternButtons[i].GetStation = function(self,weightOverride)
+		local weight = weightOverride or DolgubonSetCrafter:GetWeight()
+			if weight == ARMORTYPE_HEAVY then 
 				return CRAFTING_TYPE_BLACKSMITHING 
 			else
 				return CRAFTING_TYPE_CLOTHIER
@@ -57,13 +58,13 @@ local function setupPatternButtonFunctions(patternButtons)
 		patternButtons[i].HaveWeights = function() return true end
 		patternButtons[i].GetPattern = function(self, weightOverride)
 
-			local weight = weightOverride or DolgubonSetCrafter:GetWeight() 
+			local weight = weightOverride or DolgubonSetCrafter:GetWeight()
 
-			if weight ~=3 and i == 8 then return 0 end
+			if weight ~=ARMORTYPE_LIGHT and i == 8 then return 0 end
 			
-			if weight == 1 then
+			if weight == ARMORTYPE_HEAVY then
 				return i + 7
-			elseif weight == 2 then
+			elseif weight == ARMORTYPE_MEDIUM then
 				return i + 8
 			else
 				if i == 8 then return 2 end
@@ -205,7 +206,7 @@ function DolgubonSetCrafter.setupPatternButtons()
 	
 	setupPatternButtonFunctions(patternButtons)
 
-	DolgubonSetCrafter.armourTypes.weight = 1
+	DolgubonSetCrafter.armourTypes.weight = ARMORTYPE_HEAVY
 	local function setOtherArmourTypesToZero(index)
 		for i = 1, #DolgubonSetCrafter.armourTypes do
 			if index ~= i then
@@ -223,7 +224,7 @@ function DolgubonSetCrafter.setupPatternButtons()
 			end
 		end
 		function button:toggleOn()
-			DolgubonSetCrafter.armourTypes.weight = i
+			DolgubonSetCrafter.armourTypes.weight = 4 - i
 			self.toggleValue = true
 			self:SetNormalTexture(self.onTexture)
 			if onOverTexture then self:SetMouseOverTexture(self.onOverTexture) end

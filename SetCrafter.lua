@@ -117,7 +117,6 @@ function DolgubonSetCrafter:Initialize()
 		{0,5000,50000, "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7CZ3LW6E66NAU"}, 
 		"If you found a bug, have a request or a suggestion, or wish to donate, you can send me a mail here.")
 	window:SetHidden(true)
-	DolgubonSetCrafterWindowRightMailQueue:SetHidden(true)
 
 	local currentAPIVersionOfAddon = 100029
 
@@ -136,7 +135,9 @@ function DolgubonSetCrafter:Initialize()
 	end
 	if DolgubonSetCrafter.savedvars.debug then
 		DolgubonSetCrafterWindow:SetHidden(false)
+		DolgubonSetCrafterWindowRightInputBox:SetText("@Dolgubonn")
 	end
+	DolgubonSetCrafter.initializeMailButtons()
 end
 
 local function closeWindow (optionalOverride)
