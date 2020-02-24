@@ -74,21 +74,115 @@ function DolgubonSetCrafterWindowComboboxes:adduiElement(newElement, position)
 --(CENTER,  DolgubonSetCrafterWindowComboboxes,CENTER, x,y)
 end
 
+local function findFirstArmourSelected(traitsToUse)
+	for i = 1, #DolgubonSetCrafter.patternButtons do
+		--d(DolgubonSetCrafter.patternButtons[i].tooltip..DolgubonSetCrafter.patternButtons[i].selectedIndex)
+
+		if (traitsToUse or DolgubonSetCrafter.patternButtons[i].TraitsToUse() == traitsToUse) and  DolgubonSetCrafter.patternButtons[i].toggleValue then
+			return  DolgubonSetCrafter.patternButtons[i].GetPattern(), DolgubonSetCrafter.patternButtons[i].GetStation()
+		end
+	end
+	return 1, 1
+end
+
+local function showPreviewItemLink(control, comboBoxParent, overrideData)
+	if overrideData or control.dataEntry.data.info then
+		local info = overrideData or control.dataEntry.data.info[1]
+
+		local level, isCP = DolgubonSetCrafter:GetLevel()
+		if not level or level=="" then
+			if isCP then
+				level = 160
+			else
+				level = 1
+			end
+		 end
+
+		InitializeTooltip(ItemTooltip, comboBoxParent , LEFT, 10,0 )
+
+		local params= {
+			DolgubonSetCrafter.ComboBox.Set.selected[1],
+			DolgubonSetCrafter.ComboBox.Weapon.selected[1],
+			1, --- pattern
+			1, -- station
+			level,
+			isCP,
+			DolgubonSetCrafter.ComboBox.Quality.selected[1],
+			DolgubonSetCrafter.ComboBox.Style.selected[1],
+		}
+		local potencyId, essenceId, aspectId = LibLazyCrafting.EnchantAttributesToGlyphIds(isCP, level,DolgubonSetCrafter.ComboBox.WeaponEnchant.selected[1] , DolgubonSetCrafter.ComboBox.EnchantQuality.selected[1])
+
+		table.insert(params, potencyId)
+		table.insert(params, essenceId)
+		table.insert(params, aspectId)
+
+		comboBoxParent.previewDataPosition(params, info)
+		-- d(LibLazyCrafting.getItemLinkFromParticulars(setId, 1, 1, 1, 160, true, 5, 1))
+		local link = LibLazyCrafting.getItemLinkFromParticulars(unpack(params))
+		if not link then
+			ClearTooltip(ItemTooltip)
+			return
+		end
+		--setId, trait, pattern, station,level, isCP, quality,style,  potencyId, essenceId , aspectId
+		ItemTooltip:SetLink(link)
+	end
+end
+
+
+local function tooltipForCombobox(comboBoxContainer)
+
+	local function showTooltipForComboboxes(control, parentControl)
+		if control.menuIndex == 1 then -- unselected option
+			return
+		end
+		local info =parentControl:GetChild(1).m_comboBox.m_sortedItems[control.menuIndex].info[1]
+		if info then
+			showPreviewItemLink(control,parentControl, info)
+		end
+	end
+
+	local hooked = false
+    local originalZO_Menu_EnterItem, originalZO_Menu_ExitItem
+	ZO_PreHook(ZO_ComboBox_ObjectFromContainer(comboBoxContainer.comboBox), "ShowDropdownInternal", function(comboBox)
+        if(not hooked) then
+            hooked = true
+            originalZO_Menu_EnterItem = ZO_Menu_EnterItem
+            originalZO_Menu_ExitItem = ZO_Menu_ExitItem
+            ZO_PreHook("ZO_Menu_EnterItem",function(s)showTooltipForComboboxes(s, comboBoxContainer) end )
+            ZO_PreHook("ZO_Menu_ExitItem", function() ClearTooltip(ItemTooltip) end)
+        end
+    end)
+
+    ZO_PreHook(ZO_ComboBox_ObjectFromContainer(comboBoxContainer.comboBox), "HideDropdownInternal", function(comboBox)
+        if(hooked) then
+            hooked = false
+            ZO_Menu_EnterItem = originalZO_Menu_EnterItem
+            ZO_Menu_ExitItem = originalZO_Menu_ExitItem
+            ClearTooltip(ItemTooltip)
+        end
+    end)
+
+end
 
 -- Creates one dropdown box using the passed information
 local function makeDropdownSelections(comboBoxContainer, tableInfo , text , x, y, comboBoxLocation, selectionTypes, noDefault)
-
+	-- comboBoxLocation=2
 	if selectionTypes == "armourTrait" then isArmourCombobox = true elseif selectionTypes == "weaponTrait" then isArmourCombobox = false end
 	local comboBox = comboBoxContainer:GetChild(comboBoxLocation)
-	-- if location is 1 then get child number 2 and if location is 2 get child number 1
-	-- It was a fun exercise to not have to write an if statement
-	-- comboBoxContainer:GetChild((comboBoxLocation+2)%2+1):SetText(text..":")
+
 	comboBoxContainer:GetNamedChild("Name"):SetText(text..":")
 	if not comboBox.m_comboBox then 
 		comboBox.m_comboBox =comboBox.dropdown
 		comboBox.dropdown.m_container:SetDimensions(225,30)
 		comboBox.dropdown.m_dropdown:SetDimensions(225,370)
 	end
+	comboBoxContainer.comboBox = comboBox
+	if comboBoxLocation == 1 then
+		tooltipForCombobox(comboBoxContainer)
+	else
+	end
+
+	
 	--Function called when an option is selected
 	function comboBox:setSelected( selectedInfo)
 		if selectedInfo[1] ~= -1 then
@@ -98,6 +192,7 @@ local function makeDropdownSelections(comboBoxContainer, tableInfo , text , x, y
 		self.m_comboBox.selectedIndex = selectedInfo[1]
 		self.m_comboBox.selectedName = selectedInfo[2]
 		self.m_comboBox:HideDropdownInternal()
+
 		comboBoxContainer.selected = selectedInfo
 
 		comboBoxContainer.invalidSelection = function(weight, isAmour)
@@ -126,7 +221,7 @@ local function makeDropdownSelections(comboBoxContainer, tableInfo , text , x, y
 	comboBoxContainer.idSelectors = {}
 	for i, value in pairs(tableInfo) do
 		local itemEntry = ZO_ComboBox:CreateItemEntry(zo_strformat("<<t:1>>",tableInfo[i][2]), function() comboBox:setSelected( tableInfo[i])end )
-		
+		itemEntry.info = tableInfo[i]
 		comboBox.m_comboBox:AddItem(itemEntry)
 		if i == 1 then
 			-- Debug selection
@@ -182,6 +277,17 @@ function DolgubonSetCrafter.setupComboBoxes()
 	-- Note: Could be combined into a loop or something, but left like this for clarity
 	DolgubonSetCrafter.ComboBox = {}
 
+	-- DolgubonSetCrafter.ComboBox.ArmourEnchant = WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_ArmourEnchant", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
+	-- DolgubonSetCrafter.ComboBox.EnchantQuality = WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_EnchantQuality", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
+	-- DolgubonSetCrafter.ComboBox.WeaponEnchant = WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_WeaponEnchant", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
+	-- DolgubonSetCrafter.ComboBox.JewelEnchant = WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_JewelEnchant", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
+	-- DolgubonSetCrafter.ComboBox.Set			= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Set", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
+	-- DolgubonSetCrafter.ComboBox.Jewelry		= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Jewelry_Trait", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
+	-- DolgubonSetCrafter.ComboBox.Quality		= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Quality", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
+	-- DolgubonSetCrafter.ComboBox.Weapon 		= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Weapon_Trait", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
+	-- DolgubonSetCrafter.ComboBox.Armour 		= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Armour_Trait", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
+	-- DolgubonSetCrafter.ComboBox.Style 		= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Style", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
+
 	DolgubonSetCrafter.ComboBox.ArmourEnchant = WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_ArmourEnchant", DolgubonSetCrafterWindowComboboxes, "ComboboxTemplate")
 	DolgubonSetCrafter.ComboBox.EnchantQuality = WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_EnchantQuality", DolgubonSetCrafterWindowComboboxes, "ComboboxTemplate")
 	DolgubonSetCrafter.ComboBox.WeaponEnchant = WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_WeaponEnchant", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
@@ -193,6 +299,46 @@ function DolgubonSetCrafter.setupComboBoxes()
 	DolgubonSetCrafter.ComboBox.Jewelry		= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Jewelry_Trait", DolgubonSetCrafterWindowComboboxes, "ComboboxTemplate")
 	DolgubonSetCrafter.ComboBox.Set			= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Set", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
 	DolgubonSetCrafter.ComboBox.Style 		= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Style", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
+
+	Dolgubons_Set_Crafter_Set.showPreview = true
+	Dolgubons_Set_Crafter_Set.previewDataPosition = function(params, newValue) params[1] = newValue end
+	Dolgubons_Set_Crafter_Weapon_Trait.showPreview = true
+	Dolgubons_Set_Crafter_Weapon_Trait.previewDataPosition = function(params, newValue) params[2] = newValue end
+	Dolgubons_Set_Crafter_Style.showPreview = true
+	Dolgubons_Set_Crafter_Style.previewDataPosition = function(params, newValue) params[8] = newValue end
+	Dolgubons_Set_Crafter_Jewelry_Trait.previewDataPosition = function(params, newValue) params[4] = CRAFTING_TYPE_JEWELRYCRAFTING params[2] = newValue end
+	Dolgubons_Set_Crafter_Armour_Trait.previewDataPosition = function(params, newValue) params[3] = 8 params[2] = newValue end
+	Dolgubons_Set_Crafter_Quality.previewDataPosition = function(params, newValue) params[7] = newValue end
+	Dolgubons_Set_Crafter_ArmourEnchant.previewDataPosition = function(params, newValue)
+		local potencyId, essenceId, aspectId = LibLazyCrafting.EnchantAttributesToGlyphIds(isCP, level,newValue , DolgubonSetCrafter.ComboBox.EnchantQuality.selected[1])
+	 params[9] = potencyId 
+	 params[10] = essenceId 
+	 params[11] = aspectId 
+	 params[2] = DolgubonSetCrafter.ComboBox.Armour.selected[1]
+	 params[3] = 8
+	end
+	Dolgubons_Set_Crafter_WeaponEnchant.showPreview = true
+	Dolgubons_Set_Crafter_WeaponEnchant.previewDataPosition = function(params, newValue)
+	local potencyId, essenceId, aspectId = LibLazyCrafting.EnchantAttributesToGlyphIds(isCP, level,newValue , DolgubonSetCrafter.ComboBox.EnchantQuality.selected[1])
+	 params[9] = potencyId 
+	 params[10] = essenceId 
+	 params[11] = aspectId 
+	end
+	Dolgubons_Set_Crafter_JewelEnchant.showPreview = true
+	Dolgubons_Set_Crafter_JewelEnchant.previewDataPosition = function(params, newValue)
+	local potencyId, essenceId, aspectId = LibLazyCrafting.EnchantAttributesToGlyphIds(isCP, level,newValue , DolgubonSetCrafter.ComboBox.EnchantQuality.selected[1])
+	 params[9] = potencyId 
+	 params[10] = essenceId
+	 params[11] = aspectId
+	 params[2] = DolgubonSetCrafter.ComboBox.Jewelry.selected[1]
+	 params[4] = CRAFTING_TYPE_JEWELRYCRAFTING
+	end
+	Dolgubons_Set_Crafter_EnchantQuality.previewDataPosition = function(params, newValue)
+	local potencyId, essenceId, aspectId = LibLazyCrafting.EnchantAttributesToGlyphIds(isCP, level,DolgubonSetCrafter.ComboBox.WeaponEnchant.selected[1] , newValue)
+	 params[9] = potencyId 
+	 params[10] = essenceId 
+	 params[11] = aspectId 
+	end
 	
 	
 	for k, v in pairs(DolgubonSetCrafter.ComboBox) do
@@ -220,6 +366,28 @@ function DolgubonSetCrafter.setupComboBoxes()
 	DolgubonSetCrafter.ComboBox.ArmourEnchant.isGlyph = true
 	DolgubonSetCrafter.ComboBox.EnchantQuality.isGlyphQuality = true
 	--DolgubonSetCrafterWindowComboboxes:anchoruiElements()
+	local originalScrollEnter = ZO_ScrollableComboBox_Entry_OnMouseEnter
+	ZO_ScrollableComboBox_Entry_OnMouseEnter = 
+	function(...) 
+		originalScrollEnter(...)
+		local params = {...}
+		local self = params[1]
+		if self:GetParent():GetParent():GetParent():GetParent():GetParent().showPreview then
+			-- d(self.dataEntry)
+			showPreviewItemLink(self, self:GetParent():GetParent():GetParent():GetParent():GetParent())
+		end
+	end
+	local originalScrollExit = ZO_ScrollableComboBox_Entry_OnMouseExit
+	ZO_ScrollableComboBox_Entry_OnMouseExit = 
+	function(...)
+		originalScrollExit(...)
+		local params = {...}
+		local self = params[1]
+		if self:GetParent():GetParent():GetParent():GetParent():GetParent().showPreview then
+			ClearTooltip(ItemTooltip)
+		end
+	end
+
 end
 
 

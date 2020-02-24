@@ -26,13 +26,13 @@ local continuedFrom = "(Continued from previous mail)"
 
 local function compileMailText(subject, mailStarter, data, dataTransform)
 	mailOutputTexts = {}
-	local text = mailStarter()
+	local text
 	if type(mailStarter ) == "function" then
+		text = mailStarter()
 		text = continuedFrom..mailStarter(data[1])
 	else
 		text = continuedFrom..mailStarter
 	end
-
 	local nextAddition = ""	
 	for i = 1, #data do
 		
