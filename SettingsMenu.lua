@@ -79,6 +79,17 @@ local options =
 			DolgubonSetCrafter.savedvars.saveLastChoice = value
 		end,
 	},
+
+		{
+		type = "checkbox",
+		name = SettingsStrings.showFavourites,
+		tooltip =SettingsStrings.showFavouritesTooltip,
+		getFunc = function() return DolgubonSetCrafter:GetSettings().showFavourites end,
+		setFunc = function(value) 
+			DolgubonSetCrafter:GetSettings().showFavourites = value
+			DolgubonSetCrafterWindowFavourites:SetHidden(not value)
+		end,
+	},
 	
 	
 }

@@ -34,6 +34,7 @@ DolgubonSetCrafter.default = {
 	['width'] = DolgubonSetCrafter.defaultWidth,
 	['height'] = DolgubonSetCrafter.defaultHeight,
 	['faves'] = {},
+	['showFavourites'] = true,
 }
 
 
@@ -111,14 +112,14 @@ function DolgubonSetCrafter:Initialize()
 	DolgubonSetCrafter.initializeFunctions.setupUI()
 	
 	--DolgubonSetCrafter.initializeFeedbackWindow()
-	LibFeedback = LibStub:GetLibrary("LibFeedback")
+	local LibFeedback = LibStub:GetLibrary("LibFeedback")
 	local button, window = LibFeedback:initializeFeedbackWindow(DolgubonSetCrafter, "Dolgubon's Lazy Set Crafter",DolgubonSetCrafterWindow, "@Dolgubon", 
 		{TOPLEFT , DolgubonSetCrafterWindow , TOPLEFT , 10, 10}, 
 		{0,5000,50000, "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7CZ3LW6E66NAU"}, 
 		"If you found a bug, have a request or a suggestion, or wish to donate, you can send me a mail here.")
 	window:SetHidden(true)
 
-	local currentAPIVersionOfAddon = 100030
+	local currentAPIVersionOfAddon = 100031
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" then 
 		d("Update your addons!") 
@@ -136,8 +137,10 @@ function DolgubonSetCrafter:Initialize()
 	if DolgubonSetCrafter.savedvars.debug then
 		DolgubonSetCrafterWindow:SetHidden(false)
 		DolgubonSetCrafterWindowRightInputBox:SetText("@Dolgubonn")
+		DolgubonSetCrafter.updateList()
 	end
 	DolgubonSetCrafter.initializeMailButtons()
+	DolgubonSetCrafterWindowFavourites:SetHidden(not DolgubonSetCrafter:GetSettings().showFavourites)
 end
 
 local function closeWindow (optionalOverride)

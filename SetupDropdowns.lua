@@ -98,8 +98,6 @@ local function showPreviewItemLink(control, comboBoxParent, overrideData)
 			end
 		 end
 
-		InitializeTooltip(ItemTooltip, comboBoxParent , LEFT, 10,0 )
-
 		local params= {
 			DolgubonSetCrafter.ComboBox.Set.selected[1],
 			DolgubonSetCrafter.ComboBox.Weapon.selected[1],
@@ -119,10 +117,11 @@ local function showPreviewItemLink(control, comboBoxParent, overrideData)
 		comboBoxParent.previewDataPosition(params, info)
 		-- d(LibLazyCrafting.getItemLinkFromParticulars(setId, 1, 1, 1, 160, true, 5, 1))
 		local link = LibLazyCrafting.getItemLinkFromParticulars(unpack(params))
-		if not link then
+		if not link or link == "" then
 			ClearTooltip(ItemTooltip)
 			return
 		end
+		InitializeTooltip(ItemTooltip, comboBoxParent , LEFT, 10,0 )
 		--setId, trait, pattern, station,level, isCP, quality,style,  potencyId, essenceId , aspectId
 		ItemTooltip:SetLink(link)
 	end

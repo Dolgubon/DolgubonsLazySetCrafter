@@ -271,7 +271,48 @@ function DolgubonSetCrafter.outputAllMats()
 		text =text.. tostring(tempMatHolder[i]["Amount"]).." "..tempMatHolder[i]["Name"]
 	end
 	outputTexts[#outputTexts + 1] = text
+	d(outputTexts)
+	-- outputMultipleLinesChat(outputTexts)
+end
+
+
+function DolgubonSetCrafter.outputRequest()
+	if next(DolgubonSetCrafter.materialList) == nil then 
+		d("Dolgubon's Lazy Set Crafter: No items are in the queue! No mails sent")
+		return 
+	end
+	local sets = {} -- A list of all items under the current set type.
+	local setTypes = {} -- Used to keep the sets list in a certain order.
+	local mailInfo = {}
+	local outputTexts = {}
+	local tempMatHolder = {}
+	local text = ""
+	local mailQueue = DolgubonSetCrafter.savedvars.queue
+
+	for i, request in ipairs(mailQueue) do
+		local setName = request["Set"][2]
+		if sets[setName] == nil then
+			sets[setName] = {}
+			table.insert(setTypes, setName) -- Save this index of this set's name
+		end
+		table.insert(sets[setName], DolgubonSetCrafter.convertRequestToText(request)) -- Store the readable crafting information
+	end
+	for setName, requestInfos in pairs(sets) do
+		outputTexts[#outputTexts + 1] = "From the set "..setName..", please make:"
+		for i = 1, #requestInfos do
+			if i %2 ==1 and i > 1 then
+				outputTexts[#outputTexts + 1] = text
+				text = ""
+			else
+				text = text.." "
+			end
+			text =text.. requestInfos[i]
+		end
+		outputTexts[#outputTexts + 1] = text
+		text = ""
+	end
 	outputMultipleLinesChat(outputTexts)
+
 end
 
 
@@ -296,6 +337,7 @@ function DolgubonScroll:SetupEntry(control, data)
 	else
 		control:GetNamedChild("Style"):SetHidden(true)
 		GetControl(control, "MimicStone"):SetHidden(true)
+		control.usesMimicStone = false
 	end
 	control.qualityString = zo_strformat(DolgubonSetCrafter.localizedStrings.UIStrings.qualityString, data[1].Quality[2])
 	for k , v in pairs (data[1]) do
@@ -333,7 +375,7 @@ function DolgubonScroll:SetupEntry(control, data)
 		button.tooltip = nil
 	end
 
-	function button:onClickety ()   DolgubonSetCrafter.removeFromScroll(data[1].Reference)  end
+	function button:onClickety ()   DolgubonSetCrafter.removeFromScroll(data[1].Reference, true)  end
 	--function control:onClicked () DolgubonsGuildBlacklistWindowInputBox:SetText(data.name) end
 	
 	ZO_SortFilterList.SetupRow(self, control, data)
@@ -383,14 +425,22 @@ function DolgubonSetCrafter.setupScrollLists()
 	DolgubonSetCrafter.favouritesManager = FavouriteScroll:New(DolgubonSetCrafterWindowFavouritesScroll)
 end
 
-updateList = function () 
+local function countTotalItems()
+	local sum = 0
+	for k, v in pairs(DolgubonSetCrafter.savedvars.queue) do
+		sum = sum + tonumber((v.Quantity and v.Quantity[1]) or 1)
+	end
+	return sum
+end
+
+updateList = function ()
 	DolgubonSetCrafter.manager:RefreshData()
 	DolgubonSetCrafter.materialManager:RefreshData()
 	DolgubonSetCrafter.favouritesManager:RefreshData()
 	if #DolgubonSetCrafter.savedvars.queue == 0 then 
 		CraftingQueueScrollCounter:SetText()
 	else
-		CraftingQueueScrollCounter:SetText(" - "..#DolgubonSetCrafter.savedvars.queue)
+		CraftingQueueScrollCounter:SetText(" - "..countTotalItems())
 	end
  end
 DolgubonSetCrafter.updateList = updateList

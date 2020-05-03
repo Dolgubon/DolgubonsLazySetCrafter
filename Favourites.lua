@@ -61,7 +61,6 @@ local function addFavourite()
 			table.insert(faveTable.selectedPatterns, {name = DolgubonSetCrafter.patternButtons[i].tooltip, id = i})
 		end
 	end
-	
 
 	local comboBoxes = DolgubonSetCrafter.ComboBox
 	addComboBoxValueToFavourite(faveTable, "set", comboBoxes.Set)
@@ -89,10 +88,13 @@ local function addFavourite()
 	end
 
 	
-	local weightId = DolgubonSetCrafter.armourTypes.weight
-
+	local weightId = DolgubonSetCrafter:GetWeight()
+	if weightId == 1 then
+		weightId = 3
+	elseif weightId == 3 then
+		weightId = 1
+	end
 	faveTable.weight = {name = DolgubonSetCrafter.armourTypes[weightId].tooltip, id = weightId}
-
 	faveTable.id = GetTimeStamp() -- Will get a unique ID based on time. 
 
 	table.insert(DolgubonSetCrafter.savedvars.faves, faveTable)

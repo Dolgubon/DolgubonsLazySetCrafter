@@ -268,17 +268,27 @@ local function addRequirements(returnedTable, addAmounts)
 	local parity = -1
 	if addAmounts then parity = 1 end
 	local requirements = LazyCrafter:getMatRequirements(returnedTable)
-
 	for itemId, amount in pairs(requirements) do
 		local link = getItemLinkFromItemId(itemId)
 		local bag, bank, craft = GetItemLinkStacks(link)
+		if GetItemLinkCraftingSkillType(link) == CRAFTING_TYPE_ENCHANTING then
+			if returnedTable.type=="improvement" then
+				amount = 0
+			else
+				amount = amount*parity
+			end
+		else
+			amount = amount*parity*(returnedTable.smithingQuantity or 1)
+		end
 		if DolgubonSetCrafter.materialList[itemId] then
-			DolgubonSetCrafter.materialList[itemId]["Amount"] = DolgubonSetCrafter.materialList[itemId]["Amount"] + amount*parity
+			DolgubonSetCrafter.materialList[itemId]["Amount"] = DolgubonSetCrafter.materialList[itemId]["Amount"] + amount
 			DolgubonSetCrafter.materialList[itemId]["Current"] = bag + bank + craft
 		else
-			DolgubonSetCrafter.materialList[itemId] = {["Name"] = link ,["Amount"] = amount*parity,["Current"] = bag + bank + craft }
+			DolgubonSetCrafter.materialList[itemId] = {["Name"] = link ,["Amount"] = amount,["Current"] = bag + bank + craft }
 		end
-		if DolgubonSetCrafter.materialList[itemId]["Amount"] <= 0 then DolgubonSetCrafter.materialList[itemId] = nil end
+		if DolgubonSetCrafter.materialList[itemId]["Amount"] <= 0 then
+			DolgubonSetCrafter.materialList[itemId] = nil
+		end
 	end
 end
 
@@ -293,7 +303,7 @@ function DolgubonSetCrafter.recompileMatRequirements()
 	for station, stationQueue in pairs( LazyCrafter.personalQueue) do
 		
 		for queuePosition, request in pairs(stationQueue) do
-			if not (station == CRAFTING_TYPE_ENCHANTING and not request.equipCreated) then
+			if (request.smithingQuantity == 0)  or not (station == CRAFTING_TYPE_ENCHANTING ) then
 				addRequirements(request, true)
 			end
 		end
@@ -328,7 +338,7 @@ local function addToQueue(requestTable, craftMultiplier )
 	-- double checking one final time
 	if pattern and isCP ~= nil and level and (styleIndex or station == CRAFTING_TYPE_JEWELRYCRAFTING) and trait and station and setIndex and quality then
 		craftMultiplier = math.max(math.floor(craftMultiplier), 1) -- Make it an integer, also make it minimum of 1
-		for i = 1, craftMultiplier do
+		-- for i = 1, craftMultiplier do
 			-- First, create a deep(er) copy. Tables only go down one deep so that's max depth we need to copy
 			local requestTableCopy = oneDeepCopy(requestTable)
 			-- increment counter for unique reference
@@ -348,6 +358,11 @@ local function addToQueue(requestTable, craftMultiplier )
 				quality, 
 				DolgubonSetCrafter:GetAutocraft(),
 				requestTableCopy["Reference"],
+				nil,
+				nil,
+				nil,
+				craftMultiplier
+
 			}
 
 			local returnedTable = LazyCrafter:CraftSmithingItemByLevel(unpack(CraftRequestTable))
@@ -358,9 +373,9 @@ local function addToQueue(requestTable, craftMultiplier )
 					requestTable["Enchant"][1], requestTable["EnchantQuality"] , 
 					DolgubonSetCrafter:GetAutocraft(), requestTableCopy["Reference"], returnedTable)
 
-				table.insert(CraftRequestTable,enchantRequestTable.potencyItemID)
-				table.insert(CraftRequestTable,enchantRequestTable.essenceItemID)
-				table.insert(CraftRequestTable,enchantRequestTable.aspectItemID)
+				CraftRequestTable[12] = enchantRequestTable.potencyItemID
+				CraftRequestTable[13] = enchantRequestTable.essenceItemID
+				CraftRequestTable[14] = enchantRequestTable.aspectItemID
 			else
 				requestTableCopy["Enchant"] = ""
 				requestTableCopy["EnchantQuality"] =1
@@ -385,7 +400,7 @@ local function addToQueue(requestTable, craftMultiplier )
 				queue[#queue+1] = requestTableCopy
 			end
 		end
-	end
+	-- end
 end
 
 local function addPatternToQueue(patternButton,i)
@@ -484,6 +499,7 @@ local function addPatternToQueue(patternButton,i)
 	-- Some names are just so long, we need to shorten it
 	shortenNames(requestTable)
 	local craftMultiplier = DolgubonSetCrafter:GetMultiplier()
+	requestTable["Quantity"] = {craftMultiplier, tostring(craftMultiplier).."x"}
 	addToQueue(requestTable, craftMultiplier)
 end
 local weaponTypes={
@@ -703,7 +719,7 @@ function DolgubonSetCrafter.craftConfirm()
 	DolgubonSetCrafterConfirm:SetHidden(false)
 end
 
-function DolgubonSetCrafter.removeFromScroll(reference, resultTable)
+function DolgubonSetCrafter.removeFromScroll(reference, removeFromLLC, resultTable)
 
 	local requestTable = LazyCrafter:findItemByReference(reference)[1] or resultTable
 
@@ -720,12 +736,18 @@ function DolgubonSetCrafter.removeFromScroll(reference, resultTable)
 
 	for k, v in pairs(queue) do
 		if v.Reference == reference then
-			table.remove(queue,k)
+			if (v.Quantity and v.Quantity[1] or 1) >1 then
+				v.Quantity[1] = v.Quantity[1] - 1
+				v.Quantity[2] = v.Quantity[1].."x"
+			else
+				table.remove(queue,k)
+			end
 		end
 	end
 	if removalFunction then
 		removalFunction()
-	else
+	end
+	if removeFromLLC then
 		LazyCrafter:cancelItemByReference(reference)
 	end
 
@@ -734,21 +756,20 @@ function DolgubonSetCrafter.removeFromScroll(reference, resultTable)
 	
 end
 
-local function LLCCraftCompleteHandler(event, station, resultTable)	
+local function LLCCraftCompleteHandler(event, station, resultTable)
 	if event ==LLC_CRAFT_SUCCESS then 
 		if resultTable.type == "improvement" then 
 			resultTable.station = GetRearchLineInfoFromRetraitItem(BAG_BACKPACK, resultTable.ItemSlotID) 
 		end
-		DolgubonSetCrafter.removeFromScroll(resultTable.reference, resultTable)
+		DolgubonSetCrafter.removeFromScroll(resultTable.reference,false, resultTable)
 	elseif event == LLC_INITIAL_CRAFT_SUCCESS or event == LLC_CRAFT_PARTIAL_IMPROVEMENT then
-		-- DolgubonSetCrafter.recompileMatRequirements()
 		DolgubonSetCrafter.updateList()
 	end
 end
 
 function DolgubonSetCrafter.clearQueue()
 	for i = #queue, 1, -1 do
-		DolgubonSetCrafter.removeFromScroll(queue[i].Reference)
+		DolgubonSetCrafter.removeFromScroll(queue[i].Reference, true)
 	end
 
 end
@@ -887,7 +908,9 @@ end
 
 function DolgubonSetCrafter.isRequestInProgressByReference(referenceId)
 	local requestTable = LazyCrafter:findItemByReference(referenceId)
-	return requestTable and requestTable[1] and (requestTable[1].equipCreated or requestTable[1].glyphCreated)
+	local equipInProgress = requestTable[1].equipInfo and #requestTable[1].equipInfo > 0
+	local glyphInProgress = requestTable[1].glyphInfo and #requestTable[1].glyphInfo > 0
+	return requestTable and requestTable[1] and (equipInProgress or glyphInProgress)
 end
 
 function DolgubonSetCrafter.AddSmithingRequestWithReference(pattern, isCP, level, styleIndex, traitIndex, useUniversalStyleItem, station, setIndex, quality, autocraft, optionalReference, optionalCraftingObject)

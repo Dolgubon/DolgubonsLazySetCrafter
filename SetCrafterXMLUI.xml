@@ -43,6 +43,7 @@ Created by Dolgubon (Joseph Heinzle)
 		    <Controls>
 		    	<Control name="$(parent)Favourites" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false">
 		    		<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="2" offsetY="0"/>
+		    		<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="2" offsetY="0"/>
 		    		<Dimensions x="240" y="600" />
 		    		<Controls>
 		    			<Button name="$(parent)AddFave" alpha="1" clickSound="Default_Click" topmost="true">
@@ -362,7 +363,7 @@ Created by Dolgubon (Joseph Heinzle)
 						</Label>
 						<Control name="$(grandparent)MaterialList" alpha="1"  mouseEnabled="false" inheritAlpha="false">
 							<Anchor point="TOPLEFT" relativeTo="$(parent)Cost" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="10" />
-							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="-180" />
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="-204" />
 							
 							<Controls>
 								
@@ -427,6 +428,15 @@ Created by Dolgubon (Joseph Heinzle)
 		      				<Dimensions x="200" y="28" />
 							<OnClicked>
 								local text = DolgubonSetCrafter.outputAllMats()
+								--StartChatInput("Requires: "..text)
+								
+							</OnClicked>
+				    	</Button>
+				    	<Button name="$(parent)OutputRequest" alpha="1" topmost="true" text="Request To Chat" inherits="ZO_DefaultButton" inheritAlpha="false">
+		     				<Anchor point="BOTTOM" relativeTo="$(parent)OutputRequirements" relativePoint="TOP" offsetX="0" offsetY="-5" />
+		      				<Dimensions x="200" y="28" />
+							<OnClicked>
+								local text = DolgubonSetCrafter.outputRequest()
 								--StartChatInput("Requires: "..text)
 								
 							</OnClicked>

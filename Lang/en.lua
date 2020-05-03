@@ -63,24 +63,25 @@ DolgubonSetCrafter.localizedStrings.SettingsStrings.useCharacterSettingsTooltip 
 DolgubonSetCrafter.localizedStrings.SettingsStrings.showToggleButton              = "Always show toggle button"
 DolgubonSetCrafter.localizedStrings.SettingsStrings.showToggleButtonTooltip       = "Show the UI toggle button at all times"
 
-
+DolgubonSetCrafter.localizedStrings.SettingsStrings.showFavourites 					= "Favourites Window"
+DolgubonSetCrafter.localizedStrings.SettingsStrings.showFavouritesTooltip			= "Show the Favourites Window when the Set Crafter UI is visible"
 
 
 DolgubonSetCrafter.localizedStrings.weaponNames = 
 {
-    "Axe", "Mace", "Sword", "Battle Axe", "Maul", "Greatsword", "Dagger", "Bow", "Fire Staff", "Ice Staff", "Lightning Staff", "Restoration Staff", "Shield"
+	"Axe", "Mace", "Sword", "Battle Axe", "Maul", "Greatsword", "Dagger", "Bow", "Fire Staff", "Ice Staff", "Lightning Staff", "Restoration Staff", "Shield"
 }
 DolgubonSetCrafter.localizedStrings.pieceNames = 
 {
-    "Chest","Feet","Hands","Head","Legs","Shoulders","Belt","Jerkin",  
+	"Chest","Feet","Hands","Head","Legs","Shoulders","Belt","Jerkin",  
 }
 DolgubonSetCrafter.localizedStrings.jewelryNames = 
 {
-    "Ring" , "Ring", "Necklace",
+	"Ring" , "Ring", "Necklace",
 }
 DolgubonSetCrafter.localizedStrings.armourTypes = 
 {
-    "Heavy", "Medium", "Light"
+	"Heavy", "Medium", "Light"
 }
 ZO_CreateStringId("SI_BINDING_NAME_SET_CRAFTER_OPEN", "Open/close the Set Crafter")
 
@@ -95,27 +96,27 @@ ZO_CreateStringId("SI_BINDING_NAME_SET_CRAFTER_OPEN", "Open/close the Set Crafte
 -- Number of items in queue
 --[[
 function FurC.LoadFrameInfo()
-    local settings = FurC.settings["gui"]
+	local settings = FurC.settings["gui"]
 
-    FurC_GUI:ClearAnchors()
-    FurC_GUI:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, settings["lastX"], settings["lastY"])
+	FurC_GUI:ClearAnchors()
+	FurC_GUI:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, settings["lastX"], settings["lastY"])
 
-    FurC_GUI:SetWidth(settings["width"])
-    FurC_GUI:SetHeight(settings["height"])
+	FurC_GUI:SetWidth(settings["width"])
+	FurC_GUI:SetHeight(settings["height"])
 
-    zo_callLater(function() FurC.UpdateInventoryScroll() end, 100)
+	zo_callLater(function() FurC.UpdateInventoryScroll() end, 100)
 
 end
 
 function FurC.SaveFrameInfo()    
-    local settings = FurC.settings["gui"]
+	local settings = FurC.settings["gui"]
 
-    settings["lastX"]    = FurC_GUI:GetLeft()
-    settings["lastY"]    = FurC_GUI:GetTop()
-    settings["width"]    = FurC_GUI:GetWidth()
-    settings["height"]    = FurC_GUI:GetHeight()
+	settings["lastX"]    = FurC_GUI:GetLeft()
+	settings["lastY"]    = FurC_GUI:GetTop()
+	settings["width"]    = FurC_GUI:GetWidth()
+	settings["height"]    = FurC_GUI:GetHeight()
 
-    FurC.UpdateInventoryScroll()
+	FurC.UpdateInventoryScroll()
 
 end
 
@@ -123,12 +124,12 @@ manavortex @manavortex 04:40
 The suggestion was to clear the two "clear xx" buttons away in favour of a little x in a circle or so 
 And it's resizeable because
  <TopLevelControl name="FurC_GUI" clampedToScreen="true"  movable="true" mouseEnabled="true" hidden="true" resizeHandleSize="10">
-            <DimensionConstraints x="800" y="500" minX="850" minY="200" maxY="2000"/>
-            <Anchor point="TOPRIGHT" relativeTo="GUI_ROOT" relativePoint="TOPRIGHT" offsetX="-25" offsetY="40" />
-            <OnMoveStop>FurC.SaveFrameInfo("onMoveStop")</OnMoveStop>
+			<DimensionConstraints x="800" y="500" minX="850" minY="200" maxY="2000"/>
+			<Anchor point="TOPRIGHT" relativeTo="GUI_ROOT" relativePoint="TOPRIGHT" offsetX="-25" offsetY="40" />
+			<OnMoveStop>FurC.SaveFrameInfo("onMoveStop")</OnMoveStop>
 
-            <OnResizeStop>FurC.OnResizeStop()</OnResizeStop>            
-            <Controls> ... </Controls>
+			<OnResizeStop>FurC.OnResizeStop()</OnResizeStop>            
+			<Controls> ... </Controls>
 </TopLevelControl>]]
 
 

@@ -306,10 +306,13 @@
 						self.tooltip = DolgubonSetCrafter.localizedStrings.UIStrings.usesMimicStone
 					</OnInitialized>
 				</Button>
-
+				<Label name="$(parent)Quantity" inherits="QueueRowLabelTemplate" text="1x" color="76BCC3">
+					<Dimensions x="20" y="48" />
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)MimicStone" offsetX="0" />
+				</Label>
 				<Label name="$(parent)Pattern" inherits="QueueRowLabelTemplate" color="76BCC3">
 					<Dimensions x="140" y="48" />
-					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)MimicStone" offsetX="0" />
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Quantity" offsetX="0" />
 				</Label>
 				<Label name="$(parent)Weight" inherits="QueueRowLabelTemplate">
 					<Dimensions x="70" y="48" />
