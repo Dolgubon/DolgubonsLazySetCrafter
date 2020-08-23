@@ -31,7 +31,7 @@ Created by Dolgubon (Joseph Heinzle)
 
 		<TopLevelControl name="DolgubonSetCrafterWindow" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true" resizeHandleSize="10" >	
 			<Dimensions x="1200" y="650" />
-			<DimensionConstraints minX="740" minY="470" />
+			<DimensionConstraints minX="780" minY="470" />
 			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="300" offsetY="-100"/>
 			<OnResizeStart>
 				DolgubonSetCrafter.onWindowResizeStart(self)
@@ -51,7 +51,10 @@ Created by Dolgubon (Joseph Heinzle)
 			 				<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-20" offsetY="20" />
 			  				<Dimensions x="36" y="36" />
 							<OnClicked>
-								DolgubonSetCrafter.addFavourite()
+								ClearMenu()
+								AddMenuItem(DolgubonSetCrafter.localizedStrings.UIStrings.addSelectionFavourite, DolgubonSetCrafter.addFavourite )
+								AddMenuItem(DolgubonSetCrafter.localizedStrings.UIStrings.addQueueFavourite, DolgubonSetCrafter.addFavouriteQueue )
+								ShowMenu(dscont)
 							</OnClicked>
 				    	</Button>
 		    			<Label name="$(parent)Title" scale="1" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Favourites">
@@ -361,8 +364,21 @@ Created by Dolgubon (Joseph Heinzle)
 							<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Label" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="20" />
 							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Label" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="20" />
 						</Label>
+
+						<Button name="$(parent)ShowFavourites" alpha="1" clickSound="Default_Click" topmost="true" text="Showsddsd Favourites" inherits="ZO_DefaultButton" inheritAlpha="false">
+		     				<Anchor point="BOTTOM" relativeTo="$(parent)Cost" relativePoint="BOTTOM" offsetX="0" offsetY="28" />
+		      				<Dimensions x="200" y="24" />
+		      				<OnInitialized>
+		      					self:SetText(DolgubonSetCrafter.localizedStrings.UIStrings.showFavourites)
+		      				</OnInitialized>
+							<OnClicked>
+								DolgubonSetCrafter:GetSettings().showFavourites = not DolgubonSetCrafter:GetSettings().showFavourites
+								DolgubonSetCrafterWindowFavourites:SetHidden(not DolgubonSetCrafter:GetSettings().showFavourites)								
+							</OnClicked>
+				    	</Button>
+
 						<Control name="$(grandparent)MaterialList" alpha="1"  mouseEnabled="false" inheritAlpha="false">
-							<Anchor point="TOPLEFT" relativeTo="$(parent)Cost" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="10" />
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Cost" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="30" />
 							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="-204" />
 							
 							<Controls>

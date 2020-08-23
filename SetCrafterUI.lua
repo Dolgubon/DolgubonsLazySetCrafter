@@ -210,7 +210,7 @@ function DolgubonSetCrafter.setupBehaviourToggles()
 
 
 	autoCraft.onToggle = function(self, newState) 
-		DolgubonSetCrafter.savedvars['autoCraft'] = newState 
+		DolgubonSetCrafter.savedvars['autoCraft'] = newState
 		DolgubonSetCrafter.LazyCrafter:SetAllAutoCraft(newState)
 		DolgubonSetCrafter.LazyCrafter:craftInteract()
 		if GetCraftingInteractionType() == 0 then return end
@@ -241,7 +241,7 @@ function DolgubonSetCrafter.initializeFunctions.setupUI()
 
 	--DolgubonSetCrafter.debugFunctions()
 	DolgubonSetCrafter.initializeWindowPosition()
-	DolgubonSetCrafterToggle:SetHidden(not DolgubonSetCrafter:GetSettings().showToggle )
+	DolgubonSetCrafterToggle:SetHidden(not DolgubonSetCrafter.savedvars.showToggle )
 	DolgubonSetCrafterWindowComboboxes:anchoruiElements(DolgubonSetCrafterWindowInput,1 )
 	DolgubonSetCrafter.manager:RefreshData() -- Show the scroll
 	DolgubonSetCrafter.materialManager:RefreshData()
@@ -311,7 +311,7 @@ local function SetWindowScale(window, scale)
 	DolgubonSetCrafterWindowPatternInput:SetAnchor(BOTTOMRIGHT, DolgubonSetCrafterWindowOutput, BOTTOMRIGHT, 0, newScale*110)
 	DolgubonSetCrafterWindowClose:SetScale(newScale)
 	-- Change the new minimum height as required
-	DolgubonSetCrafterWindow:SetDimensionConstraints(740, 470*(1 - (1 - newScale)/2))
+	DolgubonSetCrafterWindow:SetDimensionConstraints(740, 520*(1 - (1 - newScale)/2))
 
 	
 	
@@ -319,7 +319,7 @@ local function SetWindowScale(window, scale)
 end
 
 local minXBeforeResize = 995
-local minYBeforeResize = 460
+local minYBeforeResize = 520
 function DolgubonSetCrafter.dynamicResize(window)
 	a = a + 1
 	-- Resize method 1

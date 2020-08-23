@@ -40,6 +40,7 @@ return
 	selectedPatterns = {},
 	weight = {},
 	name = "",
+	type = "Selection"
 }
 end
 
@@ -103,11 +104,21 @@ local function addFavourite()
 end
 DolgubonSetCrafter.addFavourite = addFavourite
 
-local function loadFavourite(selectedFavourite)
-	-- Load the favourite selection with that Id
-	d("LOADING Set Crafter selection: '"..selectedFavourite.name.."'")
-	if not selectedFavourite then d("error no favourite table passed") return end
-	if #selectedFavourite.selectedPatterns>0 then
+local function addFavouriteQueue()
+	local faveTable =
+	{
+		type = "Queue",
+	}
+	faveTable.name = "Queue: "..DolgubonSetCrafter.countTotalQueuedItems().." items"
+	faveTable.queue = ZO_DeepTableCopy(DolgubonSetCrafter.savedvars.queue)
+	table.insert(DolgubonSetCrafter.savedvars.faves, faveTable)
+	DolgubonSetCrafter.FavouriteScroll:RefreshData()
+end
+
+DolgubonSetCrafter.addFavouriteQueue = addFavouriteQueue
+
+local function loadSelectionFavourite(selectedFavourite)
+		if #selectedFavourite.selectedPatterns>0 then
 		for i = 1, #DolgubonSetCrafter.patternButtons do
 			DolgubonSetCrafter.patternButtons[i]:toggleOff()
 		end
@@ -130,7 +141,33 @@ local function loadFavourite(selectedFavourite)
 	DolgubonSetCrafter.CPToggle:setState(selectedFavourite.level.isChampion)
 	DolgubonSetCrafter.levelInput:SetText(selectedFavourite.level.lvl)
 	DolgubonSetCrafter.armourTypes[selectedFavourite.weight.id]:toggleOn()
+end
 
+local function loadQueueFavourite(selectedFavourite)
+
+	for k, v in pairs(selectedFavourite.queue) do
+		local copy = ZO_DeepTableCopy(v)
+		copy["CraftRequestTable"][11] = DolgubonSetCrafter.savedvars.counter
+		copy["Reference"] = DolgubonSetCrafter.savedvars.counter
+		DolgubonSetCrafter.savedvars.counter = DolgubonSetCrafter.savedvars.counter + 1
+		local returnedTable = DolgubonSetCrafter.LazyCrafter:CraftSmithingItemByLevel(unpack(copy["CraftRequestTable"]))
+		DolgubonSetCrafter.addRequirements(returnedTable, true)
+		if pcall(function()DolgubonSetCrafter.applyValidityFunctions(v)end) then else d("Request could not be displayed. However, you should still be able to craft it.") end
+		table.insert(DolgubonSetCrafter.savedvars.queue, copy)
+	end
+	DolgubonSetCrafter.LazyCrafter:SetAllAutoCraft(DolgubonSetCrafter.savedvars.autoCraft)
+	DolgubonSetCrafter.updateList()
+end
+
+local function loadFavourite(selectedFavourite)
+	-- Load the favourite selection with that Id
+	d("LOADING Set Crafter selection: '"..selectedFavourite.name.."'")
+	if not selectedFavourite then d("error no favourite table passed") return end
+	if selectedFavourite.type == "Selection" then
+		loadSelectionFavourite(selectedFavourite)
+	elseif selectedFavourite.type == "Queue" then
+		loadQueueFavourite(selectedFavourite)
+	end
 end
 
 DolgubonSetCrafter.loadFavourite = loadFavourite

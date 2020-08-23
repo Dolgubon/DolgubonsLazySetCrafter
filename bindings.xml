@@ -6,4 +6,15 @@
 			</Action>
 		</Category>
 	</Layer>
+	<Layer name="SI_KEYBINDINGS_LAYER_USER_INTERFACE_SHORTCUTS">
+		<Category name="Dolgubon's Lazy Set Crafter">
+			<Action name="SET_CRAFTER_ADD_MAIL_ITEM">
+				<Down>
+					if not ZO_MailInboxMessageBody:IsHidden() and DolgubonSetCrafter.isThereAValidLinkInText(ZO_MailInboxMessageBody:GetText()) then
+						DolgubonSetCrafter.importRequestFromMail()
+					end
+				</Down>
+			</Action>
+		</Category>
+	</Layer>
 </Bindings>

@@ -108,13 +108,14 @@ local function showPreviewItemLink(control, comboBoxParent, overrideData)
 			DolgubonSetCrafter.ComboBox.Quality.selected[1],
 			DolgubonSetCrafter.ComboBox.Style.selected[1],
 		}
-		local potencyId, essenceId, aspectId = LibLazyCrafting.EnchantAttributesToGlyphIds(isCP, level,DolgubonSetCrafter.ComboBox.WeaponEnchant.selected[1] , DolgubonSetCrafter.ComboBox.EnchantQuality.selected[1])
+		local enchantTable = comboBoxParent.enchants or DolgubonSetCrafter.ComboBox.WeaponEnchant
+		local potencyId, essenceId, aspectId = LibLazyCrafting.EnchantAttributesToGlyphIds(isCP, level, enchantTable.selected[1] , DolgubonSetCrafter.ComboBox.EnchantQuality.selected[1])
 
 		table.insert(params, potencyId)
 		table.insert(params, essenceId)
 		table.insert(params, aspectId)
 
-		comboBoxParent.previewDataPosition(params, info)
+		comboBoxParent.previewDataPosition(params, info, isCP, level)
 		-- d(LibLazyCrafting.getItemLinkFromParticulars(setId, 1, 1, 1, 160, true, 5, 1))
 		local link = LibLazyCrafting.getItemLinkFromParticulars(unpack(params))
 		if not link or link == "" then
@@ -127,36 +128,35 @@ local function showPreviewItemLink(control, comboBoxParent, overrideData)
 	end
 end
 
-
+local hooked = false
+local currentParent
 local function tooltipForCombobox(comboBoxContainer)
 
 	local function showTooltipForComboboxes(control, parentControl)
 		if control.menuIndex == 1 then -- unselected option
 			return
 		end
-		local info =parentControl:GetChild(1).m_comboBox.m_sortedItems[control.menuIndex].info[1]
+		local info =currentParent:GetChild(1).m_comboBox.m_sortedItems[control.menuIndex].info[1]
 		if info then
-			showPreviewItemLink(control,parentControl, info)
+			showPreviewItemLink(control,currentParent, info)
 		end
 	end
 
-	local hooked = false
-    local originalZO_Menu_EnterItem, originalZO_Menu_ExitItem
+	ZO_PreHook("ZO_Menu_EnterItem",function(s)if currentParent then showTooltipForComboboxes(s) end end )
+	ZO_PreHook("ZO_Menu_ExitItem", function() if currentParent then ClearTooltip(ItemTooltip) end end)
 	ZO_PreHook(ZO_ComboBox_ObjectFromContainer(comboBoxContainer.comboBox), "ShowDropdownInternal", function(comboBox)
+		currentParent = comboBoxContainer
         if(not hooked) then
             hooked = true
-            originalZO_Menu_EnterItem = ZO_Menu_EnterItem
-            originalZO_Menu_ExitItem = ZO_Menu_ExitItem
-            ZO_PreHook("ZO_Menu_EnterItem",function(s)showTooltipForComboboxes(s, comboBoxContainer) end )
-            ZO_PreHook("ZO_Menu_ExitItem", function() ClearTooltip(ItemTooltip) end)
         end
     end)
 
     ZO_PreHook(ZO_ComboBox_ObjectFromContainer(comboBoxContainer.comboBox), "HideDropdownInternal", function(comboBox)
+    	if currentParent == comboBoxContainer then
+    		currentParent = nil
+    	end
         if(hooked) then
             hooked = false
-            ZO_Menu_EnterItem = originalZO_Menu_EnterItem
-            ZO_Menu_ExitItem = originalZO_Menu_ExitItem
             ClearTooltip(ItemTooltip)
         end
     end)
@@ -306,37 +306,39 @@ function DolgubonSetCrafter.setupComboBoxes()
 	Dolgubons_Set_Crafter_Style.showPreview = true
 	Dolgubons_Set_Crafter_Style.previewDataPosition = function(params, newValue) params[8] = newValue end
 	Dolgubons_Set_Crafter_Jewelry_Trait.previewDataPosition = function(params, newValue) params[4] = CRAFTING_TYPE_JEWELRYCRAFTING params[2] = newValue end
+	Dolgubons_Set_Crafter_Jewelry_Trait.enchants = DolgubonSetCrafter.ComboBox.JewelEnchant
 	Dolgubons_Set_Crafter_Armour_Trait.previewDataPosition = function(params, newValue) params[3] = 8 params[2] = newValue end
+	Dolgubons_Set_Crafter_Armour_Trait.enchants = DolgubonSetCrafter.ComboBox.ArmourEnchant
 	Dolgubons_Set_Crafter_Quality.previewDataPosition = function(params, newValue) params[7] = newValue end
-	Dolgubons_Set_Crafter_ArmourEnchant.previewDataPosition = function(params, newValue)
+	Dolgubons_Set_Crafter_ArmourEnchant.previewDataPosition = function(params, newValue, isCP, level)
 		local potencyId, essenceId, aspectId = LibLazyCrafting.EnchantAttributesToGlyphIds(isCP, level,newValue , DolgubonSetCrafter.ComboBox.EnchantQuality.selected[1])
-	 params[9] = potencyId 
-	 params[10] = essenceId 
-	 params[11] = aspectId 
-	 params[2] = DolgubonSetCrafter.ComboBox.Armour.selected[1]
-	 params[3] = 8
+		params[9] = potencyId 
+		params[10] = essenceId 
+		params[11] = aspectId 
+		params[2] = DolgubonSetCrafter.ComboBox.Armour.selected[1]
+		params[3] = 8
 	end
 	Dolgubons_Set_Crafter_WeaponEnchant.showPreview = true
-	Dolgubons_Set_Crafter_WeaponEnchant.previewDataPosition = function(params, newValue)
-	local potencyId, essenceId, aspectId = LibLazyCrafting.EnchantAttributesToGlyphIds(isCP, level,newValue , DolgubonSetCrafter.ComboBox.EnchantQuality.selected[1])
-	 params[9] = potencyId 
-	 params[10] = essenceId 
-	 params[11] = aspectId 
+	Dolgubons_Set_Crafter_WeaponEnchant.previewDataPosition = function(params, newValue, isCP, level)
+		local potencyId, essenceId, aspectId = LibLazyCrafting.EnchantAttributesToGlyphIds(isCP, level,newValue , DolgubonSetCrafter.ComboBox.EnchantQuality.selected[1])
+		params[9] = potencyId 
+		params[10] = essenceId 
+		params[11] = aspectId 
 	end
 	Dolgubons_Set_Crafter_JewelEnchant.showPreview = true
-	Dolgubons_Set_Crafter_JewelEnchant.previewDataPosition = function(params, newValue)
-	local potencyId, essenceId, aspectId = LibLazyCrafting.EnchantAttributesToGlyphIds(isCP, level,newValue , DolgubonSetCrafter.ComboBox.EnchantQuality.selected[1])
-	 params[9] = potencyId 
-	 params[10] = essenceId
-	 params[11] = aspectId
-	 params[2] = DolgubonSetCrafter.ComboBox.Jewelry.selected[1]
-	 params[4] = CRAFTING_TYPE_JEWELRYCRAFTING
+	Dolgubons_Set_Crafter_JewelEnchant.previewDataPosition = function(params, newValue, isCP, level)
+		local potencyId, essenceId, aspectId = LibLazyCrafting.EnchantAttributesToGlyphIds(isCP, level,newValue , DolgubonSetCrafter.ComboBox.EnchantQuality.selected[1])
+		params[9] = potencyId 
+		params[10] = essenceId
+		params[11] = aspectId
+		params[2] = DolgubonSetCrafter.ComboBox.Jewelry.selected[1]
+		params[4] = CRAFTING_TYPE_JEWELRYCRAFTING
 	end
-	Dolgubons_Set_Crafter_EnchantQuality.previewDataPosition = function(params, newValue)
-	local potencyId, essenceId, aspectId = LibLazyCrafting.EnchantAttributesToGlyphIds(isCP, level,DolgubonSetCrafter.ComboBox.WeaponEnchant.selected[1] , newValue)
-	 params[9] = potencyId 
-	 params[10] = essenceId 
-	 params[11] = aspectId 
+	Dolgubons_Set_Crafter_EnchantQuality.previewDataPosition = function(params, newValue, isCP, level)
+		local potencyId, essenceId, aspectId = LibLazyCrafting.EnchantAttributesToGlyphIds(isCP, level,DolgubonSetCrafter.ComboBox.WeaponEnchant.selected[1] , newValue)
+		params[9] = potencyId 
+		params[10] = essenceId 
+		params[11] = aspectId 
 	end
 	
 	

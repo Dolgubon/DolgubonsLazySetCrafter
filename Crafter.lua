@@ -292,6 +292,8 @@ local function addRequirements(returnedTable, addAmounts)
 	end
 end
 
+DolgubonSetCrafter.addRequirements = addRequirements
+
 local function clearTable (t)
 	for k, v in pairs(t) do
 		t[k] = nil
@@ -736,7 +738,7 @@ function DolgubonSetCrafter.removeFromScroll(reference, removeFromLLC, resultTab
 
 	for k, v in pairs(queue) do
 		if v.Reference == reference then
-			if (v.Quantity and v.Quantity[1] or 1) >1 then
+			if (v.Quantity and v.Quantity[1] or 1) >1 and not removeFromLLC then
 				v.Quantity[1] = v.Quantity[1] - 1
 				v.Quantity[2] = v.Quantity[1].."x"
 			else
@@ -791,7 +793,7 @@ function DolgubonSetCrafter.initializeFunctions.initializeCrafting()
 			table.remove(queue, k)
 		end
 	end
-	LazyCrafter:SetAllAutoCraft(DolgubonSetCrafter:GetSettings().autocraft)
+	LazyCrafter:SetAllAutoCraft(DolgubonSetCrafter.savedvars.autoCraft)
 	LINK_HANDLER:RegisterCallback(LINK_HANDLER.LINK_MOUSE_UP_EVENT, InitializeItemLinkRightClick)
 end
 
@@ -908,8 +910,8 @@ end
 
 function DolgubonSetCrafter.isRequestInProgressByReference(referenceId)
 	local requestTable = LazyCrafter:findItemByReference(referenceId)
-	local equipInProgress = requestTable[1].equipInfo and #requestTable[1].equipInfo > 0
-	local glyphInProgress = requestTable[1].glyphInfo and #requestTable[1].glyphInfo > 0
+	local equipInProgress = requestTable and requestTable[1] and requestTable[1].equipInfo and #requestTable[1].equipInfo > 0
+	local glyphInProgress = requestTable and requestTable[1] and requestTable[1].glyphInfo and #requestTable[1].glyphInfo > 0
 	return requestTable and requestTable[1] and (equipInProgress or glyphInProgress)
 end
 

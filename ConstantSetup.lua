@@ -82,7 +82,7 @@ DolgubonSetCrafter.quality = {}
 for i = 1, 5 do
 	local qualityColor = ZO_ColorDef:New(GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, i))
     
-    DolgubonSetCrafter.quality[i] = {[1] = i, [2] = qualityColor:Colorize(GetString(SI_ITEMQUALITY0 + i))  } 
+    DolgubonSetCrafter.quality[i] = {[1] = i, [2] = qualityColor:Colorize(GetString(SI_ITEMQUALITY0 + i)),  [3] = GetString(SI_ITEMQUALITY0 + i)} 
 	
 end
 

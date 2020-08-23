@@ -271,8 +271,7 @@ function DolgubonSetCrafter.outputAllMats()
 		text =text.. tostring(tempMatHolder[i]["Amount"]).." "..tempMatHolder[i]["Name"]
 	end
 	outputTexts[#outputTexts + 1] = text
-	d(outputTexts)
-	-- outputMultipleLinesChat(outputTexts)
+	outputMultipleLinesChat(outputTexts)
 end
 
 
@@ -432,6 +431,8 @@ local function countTotalItems()
 	end
 	return sum
 end
+
+DolgubonSetCrafter.countTotalQueuedItems = countTotalItems
 
 updateList = function ()
 	DolgubonSetCrafter.manager:RefreshData()

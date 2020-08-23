@@ -115,15 +115,22 @@ function DolgubonSetCrafter.convertRequestToText(curReq)
 	local trait = curReq["Trait"] and curReq["Trait"][2] or "N/A"
 	local quality = curReq["Quality"] and curReq["Quality"][2] or "N/A"
 	local itemLink = curReq.Link
+	local enchantQuality =curReq["EnchantQuality"] and DolgubonSetCrafter.quality[ curReq["EnchantQuality"]][3] or ""
+	local enchant = curReq["Enchant"] and curReq["Enchant"][2] or ""
+	local text
 	if style == "" then
-		return itemLink..", "..level..", "..trait..", "..quality
+		text= itemLink..", "..level..", "..trait..", "..quality
 	else
-		return itemLink..", "..level..", "..style..", "..trait..", "..quality
+		text= itemLink..", "..level..", "..style..", "..trait..", "..quality
 	end
+	if enchant then
+		text = text.." with "..enchantQuality.." "..enchant.." enchant"
+	end
+	return text
 end
 
 -- Reads mail. If it contain the right format, give a button to import it.
-local function importRequestFromMail(request)
+local function importRequestFromMail()
 	local mailText = ZO_MailInboxMessageBody:GetText()
 	-- "|H1:item:56042:25:4:26580:21:5:0:0:0:0:0:0:0:0:0:1:0:0:0:10000:0|h|h"
 	for link in string.gmatch(mailText, "(|H%d:item:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+|h|h)") do
@@ -133,6 +140,7 @@ local function importRequestFromMail(request)
 		end
 	end
 end
+DolgubonSetCrafter.importRequestFromMail = importRequestFromMail
 local function isThereAValidLinkInText(text)
 	for link in string.gmatch(text, "(|H%d:item:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+|h|h)") do
 		if DolgubonSetCrafter.verifyLinkIsValid(link) then
@@ -141,7 +149,7 @@ local function isThereAValidLinkInText(text)
 	end
 	return false
 end
-
+DolgubonSetCrafter.isThereAValidLinkInText = isThereAValidLinkInText
 
 local function mailNext(destination)
 
@@ -177,7 +185,7 @@ function DolgubonSetCrafter.MailAsRequest(destinationOverride)
 			sets[setName] = {}
 			table.insert(setTypes, setName) -- Save this index of this set's name
 		end
-		table.insert(sets[setName], convertRequestToText(request)) -- Store the readable crafting information
+		table.insert(sets[setName], DolgubonSetCrafter.convertRequestToText(request)) -- Store the readable crafting information
 	end
 	for setName, requestInfos in pairs(sets) do
 		for i = 1, #requestInfos do

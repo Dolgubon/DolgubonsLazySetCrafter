@@ -43,7 +43,9 @@ DolgubonSetCrafter.localizedStrings.UIStrings.jewelryEnchant        = "Jewelry E
 DolgubonSetCrafter.localizedStrings.UIStrings.weaponEnchant         = "Weapon Enchantment"
 DolgubonSetCrafter.localizedStrings.UIStrings.enchantQuality        = "Enchantment Quality"
 DolgubonSetCrafter.localizedStrings.UIStrings.inProgressCrafting    = "This item is in progress. You can cancel it, but some items have already been created"
-
+DolgubonSetCrafter.localizedStrings.UIStrings.addSelectionFavourite = "Save Selections"
+DolgubonSetCrafter.localizedStrings.UIStrings.addQueueFavourite		= "Save Queue"
+DolgubonSetCrafter.localizedStrings.UIStrings.showFavourites 		= "Show Favourites"
 
 DolgubonSetCrafter.localizedStrings.SettingsStrings = {}
 
@@ -63,10 +65,6 @@ DolgubonSetCrafter.localizedStrings.SettingsStrings.useCharacterSettingsTooltip 
 DolgubonSetCrafter.localizedStrings.SettingsStrings.showToggleButton              = "Always show toggle button"
 DolgubonSetCrafter.localizedStrings.SettingsStrings.showToggleButtonTooltip       = "Show the UI toggle button at all times"
 
-DolgubonSetCrafter.localizedStrings.SettingsStrings.showFavourites 					= "Favourites Window"
-DolgubonSetCrafter.localizedStrings.SettingsStrings.showFavouritesTooltip			= "Show the Favourites Window when the Set Crafter UI is visible"
-
-
 DolgubonSetCrafter.localizedStrings.weaponNames = 
 {
 	"Axe", "Mace", "Sword", "Battle Axe", "Maul", "Greatsword", "Dagger", "Bow", "Fire Staff", "Ice Staff", "Lightning Staff", "Restoration Staff", "Shield"
@@ -84,6 +82,7 @@ DolgubonSetCrafter.localizedStrings.armourTypes =
 	"Heavy", "Medium", "Light"
 }
 ZO_CreateStringId("SI_BINDING_NAME_SET_CRAFTER_OPEN", "Open/close the Set Crafter")
+ZO_CreateStringId("SI_BINDING_NAME_SET_CRAFTER_ADD_MAIL_ITEM", "Add item links in mail to queue")
 
 
 
