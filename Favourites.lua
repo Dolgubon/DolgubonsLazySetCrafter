@@ -167,6 +167,8 @@ local function loadFavourite(selectedFavourite)
 		loadSelectionFavourite(selectedFavourite)
 	elseif selectedFavourite.type == "Queue" then
 		loadQueueFavourite(selectedFavourite)
+	else -- default for old favourites
+		loadSelectionFavourite(selectedFavourite)
 	end
 end
 
@@ -194,3 +196,4 @@ DolgubonSetCrafter.renameFavourite = renameFavourite
 function DolgubonSetCrafter.clearFavourites()
 	DolgubonSetCrafter.savedvars.faves = {}
 end
+--ZO_CachedStrFormat("<<C:1>>", materialName
