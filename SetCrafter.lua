@@ -119,7 +119,7 @@ function DolgubonSetCrafter:Initialize()
 		"If you found a bug, have a request or a suggestion, or wish to donate, you can send me a mail here.")
 	window:SetHidden(true)
 
-	local currentAPIVersionOfAddon = 100033
+	local currentAPIVersionOfAddon = 100034
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" then 
 		d("Update your addons!") 

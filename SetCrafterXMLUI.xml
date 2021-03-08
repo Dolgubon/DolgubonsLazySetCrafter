@@ -364,8 +364,21 @@ Created by Dolgubon (Joseph Heinzle)
 							<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Label" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="20" />
 							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Label" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="20" />
 						</Label>
+						<Button name="$(parent)PriceHelp" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text=""  inheritAlpha="false">
+							<Anchor point="LEFT" relativeTo="$(parent)Cost" relativePoint="RIGHT" offsetX="-80" offsetY="0" />
+							<Dimensions x="27" y="27" />
+							<Textures normal="/esoui/art/menubar/menubar_help_up.dds"/>
 
-						<Button name="$(parent)ShowFavourites" alpha="1" clickSound="Default_Click" topmost="true" text="Showsddsd Favourites" inherits="ZO_DefaultButton" inheritAlpha="false">
+							<OnMouseEnter>
+								InitializeTooltip(InformationTooltip, self, TOP, 0, 0)
+								SetTooltipText(InformationTooltip, DolgubonSetCrafter.getCurrentPriceAddonString())
+							</OnMouseEnter>
+							<OnMouseExit>
+								ClearTooltip(InformationTooltip)
+							</OnMouseExit>
+						</Button>
+
+						<Button name="$(parent)ShowFavourites" alpha="1" clickSound="Default_Click" topmost="true" text="Show Favourites" inherits="ZO_DefaultButton" inheritAlpha="false">
 		     				<Anchor point="BOTTOM" relativeTo="$(parent)Cost" relativePoint="BOTTOM" offsetX="0" offsetY="28" />
 		      				<Dimensions x="200" y="24" />
 		      				<OnInitialized>

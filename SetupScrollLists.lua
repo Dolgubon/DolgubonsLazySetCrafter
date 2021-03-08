@@ -37,7 +37,6 @@ function DolgubonScroll:New(control)
 	
 end
 --TamrielTradeCentrePrice:GetPriceInfo
-
 local function getPrice(itemLink)
 	
 	if LibPrice then 
@@ -54,6 +53,17 @@ local function getPrice(itemLink)
 			return price
 		end 
 	end
+	if  ArkadiusTradeTools and ArkadiusTradeTools.Modules
+            and ArkadiusTradeTools.Modules.Sales and ArkadiusTradeTools.Modules.Sales.addMenuItems then
+        local day_secs = 24*60*60
+	    for _,day_ct in ipairs({ self.day_ct_short, self.day_ct_long }) do
+	        att = ArkadiusTradeTools.Modules.Sales:GetAveragePricePerItem(
+	                        item_link, GetTimeStamp() - (day_secs * day_ct))
+	        if att and 0 < att then
+	            return att
+	       end
+	    end
+    end
 	if TamrielTradeCentrePrice then
 		local t = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
 		if t and t.SuggestedPrice then
@@ -62,6 +72,21 @@ local function getPrice(itemLink)
 	end
 	local default =GetItemLinkValue(itemLink)
 	return default
+end
+
+function DolgubonSetCrafter.getCurrentPriceAddonString()
+	if LibPrice then
+		return "Currently using prices from LibPrice"
+	elseif MasterMerchant then
+		return "Currently using prices from MasterMerchant"
+	elseif TamrielTradeCentrePrice then
+		return "Currently usuing prices from Tamriel Trade Center"
+	elseif ArkadiusTradeTools and ArkadiusTradeTools.Modules
+            and ArkadiusTradeTools.Modules.Sales and ArkadiusTradeTools.Modules.Sales.addMenuItems then
+        return "Currently using prices from Arkadius Trade Tools"
+	else 
+		return "Currently using the game's default prices"
+	end
 end
 
 local function round(price)
