@@ -46,9 +46,7 @@ local function getPrice(itemLink)
 		end
 	end
 	if MasterMerchant then
-		local itemID = tonumber(string.match(itemLink, '|H.-:item:(.-):'))
-		local itemIndex = MasterMerchant.makeIndexFromLink(itemLink)
-		local price = MasterMerchant:toolTipStats(itemID, itemIndex, true, nil, false)['avgPrice']
+  		price = MasterMerchant:itemStats(itemLink, false).avgPrice
 		if price then
 			return price
 		end 
@@ -375,7 +373,7 @@ function DolgubonScroll:SetupEntry(control, data)
 				if k == "Enchant" then
 					control[k]:ApplyEnchantColour()
 				else
-					control[k]:ApplyColour(v[3])
+					control[k]:ApplyColour(v.isKnown)
 				end
 			else
 				if k == "Enchant" then

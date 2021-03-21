@@ -183,18 +183,18 @@ local validityFunctions = --stuff that's not here will automatically recieve a v
 
 -- uses the info in validityFunctions to recheck and see if attributes are an impediment to crafting.
 local function applyValidityFunctions(requestTable) 
-	for attribute, table in pairs(validityFunctions) do
+	for attribute, t in pairs(validityFunctions) do
 		if requestTable["Station"] == 7 and attribute == "Style" then
 		else
 			local params = {}
 
-			for i = 1, #table[2]  do
+			for i = 1, #t[2]  do
 
-				params[#params + 1] = requestTable["CraftRequestTable"][table[2][i]]
+				params[#params + 1] = requestTable["CraftRequestTable"][t[2][i]]
 
 			end
 			--d("one application for: "..attribute)
-			requestTable[attribute][3] = table[1](unpack(params) )
+			requestTable[attribute].isKnown = t[1](unpack(params) )
 		end
 	end
 end

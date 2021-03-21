@@ -241,7 +241,7 @@ function DolgubonSetCrafter.initializeFunctions.setupUI()
 
 	--DolgubonSetCrafter.debugFunctions()
 	DolgubonSetCrafter.initializeWindowPosition()
-	DolgubonSetCrafterToggle:SetHidden(not DolgubonSetCrafter.savedvars.showToggle )
+	DolgubonSetCrafterToggle:SetHidden(not DolgubonSetCrafter:GetSettings().showToggle )
 	DolgubonSetCrafterWindowComboboxes:anchoruiElements(DolgubonSetCrafterWindowInput,1 )
 	DolgubonSetCrafter.manager:RefreshData() -- Show the scroll
 	DolgubonSetCrafter.materialManager:RefreshData()
