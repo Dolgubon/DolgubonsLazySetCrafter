@@ -36,55 +36,94 @@ function DolgubonScroll:New(control)
 	return self
 	
 end
---TamrielTradeCentrePrice:GetPriceInfo
-local function getPrice(itemLink)
-	
+
+local validPriceSources
+
+local function getLibPrice(itemLink)
 	if LibPrice then 
 		local price  = LibPrice.ItemLinkToPriceGold(itemLink)
 		if price then
 			return price
 		end
 	end
+end
+
+local function getMMPrice(itemLink)
 	if MasterMerchant then
   		price = MasterMerchant:itemStats(itemLink, false).avgPrice
 		if price then
 			return price
 		end 
 	end
+end
+local function getATTPrice(itemLink)
 	if  ArkadiusTradeTools and ArkadiusTradeTools.Modules
             and ArkadiusTradeTools.Modules.Sales and ArkadiusTradeTools.Modules.Sales.addMenuItems then
         local day_secs = 24*60*60
-	    for _,day_ct in ipairs({ self.day_ct_short, self.day_ct_long }) do
+	    for _,day_ct in ipairs({ 10, 30 }) do
 	        att = ArkadiusTradeTools.Modules.Sales:GetAveragePricePerItem(
-	                        item_link, GetTimeStamp() - (day_secs * day_ct))
+	                        itemLink, GetTimeStamp() - (day_secs * day_ct))
 	        if att and 0 < att then
 	            return att
 	       end
 	    end
     end
+end
+local function getTTCPrice(itemLink)
 	if TamrielTradeCentrePrice then
 		local t = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
 		if t and t.SuggestedPrice then
 			return t.SuggestedPrice
 		end
 	end
-	local default =GetItemLinkValue(itemLink)
-	return default
+end
+
+local function addonChoicePrice(itemLink)
+	for i = 2, #validPriceSources do
+		if validPriceSources[i][2] then
+			price = validPriceSources[i][3](itemLink)
+			if price then
+				return price
+			end
+		end
+	end
+end
+
+validPriceSources = 
+{
+	{'addonChoice', true,addonChoicePrice},
+	{"Currently using prices from LibPrice", LibPrice, getLibPrice},
+	{'Currently using prices from MasterMerchant', MasterMerchant, getMMPrice},
+	{'Currently using prices from Arkadius Trade Tools', ArkadiusTradeTools and ArkadiusTradeTools.Modules and ArkadiusTradeTools.Modules.Sales and ArkadiusTradeTools.Modules.Sales.addMenuItem, getATTPrice},
+	{'Currently usuing prices from Tamriel Trade Center', TamrielTradeCentrePrice, getTTCPrice},
+	{"Currently using the game's default prices", true, GetItemLinkValue},
+}
+for i = 2, #validPriceSources do
+	if validPriceSources[i][2] then
+		validPriceSources[1][1] = validPriceSources[i][1].." (Set Crafter's choice)"
+	end
+end
+
+function DolgubonSetCrafter.togglePriceSource()
+	DolgubonSetCrafter.savedvars.currentPriceChoice = ((DolgubonSetCrafter.savedvars.currentPriceChoice ) % #validPriceSources )+ 1
+	while not validPriceSources[DolgubonSetCrafter.savedvars.currentPriceChoice][2] do
+		DolgubonSetCrafter.savedvars.currentPriceChoice = ((DolgubonSetCrafter.savedvars.currentPriceChoice ) % #validPriceSources )+ 1
+	end
+end
+
+local function getPrice(itemLink)
+	local price
+	if validPriceSources[DolgubonSetCrafter.savedvars.currentPriceChoice][2] then
+		price = validPriceSources[DolgubonSetCrafter.savedvars.currentPriceChoice][3](itemLink)
+		if price then
+			return price
+		end
+	end
+	return addonChoicePrice(itemLink) or 0
 end
 
 function DolgubonSetCrafter.getCurrentPriceAddonString()
-	if LibPrice then
-		return "Currently using prices from LibPrice"
-	elseif MasterMerchant then
-		return "Currently using prices from MasterMerchant"
-	elseif TamrielTradeCentrePrice then
-		return "Currently usuing prices from Tamriel Trade Center"
-	elseif ArkadiusTradeTools and ArkadiusTradeTools.Modules
-            and ArkadiusTradeTools.Modules.Sales and ArkadiusTradeTools.Modules.Sales.addMenuItems then
-        return "Currently using prices from Arkadius Trade Tools"
-	else 
-		return "Currently using the game's default prices"
-	end
+	return validPriceSources[DolgubonSetCrafter.savedvars.currentPriceChoice][1]
 end
 
 local function round(price)

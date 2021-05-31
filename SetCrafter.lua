@@ -35,8 +35,18 @@ DolgubonSetCrafter.default = {
 	['height'] = DolgubonSetCrafter.defaultHeight,
 	['faves'] = {},
 	['showFavourites'] = true,
+	['currentPriceChoice'] = 1,
+	['notifyNewFeatures'] = 
+	{
+		['homeStation'] = false,
+		['priceSwitch'] = false,
+	}
 }
-
+local newFeatureInfo =
+{
+	['homeStation'] = "· Dolgubon's Lazy Set Crafter now has integration with Home Station Marker!\n You can check it out on ESOUI or Minion",
+	['priceSwitch'] = "· You can now switch between different pricing sources in Dolgubon's Lazy\n Set Crafter by clicking the question mark on the materials list",
+}
 
 
 DolgubonSetCrafter.version = 5
@@ -119,7 +129,7 @@ function DolgubonSetCrafter:Initialize()
 		"If you found a bug, have a request or a suggestion, or wish to donate, you can send me a mail here.")
 	window:SetHidden(true)
 
-	local currentAPIVersionOfAddon = 100034
+	local currentAPIVersionOfAddon = 100035
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" then 
 		d("Update your addons!") 
@@ -141,6 +151,20 @@ function DolgubonSetCrafter:Initialize()
 	end
 	DolgubonSetCrafter.initializeMailButtons()
 	DolgubonSetCrafterWindowFavourites:SetHidden(not DolgubonSetCrafter:GetSettings().showFavourites)
+
+	local updateString = ""
+	local showUpdate = false
+	for k, v in pairs(DolgubonSetCrafter.savedvars.notifyNewFeatures) do
+		if not v then
+			updateString = updateString .. "\n" .. newFeatureInfo[k]
+			DolgubonSetCrafter.savedvars.notifyNewFeatures[k] = true
+			showUpdate = true
+		end
+	end
+	if showUpdate then
+		DolgubonSetCrafterUpdateInfo:SetHidden(false)
+		DolgubonSetCrafterUpdateInfoUpdateInfo:SetText(updateString)
+	end
 end
 
 local function closeWindow (optionalOverride)
@@ -162,7 +186,7 @@ function DolgubonSetCrafter.OnAddOnLoaded(event, addonName)
 	if addonName == DolgubonSetCrafter.name then
 		DolgubonSetCrafter:Initialize()
 	end
-end 
+end
 
 EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name, EVENT_CRAFTING_STATION_INTERACT, 
 	function(event, station) 
@@ -190,6 +214,7 @@ EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name, EVENT_END_CRAFTING_STATI
 		end
 	end)
 EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name, EVENT_ADD_ON_LOADED, DolgubonSetCrafter.OnAddOnLoaded)
+
 --EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name, EVENT_CRAFT_COMPLETED , d)
 
 

@@ -28,6 +28,31 @@ Created by Dolgubon (Joseph Heinzle)
 				</Button>
 			</Controls>
 		</TopLevelControl>
+		<TopLevelControl name="DolgubonSetCrafterUpdateInfo" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true">	
+			<Dimensions x="600" y="200" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+			<Controls>
+				<Label name="$(parent)Title" scale="1" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Dolgubon's Lazy Set Crafter Update Info">
+
+        			<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="10" />
+        			<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" offsetY="10" />
+    			</Label>
+    			<Label name="$(parent)UpdateInfo" scale="1" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="LEFT" >
+
+        			<Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="TOPLEFT" offsetX="0" offsetY="10" />
+    			</Label>
+				<Backdrop name="$(parent)Backdrop" alpha="1" inherits="ZO_DefaultBackdrop" centerColor="666666">
+		    		<AnchorFill/>
+				</Backdrop>
+		    	<Button name="$(parent)ResetPatterns" alpha="1"  topmost="true" text="Close" inherits="ZO_DefaultButton">
+				     				
+     				<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-20" />
+					<OnClicked>
+						self:GetOwningWindow():SetHidden(true)
+					</OnClicked>
+		    	</Button>
+			</Controls>
+		</TopLevelControl>
 
 		<TopLevelControl name="DolgubonSetCrafterWindow" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true" resizeHandleSize="10" >	
 			<Dimensions x="1200" y="650" />
@@ -91,7 +116,7 @@ Created by Dolgubon (Joseph Heinzle)
 					<Dimensions x="3" y="650" />
 					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="-4" offsetX="275" />
 				</Backdrop>
-				<Button name="$(parent)Close" alpha="1" clickSound="Default_Click" topmost="true">
+				<Button name="$(parent)Close" alpha="1" clickSound="Default_Click" topmost="true" inherits="ZO_DefaultButton">
 		    		<Textures normal="/esoui/art/hud/radialicon_cancel_up.dds" mouseOver="/esoui/art/hud/radialicon_cancel_over.dds" />
      				<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-20" offsetY="20" />
       				<Dimensions x="48" y="48" />
@@ -150,6 +175,14 @@ Created by Dolgubon (Joseph Heinzle)
 				    				
 				    				<Anchor point="TOPLEFT" relativeTo="$(parent)Armour" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
 				    			</Control>
+				    			<Button name="$(grandparent)ResetPatterns" alpha="1"  topmost="true" text="Clear Patterns" inherits="ZO_DefaultButton">
+				     				
+				     				<Anchor point="LEFT" relativeTo="$(parent)Weapons" relativePoint="RIGHT" offsetX="15"/>
+				      				<Dimensions x="150" y="28" />
+									<OnClicked>
+										DolgubonSetCrafter.resetPatterns()
+									</OnClicked>
+						    	</Button>
 				    		</Controls>
 				    		<Dimensions y="110"/>
 		        			<Anchor point="TOPLEFT" relativeTo="$(grandparent)Output" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
@@ -365,9 +398,9 @@ Created by Dolgubon (Joseph Heinzle)
 							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Label" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="20" />
 						</Label>
 						<Button name="$(parent)PriceHelp" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text=""  inheritAlpha="false">
-							<Anchor point="LEFT" relativeTo="$(parent)Cost" relativePoint="RIGHT" offsetX="-80" offsetY="0" />
+							<Anchor point="LEFT" relativeTo="$(parent)Cost" relativePoint="RIGHT" offsetX="-60" offsetY="0" />
 							<Dimensions x="27" y="27" />
-							<Textures normal="/esoui/art/menubar/menubar_help_up.dds"/>
+							<Textures normal="/esoui/art/menubar/menubar_help_up.dds" mouseOver="/esoui/art/menubar/menubar_help_down.dds"/>
 
 							<OnMouseEnter>
 								InitializeTooltip(InformationTooltip, self, TOP, 0, 0)
@@ -376,6 +409,12 @@ Created by Dolgubon (Joseph Heinzle)
 							<OnMouseExit>
 								ClearTooltip(InformationTooltip)
 							</OnMouseExit>
+							<OnClicked>
+								DolgubonSetCrafter.togglePriceSource()
+								ClearTooltip(InformationTooltip)
+								InitializeTooltip(InformationTooltip, self, TOP, 0, 0)
+								SetTooltipText(InformationTooltip, DolgubonSetCrafter.getCurrentPriceAddonString())
+							</OnClicked>
 						</Button>
 
 						<Button name="$(parent)ShowFavourites" alpha="1" clickSound="Default_Click" topmost="true" text="Show Favourites" inherits="ZO_DefaultButton" inheritAlpha="false">

@@ -267,6 +267,12 @@ function DolgubonSetCrafter.resetChoices()
 	DolgubonSetCrafterWindowMultiplierInputInputBox:SetText("1")
 end
 
+function DolgubonSetCrafter.resetPatterns()
+	for i = 1, #DolgubonSetCrafter.patternButtons do
+		DolgubonSetCrafter.patternButtons[i]:toggleOff()
+	end
+end
+
 function DolgubonSetCrafter.onWindowMove(window)
 	
 	DolgubonSetCrafter.savedvars.xPos = window:GetLeft()
