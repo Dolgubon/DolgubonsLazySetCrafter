@@ -46,6 +46,8 @@ DolgubonSetCrafter.localizedStrings.UIStrings.inProgressCrafting    = "This item
 DolgubonSetCrafter.localizedStrings.UIStrings.addSelectionFavourite = "Save Selections"
 DolgubonSetCrafter.localizedStrings.UIStrings.addQueueFavourite		= "Save Queue"
 DolgubonSetCrafter.localizedStrings.UIStrings.showFavourites 		= "Show Favourites"
+DolgubonSetCrafter.localizedStrings.UIStrings.loadQueueAsIs 		= "Load with saved level"
+DolgubonSetCrafter.localizedStrings.UIStrings.loadQueueCurrentLevel	= "Load with currently selected level"
 
 DolgubonSetCrafter.localizedStrings.SettingsStrings = {}
 

@@ -51,7 +51,7 @@
 			<Dimensions x="48" y="48" />
 		</Control>
 		<!-- This template is used for all the scrolling comboboxes which have a large amount of options (e.g. style, set)-->
-		<Label name="ScrollComboboxTemplate" virtual="true" mouseEnabled="true">
+		<Label name="ScrollComboboxTemplate" virtual="true" >
 			<Dimensions x="250" y="30" />
 			<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="20" />
 			<Controls>
@@ -60,14 +60,14 @@
 					<Dimensions x="250" y="48" />
 					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
 				</Label>
-				<Control name="$(parent)ComboBox" inherits="ZO_ScrollableComboBox"><!--ZO_ScrollableComboBox-->
+				<Control name="$(parent)ComboBox" inherits="ZO_ScrollableComboBox" mouseEnabled="true"><!--ZO_ScrollableComboBox-->
 					<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" offsetY="0" />
 					<Dimensions x="175" y="30" />
 				</Control>
 			</Controls>
 		</Label>
 		<!-- This combobox template is used for all the non scrolling comboboxes-->
-		<Label name="ComboboxTemplate" virtual="true" mouseEnabled="true">
+		<Label name="ComboboxTemplate" virtual="true" >
 			<Dimensions x="250" y="30" />
 
 			<Controls>
@@ -76,7 +76,7 @@
 					<Dimensions x="250" y="48" />
 					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
 				</Label>
-				<Control name="$(parent)ComboBox" inherits="ZO_ComboBox">
+				<Control name="$(parent)ComboBox" inherits="ZO_ComboBox" mouseEnabled="true">
 					<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" offsetY="0" />
 					<Dimensions x="175" y="30" />
 				</Control>
@@ -186,6 +186,7 @@
 				self.getCurrent = function(self) return self.fave end
 			</OnInitialized>
 			<OnMouseDown>
+				
 				DolgubonSetCrafter.loadFavourite(self:getCurrent())
 			</OnMouseDown>
 			<Dimensions x="220" y="30" />

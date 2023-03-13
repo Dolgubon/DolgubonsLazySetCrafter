@@ -9,7 +9,7 @@ Created by Dolgubon (Joseph Heinzle)
 <GuiXml> 
 	<Controls>
 		<TopLevelControl name="DolgubonSetCrafterToggle" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false" resizeToFitDescendents="true">	
-			<Dimensions x="75" y="75" />
+			<Dimensions x="30" y="30" />
 			
 			<OnMoveStop>
 

@@ -143,15 +143,56 @@ local function loadSelectionFavourite(selectedFavourite)
 	DolgubonSetCrafter.armourTypes[selectedFavourite.weight.id]:toggleOn()
 end
 
-local function loadQueueFavourite(selectedFavourite)
-
+local function loadQueueFavourite(selectedFavourite, useCurrentLevel, useCurrentQuality, useCurrentSet, useCurrentStyle)
+	if useCurrentLevel then
+		d("LOADING Set Crafter selection: '"..selectedFavourite.name.."' with currently selected level")
+	else
+		d("LOADING Set Crafter selection: '"..selectedFavourite.name.."' with saved level")
+	end
+	
 	for k, v in pairs(selectedFavourite.queue) do
 		local copy = ZO_DeepTableCopy(v)
 		copy["CraftRequestTable"][11] = DolgubonSetCrafter.savedvars.counter
 		copy["Reference"] = DolgubonSetCrafter.savedvars.counter
+		local returnedTable
+		if useCurrentLevel then
+			local level, isCP = DolgubonSetCrafter:GetLevel()
+			local levelString = level
+			if isCP then
+				levelString = "CP "..levelString
+			end
+			-- re-generate level stuff
+			copy["Level"] = {
+				level, levelString, isCP
+			}
+			copy["CraftRequestTable"][2] = isCP
+			copy["CraftRequestTable"][3] = level
+			local r = copy["CraftRequestTable"]
+
+
+			-- Need to write it out instead of using unpack since 12, 13, and 14 can be nil
+			returnedTable = DolgubonSetCrafter.LazyCrafter:CraftSmithingItemByLevel(r[1], r[2], r[3],r[4], r[5], r[6], r[7], r[8], r[9], r[10], r[11], nil, nil, nil, r[15])
+
+			copy["Link"] = DolgubonSetCrafter.LazyCrafter.getItemLinkFromParticulars( returnedTable.setIndex,returnedTable.trait ,returnedTable.pattern ,returnedTable.station ,level, 
+			isCP,returnedTable.quality,returnedTable.style, returnedTable.potencyItemId , returnedTable.essenceItemId, returnedTable.aspectItemId)
+						local enchantLevel = LibLazyCrafting.closestGlyphLevel(isCP, level)
+					enchantRequestTable = DolgubonSetCrafter.LazyCrafter:CraftEnchantingGlyphByAttributes(isCP, enchantLevel, 
+			copy["Enchant"][1], copy["EnchantQuality"] , 
+			DolgubonSetCrafter:GetAutocraft(), returnedTable["Reference"], returnedTable)
+
+				r[12] = enchantRequestTable.potencyItemID
+				r[13] = enchantRequestTable.essenceItemID
+				r[14] = enchantRequestTable.aspectItemID
+
+		else
+			local r = copy["CraftRequestTable"]
+			returnedTable = DolgubonSetCrafter.LazyCrafter:CraftSmithingItemByLevel(r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10], r[11], r[12], r[13], r[14], r[15])
+			-- returnedTable = DolgubonSetCrafter.LazyCrafter:CraftSmithingItemByLevel(unpack(copy["CraftRequestTable"]))
+		end
 		DolgubonSetCrafter.savedvars.counter = DolgubonSetCrafter.savedvars.counter + 1
-		local returnedTable = DolgubonSetCrafter.LazyCrafter:CraftSmithingItemByLevel(unpack(copy["CraftRequestTable"]))
+		
 		DolgubonSetCrafter.addRequirements(returnedTable, true)
+
 		if pcall(function()DolgubonSetCrafter.applyValidityFunctions(v)end) then else d("Request could not be displayed. However, you should still be able to craft it.") end
 		table.insert(DolgubonSetCrafter.savedvars.queue, copy)
 	end
@@ -161,12 +202,17 @@ end
 
 local function loadFavourite(selectedFavourite)
 	-- Load the favourite selection with that Id
-	d("LOADING Set Crafter selection: '"..selectedFavourite.name.."'")
+	
 	if not selectedFavourite then d("error no favourite table passed") return end
 	if selectedFavourite.type == "Selection" then
+		d("LOADING Set Crafter selection: '"..selectedFavourite.name.."'")
 		loadSelectionFavourite(selectedFavourite)
 	elseif selectedFavourite.type == "Queue" then
-		loadQueueFavourite(selectedFavourite)
+		ClearMenu()
+		AddMenuItem(DolgubonSetCrafter.localizedStrings.UIStrings.loadQueueAsIs, function()loadQueueFavourite(selectedFavourite, false) end )
+		AddMenuItem(DolgubonSetCrafter.localizedStrings.UIStrings.loadQueueCurrentLevel,  function()loadQueueFavourite(selectedFavourite, true) end )
+		ShowMenu(dscont) -->
+		-- loadQueueFavourite(selectedFavourite)
 	else -- default for old favourites
 		loadSelectionFavourite(selectedFavourite)
 	end

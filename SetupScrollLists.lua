@@ -89,26 +89,33 @@ local function addonChoicePrice(itemLink)
 	end
 end
 
-validPriceSources = 
-{
-	{'addonChoice', true,addonChoicePrice},
-	{"Currently using prices from LibPrice", LibPrice, getLibPrice},
-	{'Currently using prices from MasterMerchant', MasterMerchant, getMMPrice},
-	{'Currently using prices from Arkadius Trade Tools', ArkadiusTradeTools and ArkadiusTradeTools.Modules and ArkadiusTradeTools.Modules.Sales and ArkadiusTradeTools.Modules.Sales.addMenuItem, getATTPrice},
-	{'Currently usuing prices from Tamriel Trade Center', TamrielTradeCentrePrice, getTTCPrice},
-	{"Currently using the game's default prices", true, GetItemLinkValue},
-}
-for i = 2, #validPriceSources do
-	if validPriceSources[i][2] then
-		validPriceSources[1][1] = validPriceSources[i][1].." (Set Crafter's choice)"
+local function generateValidPriceSources()
+	local validPriceSources = 
+	{
+		{"Currently using Set Crafter's choice", true, addonChoicePrice},
+		{"Currently using prices from LibPrice", LibPrice, getLibPrice},
+		{'Currently using prices from MasterMerchant', MasterMerchant, getMMPrice},
+		{'Currently using prices from Arkadius Trade Tools', ArkadiusTradeTools and ArkadiusTradeTools.Modules and ArkadiusTradeTools.Modules.Sales and ArkadiusTradeTools.Modules.Sales.addMenuItems, getATTPrice},
+		{'Currently using prices from Tamriel Trade Center', TamrielTradeCentrePrice, getTTCPrice},
+		{"Currently using the game's default prices", true, GetItemLinkValue},
+	}
+	for i = 2, #validPriceSources do
+		if validPriceSources[i][2] then
+			validPriceSources[1][1] = validPriceSources[i][1].." (Set Crafter's choice)"
+			validPriceSources[1][4] = i
+			return validPriceSources
+		end
 	end
 end
 
+
+
 function DolgubonSetCrafter.togglePriceSource()
 	DolgubonSetCrafter.savedvars.currentPriceChoice = ((DolgubonSetCrafter.savedvars.currentPriceChoice ) % #validPriceSources )+ 1
-	while not validPriceSources[DolgubonSetCrafter.savedvars.currentPriceChoice][2] do
+	while not validPriceSources[DolgubonSetCrafter.savedvars.currentPriceChoice][2] and DolgubonSetCrafter.savedvars.currentPriceChoice~= validPriceSources[1][4] do
 		DolgubonSetCrafter.savedvars.currentPriceChoice = ((DolgubonSetCrafter.savedvars.currentPriceChoice ) % #validPriceSources )+ 1
 	end
+	DolgubonSetCrafter.updateList()
 end
 
 local function getPrice(itemLink)
@@ -484,6 +491,7 @@ function DolgubonSetCrafter.setupScrollLists()
 	
 	DolgubonSetCrafter.materialManager = MaterialScroll:New(DolgubonSetCrafterWindowMaterialList)
 	DolgubonSetCrafter.favouritesManager = FavouriteScroll:New(DolgubonSetCrafterWindowFavouritesScroll)
+	validPriceSources = generateValidPriceSources()
 end
 
 local function countTotalItems()

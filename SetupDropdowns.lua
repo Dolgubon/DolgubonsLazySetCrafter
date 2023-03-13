@@ -136,7 +136,8 @@ local function tooltipForCombobox(comboBoxContainer)
 		if control.menuIndex == 1 then -- unselected option
 			return
 		end
-		local info =currentParent:GetChild(1).m_comboBox.m_sortedItems[control.menuIndex].info[1]
+		local info =currentParent:GetChild(2).m_comboBox.m_sortedItems[control.menuIndex].info[1]
+
 		if info then
 			showPreviewItemLink(control,currentParent, info)
 		end
@@ -167,7 +168,7 @@ end
 local function makeDropdownSelections(comboBoxContainer, tableInfo , text , x, y, comboBoxLocation, selectionTypes, noDefault)
 	-- comboBoxLocation=2
 	if selectionTypes == "armourTrait" then isArmourCombobox = true elseif selectionTypes == "weaponTrait" then isArmourCombobox = false end
-	local comboBox = comboBoxContainer:GetChild(comboBoxLocation)
+	local comboBox = comboBoxContainer:GetChild(2)
 
 	comboBoxContainer:GetNamedChild("Name"):SetText(text..":")
 	if not comboBox.m_comboBox then 
