@@ -132,7 +132,7 @@ for i = 1, 41 do
 end
 
 DolgubonSetCrafter.setIndexes = {}
-local LibLazyCrafting =  LibStub:GetLibrary("LibLazyCrafting")
+local LibLazyCrafting =  LibLazyCrafting
 local t = LibLazyCrafting.GetSetIndexes()
 for i, value in pairs(t) do
 	if i ~=LibLazyCrafting.INDEX_NO_SET then -- don't want to sort the no set table in

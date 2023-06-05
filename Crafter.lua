@@ -32,7 +32,7 @@ end
 
 local LazyCrafter
 
-local LibLazyCrafting = LibStub:GetLibrary("LibLazyCrafting")
+local LibLazyCrafting = LibLazyCrafting
 local out = DolgubonSetCrafter.out
 
 local validityFunctions 

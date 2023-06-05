@@ -175,8 +175,9 @@ local function loadQueueFavourite(selectedFavourite, useCurrentLevel, useCurrent
 
 			copy["Link"] = DolgubonSetCrafter.LazyCrafter.getItemLinkFromParticulars( returnedTable.setIndex,returnedTable.trait ,returnedTable.pattern ,returnedTable.station ,level, 
 			isCP,returnedTable.quality,returnedTable.style, returnedTable.potencyItemId , returnedTable.essenceItemId, returnedTable.aspectItemId)
-						local enchantLevel = LibLazyCrafting.closestGlyphLevel(isCP, level)
-					enchantRequestTable = DolgubonSetCrafter.LazyCrafter:CraftEnchantingGlyphByAttributes(isCP, enchantLevel, 
+			
+			local enchantLevel = LibLazyCrafting.closestGlyphLevel(isCP, level)
+			enchantRequestTable = DolgubonSetCrafter.LazyCrafter:CraftEnchantingGlyphByAttributes(isCP, enchantLevel, 
 			copy["Enchant"][1], copy["EnchantQuality"] , 
 			DolgubonSetCrafter:GetAutocraft(), returnedTable["Reference"], returnedTable)
 
