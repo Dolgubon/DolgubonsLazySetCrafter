@@ -1,20 +1,21 @@
 --[[colorpickerData = {
     type = "colorpicker",
     name = "My Color Picker", -- or string id or function returning a string
-    getFunc = function() return db.r, db.g, db.b, db.a end, --(alpha is optional)
-    setFunc = function(r,g,b,a) db.r=r, db.g=g, db.b=b, db.a=a end, --(alpha is optional)
+    getFunc = function() return db.r, db.g, db.b, db.a end, -- (alpha is optional)
+    setFunc = function(r,g,b,a) db.r=r, db.g=g, db.b=b, db.a=a end, -- (alpha is optional)
     tooltip = "Color Picker's tooltip text.", -- or string id or function returning a string (optional)
-    width = "full", --or "half" (optional)
-    disabled = function() return db.someBooleanSetting end, --or boolean (optional)
+    width = "full", -- or "half" (optional)
+    disabled = function() return db.someBooleanSetting end, -- or boolean (optional)
     warning = "May cause permanent awesomeness.", -- or string id or function returning a string (optional)
     requiresReload = false, -- boolean, if set to true, the warning text will contain a notice that changes are only applied after an UI reload and any change to the value will make the "Apply Settings" button appear on the panel which will reload the UI when pressed (optional)
-    default = {r = defaults.r, g = defaults.g, b = defaults.b, a = defaults.a}, --(optional) table of default color values (or default = defaultColor, where defaultColor is a table with keys of r, g, b[, a]) or a function that returns the color
+    default = {r = defaults.r, g = defaults.g, b = defaults.b, a = defaults.a}, -- (optional) table of default color values (or default = defaultColor, where defaultColor is a table with keys of r, g, b[, a]) or a function that returns the color
+    helpUrl = "https://www.esoui.com/portal.php?id=218&a=faq", -- a string URL or a function that returns the string URL (optional)
     reference = "MyAddonColorpicker" -- unique global reference to control (optional)
 } ]]
 
 
-local widgetVersion = 13
-local LAM = LibStub("LibAddonMenu-2.0")
+local widgetVersion = 15
+local LAM = LibAddonMenu2
 if not LAM:RegisterWidget("colorpicker", widgetVersion) then return end
 
 local wm = WINDOW_MANAGER
@@ -79,7 +80,11 @@ function LAMCreateControl.colorpicker(parent, colorpickerData, controlName)
 
         if upInside then
             local r, g, b, a = colorpickerData.getFunc()
-            COLOR_PICKER:Show(ColorPickerCallback, r, g, b, a, LAM.util.GetStringFromValue(colorpickerData.name))
+            if IsInGamepadPreferredMode() then
+                COLOR_PICKER_GAMEPAD:Show(ColorPickerCallback, r, g, b, a)
+            else
+                COLOR_PICKER:Show(ColorPickerCallback, r, g, b, a)
+            end
         end
     end)
 

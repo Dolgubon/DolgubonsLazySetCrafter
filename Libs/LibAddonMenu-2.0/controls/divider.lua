@@ -1,14 +1,14 @@
 --[[dividerData = {
     type = "divider",
-    width = "full", --or "half" (optional)
-    height = 10, (optional)
-    alpha = 0.25, (optional)
+    width = "full", -- or "half" (optional)
+    height = 10, -- (optional)
+    alpha = 0.25, -- (optional)
     reference = "MyAddonDivider" -- unique global reference to control (optional)
 } ]]
 
 
 local widgetVersion = 2
-local LAM = LibStub("LibAddonMenu-2.0")
+local LAM = LibAddonMenu2
 if not LAM:RegisterWidget("divider", widgetVersion) then return end
 
 local wm = WINDOW_MANAGER

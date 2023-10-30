@@ -1,17 +1,17 @@
 --[[textureData = {
     type = "texture",
     image = "file/path.dds",
-    imageWidth = 64, --max of 250 for half width, 510 for full
-    imageHeight = 32, --max of 100
+    imageWidth = 64, -- max of 250 for half width, 510 for full
+    imageHeight = 32, -- max of 100
     tooltip = "Image's tooltip text.", -- or string id or function returning a string (optional)
-    width = "full", --or "half" (optional)
-    reference = "MyAddonTexture" --(optional) unique global reference to control
+    width = "full", -- or "half" (optional)
+    reference = "MyAddonTexture" -- unique global reference to control (optional)
 } ]]
 
---add texture coords support?
+-- TODO: add texture coords support?
 
-local widgetVersion = 9
-local LAM = LibStub("LibAddonMenu-2.0")
+local widgetVersion = 10
+local LAM = LibAddonMenu2
 if not LAM:RegisterWidget("texture", widgetVersion) then return end
 
 local wm = WINDOW_MANAGER
@@ -33,13 +33,7 @@ function LAMCreateControl.texture(parent, textureData, controlName)
     texture:SetAnchor(CENTER)
     texture:SetDimensions(textureData.imageWidth, textureData.imageHeight)
     texture:SetTexture(textureData.image)
-
-    if textureData.tooltip then
-        texture:SetMouseEnabled(true)
-        texture.data = {tooltipText = LAM.util.GetStringFromValue(textureData.tooltip)}
-        texture:SetHandler("OnMouseEnter", ZO_Options_OnMouseEnter)
-        texture:SetHandler("OnMouseExit", ZO_Options_OnMouseExit)
-    end
+    LAM.util.SetUpTooltip(texture, textureData)
 
     return control
 end

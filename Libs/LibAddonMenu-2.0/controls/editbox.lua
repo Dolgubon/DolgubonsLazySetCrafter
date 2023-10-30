@@ -4,22 +4,33 @@
     getFunc = function() return db.text end,
     setFunc = function(text) db.text = text doStuff() end,
     tooltip = "Editbox's tooltip text.", -- or string id or function returning a string (optional)
-    isMultiline = true, --boolean (optional)
-    isExtraWide = true, --boolean (optional)
-    width = "full", --or "half" (optional)
-    disabled = function() return db.someBooleanSetting end, --or boolean (optional)
+    isMultiline = true, -- boolean (optional)
+    isExtraWide = true, -- boolean (optional)
+    maxChars = 3000, -- number (optional)
+    textType = TEXT_TYPE_NUMERIC, -- number (optional) or function returning a number. Valid TextType numbers: TEXT_TYPE_ALL, TEXT_TYPE_ALPHABETIC, TEXT_TYPE_ALPHABETIC_NO_FULLWIDTH_LATIN, TEXT_TYPE_NUMERIC, TEXT_TYPE_NUMERIC_UNSIGNED_INT, TEXT_TYPE_PASSWORD
+    width = "full", -- or "half" (optional)
+    disabled = function() return db.someBooleanSetting end, -- or boolean (optional)
     warning = "May cause permanent awesomeness.", -- or string id or function returning a string (optional)
     requiresReload = false, -- boolean, if set to true, the warning text will contain a notice that changes are only applied after an UI reload and any change to the value will make the "Apply Settings" button appear on the panel which will reload the UI when pressed (optional)
     default = defaults.text, -- default value or function that returns the default value (optional)
+    helpUrl = "https://www.esoui.com/portal.php?id=218&a=faq", -- a string URL or a function that returns the string URL (optional)
     reference = "MyAddonEditbox" -- unique global reference to control (optional)
 } ]]
 
 
-local widgetVersion = 14
-local LAM = LibStub("LibAddonMenu-2.0")
+local widgetVersion = 16
+local LAM = LibAddonMenu2
 if not LAM:RegisterWidget("editbox", widgetVersion) then return end
 
 local wm = WINDOW_MANAGER
+
+local function GetValidTextType(textType)
+    textType = LAM.util.GetDefaultValue(textType)
+    if type(textType) ~= "number" or textType < TEXT_TYPE_ITERATION_BEGIN or textType > TEXT_TYPE_ITERATION_END then
+        return TEXT_TYPE_ALL
+    end
+    return textType
+end
 
 local function UpdateDisabled(control)
     local disable
@@ -88,10 +99,13 @@ function LAMCreateControl.editbox(parent, editboxData, controlName)
         end)
     else
         control.editbox = wm:CreateControlFromVirtual(nil, bg, "ZO_DefaultEditForBackdrop")
+
     end
+
     local editbox = control.editbox
+    editbox:SetTextType(GetValidTextType(editboxData.textType))
     editbox:SetText(editboxData.getFunc())
-    editbox:SetMaxInputChars(3000)
+    editbox:SetMaxInputChars(LAM.util.GetDefaultValue(editboxData.maxChars) or 3000)
     editbox:SetHandler("OnFocusLost", function(self) control:UpdateValue(false, self:GetText()) end)
     editbox:SetHandler("OnEscape", function(self) self:LoseFocus() control:UpdateValue(false, self:GetText()) end)
     editbox:SetHandler("OnMouseEnter", function() ZO_Options_OnMouseEnter(control) end)

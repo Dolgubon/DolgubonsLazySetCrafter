@@ -11,16 +11,17 @@
     iconSize = 28, -- size of the icons (optional)
     defaultColor = ZO_ColorDef:New("FFFFFF"), -- default color of the icons (optional)
     width = "full", --or "half" (optional)
-    beforeShow = function(control, iconPicker) return preventShow end, --(optional)
-    disabled = function() return db.someBooleanSetting end, --or boolean (optional)
+    beforeShow = function(control, iconPicker) return preventShow end, -- (optional)
+    disabled = function() return db.someBooleanSetting end, -- or boolean (optional)
     warning = "May cause permanent awesomeness.", -- or string id or function returning a string (optional)
     requiresReload = false, -- boolean, if set to true, the warning text will contain a notice that changes are only applied after an UI reload and any change to the value will make the "Apply Settings" button appear on the panel which will reload the UI when pressed (optional)
     default = defaults.var, -- default value or function that returns the default value (optional)
+    helpUrl = "https://www.esoui.com/portal.php?id=218&a=faq", -- a string URL or a function that returns the string URL (optional)
     reference = "MyAddonIconPicker" -- unique global reference to control (optional)
 } ]]
 
-local widgetVersion = 8
-local LAM = LibStub("LibAddonMenu-2.0")
+local widgetVersion = 11
+local LAM = LibAddonMenu2
 if not LAM:RegisterWidget("iconpicker", widgetVersion) then return end
 
 local wm = WINDOW_MANAGER
@@ -84,6 +85,7 @@ function IconPickerMenu:Initialize(name)
         local icon = wm:CreateControl(name .. "Entry" .. pool:GetNextControlId(), scroll, CT_TEXTURE)
         icon:SetMouseEnabled(true)
         icon:SetDrawLevel(3)
+        icon:SetDrawLayer(DL_CONTROLS)
         icon:SetHandler("OnMouseEnter", function()
             mouseOver:SetAnchor(TOPLEFT, icon, TOPLEFT, 0, 0)
             mouseOver:SetAnchor(BOTTOMRIGHT, icon, BOTTOMRIGHT, 0, 0)
@@ -113,6 +115,7 @@ function IconPickerMenu:Initialize(name)
 
     local function ResetFunction(icon)
         icon:ClearAnchors()
+        icon:SetHidden(true)
     end
 
     self.iconPool = ZO_ObjectPool:New(IconFactory, ResetFunction)
@@ -134,9 +137,12 @@ function IconPickerMenu:Initialize(name)
 end
 
 function IconPickerMenu:OnMouseEnter(icon)
-    InitializeTooltip(InformationTooltip, icon, TOPLEFT, 0, 0, BOTTOMRIGHT)
-    SetTooltipText(InformationTooltip, LAM.util.GetStringFromValue(icon.tooltip))
-    InformationTooltipTopLevel:BringWindowToTop()
+    local tooltipText = icon.tooltip and LAM.util.GetStringFromValue(icon.tooltip)
+    if tooltipText and tooltipText ~= "" then
+        InitializeTooltip(InformationTooltip, icon, TOPLEFT, 0, 0, BOTTOMRIGHT)
+        SetTooltipText(InformationTooltip, tooltipText)
+        InformationTooltipTopLevel:BringWindowToTop()
+    end
 end
 
 function IconPickerMenu:OnMouseExit(icon)
@@ -213,6 +219,7 @@ end
 
 function IconPickerMenu:AddIcon(texturePath, callback, tooltip)
     local icon, key = self.iconPool:AcquireObject()
+    icon:SetHidden(false)
     icon:SetTexture(texturePath)
     icon:SetColor(self.color:UnpackRGBA())
     icon.texture = texturePath
@@ -266,7 +273,7 @@ local function UpdateChoices(control, choices, choicesTooltips)
                 data.setFunc(texture)
                 LAM.util.RequestRefreshIfNeeded(control)
             end, LAM.util.GetStringFromValue(choicesTooltips[i]))
-        addedChoices[texture] = true
+            addedChoices[texture] = true
         end
     end
 end

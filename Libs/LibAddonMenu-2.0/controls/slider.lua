@@ -5,29 +5,37 @@
     setFunc = function(value) db.var = value doStuff() end,
     min = 0,
     max = 20,
-    step = 1, --(optional)
+    step = 1, -- (optional)
     clampInput = true, -- boolean, if set to false the input won't clamp to min and max and allow any number instead (optional)
+    clampFunction = function(value, min, max) return math.max(math.min(value, max), min) end, -- function that is called to clamp the value (optional)
     decimals = 0, -- when specified the input value is rounded to the specified number of decimals (optional)
     autoSelect = false, -- boolean, automatically select everything in the text input field when it gains focus (optional)
     inputLocation = "below", -- or "right", determines where the input field is shown. This should not be used within the addon menu and is for custom sliders (optional) 
+    readOnly = true, -- boolean, you can use the slider, but you can't insert a value manually (optional)
     tooltip = "Slider's tooltip text.", -- or string id or function returning a string (optional)
-    width = "full", --or "half" (optional)
+    width = "full", -- or "half" (optional)
     disabled = function() return db.someBooleanSetting end, --or boolean (optional)
     warning = "May cause permanent awesomeness.", -- or string id or function returning a string (optional)
     requiresReload = false, -- boolean, if set to true, the warning text will contain a notice that changes are only applied after an UI reload and any change to the value will make the "Apply Settings" button appear on the panel which will reload the UI when pressed (optional)
     default = defaults.var, -- default value or function that returns the default value (optional)
+    helpUrl = "https://www.esoui.com/portal.php?id=218&a=faq", -- a string URL or a function that returns the string URL (optional)
     reference = "MyAddonSlider" -- unique global reference to control (optional)
 } ]]
 
-local widgetVersion = 12
-local LAM = LibStub("LibAddonMenu-2.0")
+local widgetVersion = 16
+local LAM = LibAddonMenu2
 if not LAM:RegisterWidget("slider", widgetVersion) then return end
 
 local wm = WINDOW_MANAGER
 local strformat = string.format
+local SLIDER_HANDLER_NAMESPACE = "LAM2_Slider"
 
 local function RoundDecimalToPlace(d, place)
     return tonumber(strformat("%." .. tostring(place) .. "f", d))
+end
+
+local function ClampValue(value, min, max)
+    return math.max(math.min(value, max), min)
 end
 
 local function UpdateDisabled(control)
@@ -39,7 +47,7 @@ local function UpdateDisabled(control)
     end
 
     control.slider:SetEnabled(not disable)
-    control.slidervalue:SetEditEnabled(not disable)
+    control.slidervalue:SetEditEnabled(not (control.data.readOnly or disable))
     if disable then
         control.label:SetColor(ZO_DEFAULT_DISABLED_COLOR:UnpackRGBA())
         control.minText:SetColor(ZO_DEFAULT_DISABLED_COLOR:UnpackRGBA())
@@ -62,7 +70,8 @@ local function UpdateValue(control, forceDefault, value)
             value = RoundDecimalToPlace(value, control.data.decimals)
         end
         if control.data.clampInput ~= false then
-            value = math.max(math.min(value, control.data.max), control.data.min)
+            local clamp = control.data.clampFunction or ClampValue
+            value = clamp(value, control.data.min, control.data.max)
         end
         control.data.setFunc(value)
         --after setting this value, let's refresh the others to see if any should be disabled or have their settings changed
@@ -75,9 +84,10 @@ local function UpdateValue(control, forceDefault, value)
     control.slidervalue:SetText(value)
 end
 
+local index = 1
 function LAMCreateControl.slider(parent, sliderData, controlName)
     local control = LAM.util.CreateLabelAndContainerControl(parent, sliderData, controlName)
-    local isInputOnRight = sliderData.inputLocation == "right" 
+    local isInputOnRight = sliderData.inputLocation == "right"
 
     --skipping creating the backdrop...  Is this the actual slider texture?
     control.slider = wm:CreateControl(nil, control.container, CT_SLIDER)
@@ -104,7 +114,7 @@ function LAMCreateControl.slider(parent, sliderData, controlName)
     bg:SetCenterColor(0, 0, 0)
     bg:SetAnchor(TOPLEFT, slider, TOPLEFT, 0, 4)
     bg:SetAnchor(BOTTOMRIGHT, slider, BOTTOMRIGHT, 0, -4)
-    bg:SetEdgeTexture("EsoUI\\Art\\Tooltips\\UI-SliderBackdrop.dds", 32, 4) 
+    bg:SetEdgeTexture("EsoUI\\Art\\Tooltips\\UI-SliderBackdrop.dds", 32, 4)
 
     control.minText = wm:CreateControl(nil, slider, CT_LABEL)
     local minText = control.minText
@@ -182,13 +192,35 @@ function LAMCreateControl.slider(parent, sliderData, controlName)
         HandleValueChanged(value)
     end)
     slider:SetHandler("OnSliderReleased", function(self, value)
-        control:UpdateValue(false, value)
+        if self:GetEnabled() then
+            control:UpdateValue(false, value)
+        end
     end)
-    slider:SetHandler("OnMouseWheel", function(self, value)
+
+    local function OnMouseWheel(self, value)
         if(not self:GetEnabled()) then return end
         local new_value = (tonumber(slidervalue:GetText()) or sliderData.min or 0) + ((sliderData.step or 1) * value)
         control:UpdateValue(false, new_value)
+    end
+
+    local sliderHasFocus = false
+    local scrollEventInstalled = false
+    local function UpdateScrollEventHandler()
+        local needsScrollEvent = sliderHasFocus or slidervalue:HasFocus()
+        if needsScrollEvent ~= scrollEventInstalled then
+            local callback = needsScrollEvent and OnMouseWheel or nil
+            slider:SetHandler("OnMouseWheel", callback, SLIDER_HANDLER_NAMESPACE)
+            scrollEventInstalled = needsScrollEvent
+        end
+    end
+
+    EVENT_MANAGER:RegisterForEvent("LAM_Slider_OnGlobalMouseUp_" .. index, EVENT_GLOBAL_MOUSE_UP, function()
+        sliderHasFocus = (wm:GetMouseOverControl() == slider)
+        UpdateScrollEventHandler()
     end)
+    slidervalue:SetHandler("OnFocusGained", UpdateScrollEventHandler, SLIDER_HANDLER_NAMESPACE)
+    slidervalue:SetHandler("OnFocusLost", UpdateScrollEventHandler, SLIDER_HANDLER_NAMESPACE)
+    index = index + 1
 
     if sliderData.warning ~= nil or sliderData.requiresReload then
         control.warning = wm:CreateControlFromVirtual(nil, control, "ZO_Options_WarningIcon")

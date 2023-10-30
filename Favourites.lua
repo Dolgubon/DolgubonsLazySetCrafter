@@ -169,21 +169,20 @@ local function loadQueueFavourite(selectedFavourite, useCurrentLevel, useCurrent
 			copy["CraftRequestTable"][3] = level
 			local r = copy["CraftRequestTable"]
 
-
-			-- Need to write it out instead of using unpack since 12, 13, and 14 can be nil
 			returnedTable = DolgubonSetCrafter.LazyCrafter:CraftSmithingItemByLevel(r[1], r[2], r[3],r[4], r[5], r[6], r[7], r[8], r[9], r[10], r[11], nil, nil, nil, r[15])
 
 			copy["Link"] = DolgubonSetCrafter.LazyCrafter.getItemLinkFromParticulars( returnedTable.setIndex,returnedTable.trait ,returnedTable.pattern ,returnedTable.station ,level, 
 			isCP,returnedTable.quality,returnedTable.style, returnedTable.potencyItemId , returnedTable.essenceItemId, returnedTable.aspectItemId)
 			
-			local enchantLevel = LibLazyCrafting.closestGlyphLevel(isCP, level)
-			enchantRequestTable = DolgubonSetCrafter.LazyCrafter:CraftEnchantingGlyphByAttributes(isCP, enchantLevel, 
-			copy["Enchant"][1], copy["EnchantQuality"] , 
-			DolgubonSetCrafter:GetAutocraft(), returnedTable["Reference"], returnedTable)
-
+			if r[12] and r[13] and r[14] then -- If these are nil then there's no glyph
+				local enchantLevel = LibLazyCrafting.closestGlyphLevel(isCP, level)
+				enchantRequestTable = DolgubonSetCrafter.LazyCrafter:CraftEnchantingGlyphByAttributes(isCP, enchantLevel, 
+				copy["Enchant"][1], copy["EnchantQuality"] , 
+				DolgubonSetCrafter:GetAutocraft(), returnedTable["Reference"], returnedTable)
 				r[12] = enchantRequestTable.potencyItemID
 				r[13] = enchantRequestTable.essenceItemID
 				r[14] = enchantRequestTable.aspectItemID
+			end
 
 		else
 			local r = copy["CraftRequestTable"]

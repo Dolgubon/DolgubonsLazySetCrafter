@@ -196,8 +196,8 @@ Created by Dolgubon (Joseph Heinzle)
 		        			<Anchor point="TOPRIGHT" relativeTo="$(grandparent)PatternInput" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="5" />
 		    			</Label>
 		    			<Control name="$(parent)Toggles" resizeToFitDescendents="true">
-		    				<Dimensions x="500" y="75"/>
-		    				<Anchor point="RIGHT" relativeTo="$(grandparent)Output" relativePoint="TOPRIGHT" offsetX="-10" offsetY="0"  />
+		    				<Dimensions x="300" y="75"/>
+		    				<Anchor point="RIGHT" relativeTo="$(grandparent)Output" relativePoint="TOPRIGHT" offsetX="80" offsetY="0"  />
 		    				
 		    				<Controls>
 		    					

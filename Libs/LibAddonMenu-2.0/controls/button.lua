@@ -3,16 +3,17 @@
     name = "My Button", -- string id or function returning a string
     func = function() end,
     tooltip = "Button's tooltip text.", -- string id or function returning a string (optional)
-    width = "full", --or "half" (optional)
-    disabled = function() return db.someBooleanSetting end, --or boolean (optional)
-    icon = "icon\\path.dds", --(optional)
+    width = "full", -- or "half" (optional)
+    disabled = function() return db.someBooleanSetting end, -- or boolean (optional)
+    icon = "icon\\path.dds", -- (optional)
     isDangerous = false, -- boolean, if set to true, the button text will be red and a confirmation dialog with the button label and warning text will show on click before the callback is executed (optional)
-    warning = "Will need to reload the UI.", --(optional)
+    warning = "Will need to reload the UI.", -- (optional)
+    helpUrl = "https://www.esoui.com/portal.php?id=218&a=faq", -- a string URL or a function that returns the string URL (optional)
     reference = "MyAddonButton", -- unique global reference to control (optional)
 } ]]
 
-local widgetVersion = 11
-local LAM = LibStub("LibAddonMenu-2.0")
+local widgetVersion = 12
+local LAM = LibAddonMenu2
 if not LAM:RegisterWidget("button", widgetVersion) then return end
 
 local wm = WINDOW_MANAGER
@@ -83,6 +84,12 @@ function LAMCreateControl.button(parent, buttonData, controlName)
     if buttonData.disabled ~= nil then
         control.UpdateDisabled = UpdateDisabled
         control:UpdateDisabled()
+    end
+
+    local faqTexture = LAM.util.CreateFAQTexture(control)
+    if faqTexture then
+        faqTexture:ClearAnchors()
+        faqTexture:SetAnchor(LEFT, button, RIGHT, 0, 0)
     end
 
     LAM.util.RegisterForRefreshIfNeeded(control)
