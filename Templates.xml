@@ -88,12 +88,12 @@
 				local original = self.SetColor
 				self.ApplyColour = function(self, isKnown)
 					if isKnown then
-						local colour  = GetItemQualityColor(self:GetParent().data[1].CraftRequestTable[9])
+						local colour  = GetItemQualityColor(self:GetParent().data[1].Quality[1])
 						original(self, colour:UnpackRGB())
 					elseif isKnown==nil then
 
 						self.SetColor = function(...) 
-							local colour  = GetItemQualityColor(self:GetParent().data[1].CraftRequestTable[9])
+							local colour  = GetItemQualityColor(self:GetParent().data[1].Quality[1])
 							original(self, colour:UnpackRGB())
 						end 
 						return
@@ -343,6 +343,95 @@
 				<Label name="$(parent)Reference" inherits="QueueRowLabelTemplate">
 					<Dimensions x="30" y="48" />
 					<Anchor point="LEFT" relativeTo="$(parent)Set" relativePoint="RIGHT" offsetX="0" />
+					<OnInitialized>
+						if not DolgubonSetCrafter:GetSettings().debug then
+							self:SetHidden(true)
+						end
+					</OnInitialized>
+					<OnMouseExit>
+						ClearTooltip(InformationTooltip)
+						DolgubonSetCrafter.scroll:Row_OnMouseExit(self:GetParent())
+						self:GetParent():GetHandler("OnMouseExit")(self:GetParent(), true)
+					</OnMouseExit>
+				</Label>
+				
+			</Controls>
+		</Button>
+		<Button name="FurnitureRequestTemplate" virtual="true" mouseEnabled="true" >
+			<OnMouseEnter>
+				DolgubonSetCrafter.scroll:Row_OnMouseEnter(self)
+				local added = false
+				local parameters = {...}
+				if not parameters[2] then
+				end
+				if self.data[1].Link ~= nil then
+					InitializeTooltip(ItemTooltip, self, RIGHT, 0, -40)
+					ItemTooltip:SetLink(self.data[1].Link)
+				end
+			</OnMouseEnter>
+
+			<OnMouseExit>
+				ClearTooltip(ItemTooltip)
+				ClearTooltip(InformationTooltip)
+				
+				DolgubonSetCrafter.scroll:Row_OnMouseExit(self)
+			</OnMouseExit>
+			<OnClicked>
+				local prevText = ZO_ChatWindowTextEntryEditBox:GetText()
+				StartChatInput(prevText..self.data[1].Link)
+				-- Get Reference
+				-- Refer to LLC to find the request Table
+				-- Get the mat requirements
+				-- format it into a table properly
+				-- replace the materialsList with the new table temporarily
+				-- refresh materialsList
+				-- place semi-permanent highlight
+
+				-- Taking off
+				-- delete temp table
+				-- return materialslist as main table
+				-- refresh scrolllists
+				-- remove highlight
+			</OnClicked>
+			<OnInitialized>
+				self.errorTooltip = DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughKnowledge
+			</OnInitialized>
+			<Dimensions x="850" y="30" />
+			<Controls>
+				<Button name="$(parent)RemoveButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-10" offsetY="0" />
+					<Dimensions x="44" y="44" />
+					<Textures normal="/esoui/art/hud/radialicon_cancel_up.dds" mouseOver="/esoui/art/hud/radialicon_cancel_over.dds" />
+					<OnClicked>
+						self:onClickety()
+					</OnClicked>
+					<OnMouseExit>
+						self:GetParent():GetHandler("OnMouseEnter")(self:GetParent(), true)
+					</OnMouseExit>
+					<OnMouseExit>
+						ClearTooltip(InformationTooltip)
+						DolgubonSetCrafter.scroll:Row_OnMouseExit(self:GetParent())
+						self:GetParent():GetHandler("OnMouseExit")(self:GetParent(), true)
+					</OnMouseExit>
+					
+				</Button>
+				<Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+
+				<Label name="$(parent)Quantity" inherits="QueueRowLabelTemplate" text="1x" color="76BCC3">
+					<Dimensions x="20" y="48" />
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)" offsetX="24" />
+				</Label>
+				<Label name="$(parent)Name" inherits="QueueRowLabelTemplate" color="76BCC3">
+					<Dimensions x="390" y="48" />
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Quantity" offsetX="0" />
+				</Label>
+				<Label name="$(parent)Station" inherits="QueueRowLabelTemplate">
+					<Dimensions x="140" y="48" />
+					<Anchor point="CENTER" relativeTo="$(parent)Name" relativePoint="RIGHT" offsetX="45" />
+				</Label>
+				<Label name="$(parent)Reference" inherits="QueueRowLabelTemplate">
+					<Dimensions x="30" y="48" />
+					<Anchor point="LEFT" relativeTo="$(parent)Station" relativePoint="RIGHT" offsetX="0" />
 					<OnInitialized>
 						if not DolgubonSetCrafter:GetSettings().debug then
 							self:SetHidden(true)

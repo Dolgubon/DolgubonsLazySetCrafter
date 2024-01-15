@@ -66,6 +66,12 @@ Created by Dolgubon (Joseph Heinzle)
 			</OnResizeStop>
 			<OnMoveStop>DolgubonSetCrafter.onWindowMove(self) </OnMoveStop>
 		    <Controls>
+		    	<Button name="$(parent)ToggleFurniture" alpha="1" clickSound="Default_Click" topmost="true" inherits="ZO_DefaultButton" text="Toggle Furniture">
+     				<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="200" offsetY="20" />
+					<OnClicked>
+						DolgubonSetCrafter.toggleFurnitureUI(self)
+					</OnClicked>
+		    	</Button>
 		    	<Control name="$(parent)Favourites" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false">
 		    		<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="2" offsetY="0"/>
 		    		<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="2" offsetY="0"/>
@@ -117,9 +123,9 @@ Created by Dolgubon (Joseph Heinzle)
 					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="-4" offsetX="275" />
 				</Backdrop>
 				<Button name="$(parent)Close" alpha="1" clickSound="Default_Click" topmost="true" inherits="ZO_DefaultButton">
-		    		<Textures normal="/esoui/art/hud/radialicon_cancel_up.dds" mouseOver="/esoui/art/hud/radialicon_cancel_over.dds" />
+		    		<Textures normal="/esoui/art/hud/radialicon_cancel_up.dds" mouseOver="/esoui/art/hud/radialicon_cancel_over.dds"  pressed="/esoui/art/hud/radialicon_cancel_disabled.dds" />
      				<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-20" offsetY="20" />
-      				<Dimensions x="48" y="48" />
+      				<Dimensions x="60" y="48" />
 					<OnClicked>
 						DolgubonSetCrafter.close()
 					</OnClicked>
@@ -152,6 +158,25 @@ Created by Dolgubon (Joseph Heinzle)
 		        			<Anchor point="TOPLEFT" relativeTo="$(grandparent)Title" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="5" />
 		        			<Anchor point="TOPRIGHT" relativeTo="$(grandparent)Title" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="5" />
 		    			</Label>
+    					<Button name="$(grandparent)CraftHousePort" alpha="1" clickSound="Default_Click" text="Crafting House" topmost="true" inherits="ZO_DefaultButton">
+		     				<Textures 
+								normal		="/esoui/art/lfg/lfg_indexicon_homeshow_up.dds"
+								pressed		="/esoui/art/lfg/lfg_indexicon_homeshow_down.dds"
+								mouseOver	="/esoui/art/lfg/lfg_indexicon_homeshow_over.dds"
+							/>
+		     				<Anchor point="LEFT" relativeTo="$(grandparent)Title" relativePoint="LEFT"  offsetX="50" offsetY="15"/>
+		      				<Dimensions x="65" y="55" />
+							<OnClicked>
+								DolgubonSetCrafter.portToCraftingHouse()
+							</OnClicked>
+							<OnMouseEnter>
+								InitializeTooltip(InformationTooltip, self, TOP, 0, 0)
+								SetTooltipText(InformationTooltip,"Port to a publicly open crafting house")
+							</OnMouseEnter>
+							<OnMouseExit>
+								ClearTooltip(InformationTooltip)
+							</OnMouseExit>
+				    	</Button>
 		    			<!--  -->
 		    			<!-- Creating XML controls for Input/-->
 		    			<!-- Creating the holder for the pieces Input/-->
@@ -364,6 +389,50 @@ Created by Dolgubon (Joseph Heinzle)
 									5<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" />
 									
 								</Label>
+							</Controls>
+						</Control>
+						<Control name="$(grandparent)Furniture" hidden="true" mouseEnabled="true" clampedToScreen="true" movable="false" inherits="ZO_ScrollContainer">
+							<Dimensions x="450" y="400" />
+							<DimensionConstraints minY="80" minX="380" />
+							<Anchor point="TOP" relativeTo="$(grandparent)Title" relativePoint="BOTTOM" offsetX="-200" offsetY="35" />
+							<Anchor point="BOTTOM" relativeTo="$(parent)Add" relativePoint="BOTTOM" offsetX="-200" offsetY="-35" />
+							<Controls>
+								<Label name="$(parent)Test" font="ZoFontWinH4" horizontalAlignment="CENTER" text="Furniture currently in Beta. More features will be added later!">
+									<Dimensions x="350"  />
+		                            <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="20" offsetY="20" />
+		                        </Label>
+		                        <Label name="$(parent)SelectedItem" font="ZoFontWinH4" horizontalAlignment="LEFT" text="">
+									<Dimensions x="350" />
+		                            <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="20" offsetY="75" />
+		                        </Label>
+		                        <Button name="$(parent)Food" inherits="PieceButtonTemplate">
+		    						<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="30" offsetY="40" />
+		    					</Button>
+		    					<Button name="$(parent)Drinks" inherits="PieceButtonTemplate">
+		    						<Anchor point="LEFT" relativeTo="$(parent)Food" relativePoint="RIGHT" offsetX="10" offsetY="0" />
+		    					</Button>
+		    					<Button name="$(parent)Furniture" inherits="PieceButtonTemplate">
+		    						<Anchor point="LEFT" relativeTo="$(parent)Drinks" relativePoint="RIGHT" offsetX="10" offsetY="0" />
+		    					</Button>
+		                        <!-- <Tooltip name="$(parent)Tooltip" inherits="ZO_CraftingTooltip" hidden="false" >
+		                        	<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="20" offsetY="0" />
+		                        </Tooltip> -->
+		                        <Backdrop name="$(parent)Input"  inherits="ZO_EditBackdrop">
+									<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="175" offsetY="-30" />
+									<Dimensions x="150"/>
+									<Controls>
+										<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" textType="TEXT_TYPE_ALL" text="" mouseEnabled="true">
+											<OnInitialized>
+												ZO_EditDefaultText_Initialize(self, "Search")
+												--DolgubonSetCrafterWindowInputBox = self
+											</OnInitialized>
+											<OnTextChanged>
+												DolgubonSetCrafter:RefreshRecipeList()
+											</OnTextChanged>
+										</EditBox>
+									</Controls>
+								</Backdrop>
+	                    			
 							</Controls>
 						</Control>
 					</Controls>

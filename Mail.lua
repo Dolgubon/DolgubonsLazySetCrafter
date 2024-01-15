@@ -28,10 +28,10 @@ local function compileMailText(subject, mailStarter, data, dataTransform)
 	mailOutputTexts = {}
 	local text
 	if type(mailStarter ) == "function" then
-		text = mailStarter()
-		text = continuedFrom..mailStarter(data[1])
+		-- text = mailStarter()
+		text = ""..mailStarter(data[1])
 	else
-		text = continuedFrom..mailStarter
+		text = ""..mailStarter
 	end
 	local nextAddition = ""	
 	for i = 1, #data do
@@ -180,21 +180,33 @@ function DolgubonSetCrafter.MailAsRequest(destinationOverride)
 	local mailQueue = DolgubonSetCrafter.savedvars.queue
 
 	for i, request in ipairs(mailQueue) do
-		local setName = request["Set"][2]
-		if sets[setName] == nil then
-			sets[setName] = {}
-			table.insert(setTypes, setName) -- Save this index of this set's name
+		if request.typeId == 1 then
+			local setName = request["Set"][2]
+			if sets[setName] == nil then
+				sets[setName] = {}
+				table.insert(setTypes, setName) -- Save this index of this set's name
+			end
+			table.insert(sets[setName], DolgubonSetCrafter.convertRequestToText(request)) -- Store the readable crafting information
 		end
-		table.insert(sets[setName], DolgubonSetCrafter.convertRequestToText(request)) -- Store the readable crafting information
 	end
 	for setName, requestInfos in pairs(sets) do
+		table.insert(mailInfo, {text="-- "..setName.." --"})
 		for i = 1, #requestInfos do
 			table.insert(mailInfo, {text=requestInfos[i], set=setName})
 		end
-		
 	end
-
-	compileMailText(requestSubject, function(data) if data then return "\n".."-- "..data.set.." --\n"else return "\n" end end, mailInfo, function(s) return s.text end)
+	local addedProvisioningGreeting = false
+	for i, request in pairs(mailQueue) do
+		if request.typeId == 2 then
+			if not addedProvisioningGreeting then
+				addedProvisioningGreeting = true
+				table.insert(mailInfo, {text="Furniture/Provisioning Items"})
+				-- mailInfo[#mailInfo + 1] = "Please create these provisioning/furniture items:"
+			end
+			table.insert(mailInfo, {text=request.Quantity[1].."x "..request.Link, set="Furniture/Provisioning Items"})
+		end
+	end
+	compileMailText(requestSubject, function(data) if data.set then return "\n".."-- "..data.set.." --\n"else return "\n" end end, mailInfo, function(s) return s.text end)
 
 	beginMailing(destination)
 	if true then 

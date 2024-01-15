@@ -68,7 +68,6 @@ function DolgubonSetCrafter.createToggle(control, onTexture, offTexture, onOverT
 		-- Sets the toggle value to the other value
 		if self.toggleValue then
 			control:toggleOff()
-			
 		else
 			control:toggleOn()
 			

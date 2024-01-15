@@ -27,6 +27,7 @@ function DolgubonScroll:New(control)
  	self.masterList = {}
 	
  	ZO_ScrollList_AddDataType(self.list, 1, "CraftingRequestTemplate", 30, function(control, data) self:SetupEntry(control, data) end)
+ 	ZO_ScrollList_AddDataType(self.list, 2, "FurnitureRequestTemplate", 30, function(control, data) self:SetupFurnitureEntry(control, data) end)
  	ZO_ScrollList_EnableHighlight(self.list, "ZO_ThinListHighlight")
 	
 	self.currentSortKey = "Reference"
@@ -147,6 +148,7 @@ local function updateCost()
 
 		cost = cost + price * v["Amount"]
 	end 
+	cost = zo_strformat(SI_NUMBER_FORMAT, ZO_AbbreviateNumber(cost, NUMBER_ABBREVIATION_PRECISION_HUNDREDTHS, USE_LOWERCASE_NUMBER_SUFFIXES))
 	DolgubonSetCrafterWindowRightCost:SetText("Total Cost: "..cost.." |t20:20:esoui/art/currency/currency_gold_64.dds|t")
 end
 
@@ -358,12 +360,14 @@ function DolgubonSetCrafter.outputRequest()
 	local mailQueue = DolgubonSetCrafter.savedvars.queue
 
 	for i, request in ipairs(mailQueue) do
-		local setName = request["Set"][2]
-		if sets[setName] == nil then
-			sets[setName] = {}
-			table.insert(setTypes, setName) -- Save this index of this set's name
+		if request.typeId == 1 then
+			local setName = request["Set"][2]
+			if sets[setName] == nil then
+				sets[setName] = {}
+				table.insert(setTypes, setName) -- Save this index of this set's name
+			end
+			table.insert(sets[setName], DolgubonSetCrafter.convertRequestToText(request)) -- Store the readable crafting information
 		end
-		table.insert(sets[setName], DolgubonSetCrafter.convertRequestToText(request)) -- Store the readable crafting information
 	end
 	for setName, requestInfos in pairs(sets) do
 		outputTexts[#outputTexts + 1] = "From the set "..setName..", please make:"
@@ -379,8 +383,17 @@ function DolgubonSetCrafter.outputRequest()
 		outputTexts[#outputTexts + 1] = text
 		text = ""
 	end
+	local addedProvisioningGreeting = false
+	for i, request in pairs(mailQueue) do
+		if request.typeId == 2 then
+			if not addedProvisioningGreeting then
+				addedProvisioningGreeting = true
+				outputTexts[#outputTexts + 1] = "Please create these provisioning/furniture items:"
+			end
+			outputTexts[#outputTexts + 1] = request.Quantity[1].."x "..request.Link
+		end
+	end
 	outputMultipleLinesChat(outputTexts)
-
 end
 
 
@@ -450,6 +463,38 @@ function DolgubonScroll:SetupEntry(control, data)
 	
 end
 
+function DolgubonScroll:SetupFurnitureEntry(control, data)
+
+	control.data = data
+	-- control.qualityString = zo_strformat(DolgubonSetCrafter.localizedStrings.UIStrings.qualityString, data[1].Quality[2])
+	local qual = data[1]["Quality"][1]
+	local qualityColour = {GetItemQualityColor(qual or 2)}
+	for k , v in pairs (data[1]) do
+
+		control[k] = GetControl(control, k)
+
+		if control[k] then
+			if type(v)=="table" then
+				control[k]:SetText(v[2])
+				control[k]:SetHidden(false)
+				control[k]:SetColor(unpack(qualityColour))
+				control[k]:ApplyColour(true)
+			end
+		end
+	end
+
+	local button = control:GetNamedChild( "RemoveButton")
+	WINDOW_MANAGER:ApplyTemplateToControl(button, "SetCrafterRequestNotInProgress")
+	
+	button.tooltip = nil
+
+	function button:onClickety ()   DolgubonSetCrafter.removeFromScroll(data[1].Reference, true)  end
+	--function control:onClicked () DolgubonsGuildBlacklistWindowInputBox:SetText(data.name) end
+	
+	ZO_SortFilterList.SetupRow(self, control, data)
+	
+end
+
 
 function DolgubonScroll:BuildMasterList()
 	self.masterList = {}
@@ -457,7 +502,7 @@ function DolgubonScroll:BuildMasterList()
 	for k, v in pairs(self.data) do 
 
 		table.insert(self.masterList, {
-			v
+			v, ["typeId"] = v.typeId
 		})
 
 	end
@@ -475,7 +520,7 @@ function DolgubonScroll:FilterScrollList()
 	ZO_ClearNumericallyIndexedTable(scrollData)
 	for i = 1, #self.masterList do
 		local data = self.masterList[i]
-		table.insert(scrollData, ZO_ScrollList_CreateDataEntry(1, data))
+		table.insert(scrollData, ZO_ScrollList_CreateDataEntry(data.typeId or 1, data))
 	end
 end
 

@@ -174,7 +174,7 @@ local function makeDropdownSelections(comboBoxContainer, tableInfo , text , x, y
 	if not comboBox.m_comboBox then 
 		comboBox.m_comboBox =comboBox.dropdown
 		comboBox.dropdown.m_container:SetDimensions(225,30)
-		comboBox.dropdown.m_dropdown:SetDimensions(225,370)
+		comboBox.dropdown.m_dropdown:SetDimensions(225,500)
 	end
 	comboBoxContainer.comboBox = comboBox
 	if comboBoxLocation == 1 then

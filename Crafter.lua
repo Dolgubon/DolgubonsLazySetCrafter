@@ -398,6 +398,7 @@ local function addToQueue(requestTable, craftMultiplier )
 			if returnedTable then
 				addRequirements(returnedTable, true)
 			end
+			requestTableCopy.typeId = 1
 			if requestTableCopy then
 				queue[#queue+1] = requestTableCopy
 			end
@@ -589,7 +590,18 @@ function GetEnchantQuality(itemLink)
 	return 0
 end
 
+local recipeItemTypes=
+{
+	[ITEMTYPE_DRINK] = 1, [ITEMTYPE_FOOD] = 1, [ITEMTYPE_FURNISHING] = 1
+}
+
 local function verifyLinkIsValid(link)
+	local itemType = GetItemLinkItemType(link)
+	if recipeItemTypes[itemType] then
+		if GetRecipeInfoFromItemId(GetItemLinkItemId(link)) then
+			return true
+		end
+	end
 	local _,_,_,_,_,setIndex=GetItemLinkSetInfo(link)
 	if setIndex > 0 and not LibLazyCrafting.GetSetIndexes()[setIndex] then
 		return false
@@ -606,6 +618,12 @@ DolgubonSetCrafter.verifyLinkIsValid = verifyLinkIsValid
 local function addByItemLinkToQueue(itemLink)
 	if not verifyLinkIsValid(itemLink) then
 		return
+	end
+	local itemType = GetItemLinkItemType(itemLink)
+	if recipeItemTypes[itemType] then
+		if GetRecipeInfoFromItemId(GetItemLinkItemId(itemLink)) then
+			return DolgubonSetCrafter.addFurnitureByLink(itemLink)
+		end
 	end
 
 	local requestTable = {}
@@ -709,9 +727,64 @@ function DolgubonSetCrafter.compileMatRequirements()
 	end
 end
 
-function DolgubonSetCrafter.craft() 
+function DolgubonSetCrafter.addFurniture()
+	if DolgubonSetCrafter.selectedFurniture ~= "" then
+		requestTableCopy = {}
+		requestTableCopy["Reference"]	= DolgubonSetCrafter.savedvars.counter
+		DolgubonSetCrafter.savedvars.counter = DolgubonSetCrafter.savedvars.counter + 1
+		local requestParameters = 
+		{
+			DolgubonSetCrafter.selectedFurniture, 1, DolgubonSetCrafter:GetAutocraft(), requestTableCopy["Reference"]
+		}
+		local returnedTable = LazyCrafter:CraftProvisioningItemByResultItemId(unpack(requestParameters))
+		requestTableCopy["CraftRequestTable"] = requestParameters
+		requestTableCopy["Link"] = DolgubonSetCrafter.selectedFurnitureLink
+		if returnedTable then
+			addRequirements(returnedTable, true)
+		end
+		local _,_,_,_,_,_, station = GetRecipeInfo(DolgubonSetCrafter.selectedRecipeListIndex, DolgubonSetCrafter.selectedRecipeIndex)
 
-	DolgubonSetCrafter.compileMatRequirements() 
+		requestTableCopy["Quantity"] = {1, "1x"}
+		requestTableCopy["Quality"]  = DolgubonSetCrafter.quality[GetItemLinkQuality(DolgubonSetCrafter.selectedFurnitureLink)]
+		requestTableCopy["Name"] = {GetItemLinkName(DolgubonSetCrafter.selectedFurnitureLink), GetItemLinkName(DolgubonSetCrafter.selectedFurnitureLink)}
+		requestTableCopy["Station"] = {station, GetCraftingSkillName(station)}
+		requestTableCopy.typeId = 2
+		queue[#queue+1] = requestTableCopy
+	end
+end
+
+function DolgubonSetCrafter.addFurnitureByLink(itemLink)
+	requestTableCopy = {}
+	requestTableCopy["Reference"]	= DolgubonSetCrafter.savedvars.counter
+	DolgubonSetCrafter.savedvars.counter = DolgubonSetCrafter.savedvars.counter + 1
+	local requestParameters = 
+	{
+		GetItemLinkItemId(itemLink), 1, DolgubonSetCrafter:GetAutocraft(), requestTableCopy["Reference"]
+	}
+	local returnedTable = LazyCrafter:CraftProvisioningItemByResultItemId(unpack(requestParameters))
+	requestTableCopy["CraftRequestTable"] = requestParameters
+	requestTableCopy["Link"] = itemLink
+	if returnedTable then
+		addRequirements(returnedTable, true)
+	end
+	local _, recipeListIndex, recipeList =  GetRecipeInfoFromItemId(GetItemLinkItemId(link))
+	local _,_,_,_,_,_, station = GetRecipeInfo(recipeListIndex, recipeList)
+
+	requestTableCopy["Quantity"] = {1, "1x"}
+	requestTableCopy["Quality"]  = DolgubonSetCrafter.quality[GetItemLinkQuality(itemLink)]
+	requestTableCopy["Name"] = {GetItemLinkName(itemLink), GetItemLinkName(itemLink)}
+	requestTableCopy["Station"] = {station, GetCraftingSkillName(station)}
+	requestTableCopy.typeId = 2
+	queue[#queue+1] = requestTableCopy
+	DolgubonSetCrafter.updateList()
+end
+
+function DolgubonSetCrafter.craft() 
+	if (DolgubonSetCrafter.isCurrentlyInFurniture()) then
+		DolgubonSetCrafter.addFurniture()
+	else
+		DolgubonSetCrafter.compileMatRequirements() 
+	end
 	DolgubonSetCrafter.updateList()
 end
 
@@ -785,10 +858,14 @@ function DolgubonSetCrafter.initializeFunctions.initializeCrafting()
 	DolgubonSetCrafter.LazyCrafter = LazyCrafter
 	for k, v in pairs(queue) do 
 		if not v.doNotKeep then
+			if v.typeId == 1 then
+				local returnedTable = LazyCrafter:CraftSmithingItemByLevel(unpack(v["CraftRequestTable"]))
+				addRequirements(returnedTable, true)
+				if pcall(function()applyValidityFunctions(v)end) then else d("Request could not be displayed. However, you should still be able to craft it.") end
+			elseif v.typeId == 2 then
+				local returnedTable = LazyCrafter:CraftProvisioningItemByResultItemId(unpack(v["CraftRequestTable"]))
 
-			local returnedTable = LazyCrafter:CraftSmithingItemByLevel(unpack(v["CraftRequestTable"]))
-			addRequirements(returnedTable, true)
-			if pcall(function()applyValidityFunctions(v)end) then else d("Request could not be displayed. However, you should still be able to craft it.") end
+			end
 		else
 			table.remove(queue, k)
 		end

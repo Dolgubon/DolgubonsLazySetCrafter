@@ -10,7 +10,8 @@
 -- A good portion are setup functions, called by the initialization function
 -- 
 
-
+-- GetRecipeInfo(number recipeListIndex, number recipeIndex)
+--  GetRecipeListInfo(number recipeListIndex)
 
 local queue
  
@@ -248,12 +249,34 @@ function DolgubonSetCrafter.initializeFunctions.setupUI()
 	DolgubonSetCrafter.favouritesManager:RefreshData()
 	local includeFlags = { AUTO_COMPLETE_FLAG_ALL}
 	ZO_AutoComplete:New(DolgubonSetCrafterWindowRightInputBox, includeFlags, {}, AUTO_COMPLETION_ONLINE_OR_OFFLINE, 5)
+	if not DolgubonSetCrafter:GetSettings().initialFurniture then
+		DolgubonSetCrafterWindowFavourites:SetHidden(not DolgubonSetCrafter:GetSettings().showFavourites )
+	end
+	if DolgubonSetCrafter:GetSettings().initialFurniture then
+		DolgubonSetCrafter.toggleFurnitureUI(DolgubonSetCrafterWindowToggleFurniture)
+	end
 
 end
 
 
 ---------------------
 --- OTHER
+
+function DolgubonSetCrafter.isCurrentlyInFurniture()
+	return DolgubonSetCrafterWindowToggleFurniture.isCurrentUIFurniture
+end
+
+function DolgubonSetCrafter.toggleFurnitureUI(toggleButton)
+	toggleButton.isCurrentUIFurniture = not toggleButton.isCurrentUIFurniture
+	local newHidden = toggleButton.isCurrentUIFurniture
+	DolgubonSetCrafterWindowFavourites:SetHidden(newHidden)
+	DolgubonSetCrafterWindowPatternInput:SetHidden(newHidden)
+	DolgubonSetCrafterWindowComboboxes:SetHidden(newHidden)
+	DolgubonSetCrafterWindowInput:SetHidden(newHidden)
+	DolgubonSetCrafterWindowMultiplierInput:SetHidden(newHidden)
+	DolgubonSetCrafterWindowFurniture:SetHidden(not newHidden)
+	DolgubonSetCrafter:GetSettings().initialFurniture = toggleButton.isCurrentUIFurniture
+end
 
 function DolgubonSetCrafter.resetChoices()
 
@@ -281,7 +304,7 @@ end
 DolgubonSetCrafter.defaultWidth = 1150
 DolgubonSetCrafter.defaultHeight = 650
 local totalWindowWidth = DolgubonSetCrafter.defaultWidth
-local leftHalfWindowWidth = totalWindowWidth - 250
+local leftHalfWindowWidth = totalWindowWidth - DolgubonSetCrafter.localizedMatScrollWidth
 local function getDividerPosition(window, a)
 	local DIVIDER_RATIO = leftHalfWindowWidth/totalWindowWidth
 	local width = window:GetWidth()

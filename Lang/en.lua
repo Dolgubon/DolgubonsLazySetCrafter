@@ -66,6 +66,7 @@ DolgubonSetCrafter.localizedStrings.SettingsStrings.useCharacterSettings        
 DolgubonSetCrafter.localizedStrings.SettingsStrings.useCharacterSettingsTooltip  = "Use character specific settings on this character only"
 DolgubonSetCrafter.localizedStrings.SettingsStrings.showToggleButton              = "Always show toggle button"
 DolgubonSetCrafter.localizedStrings.SettingsStrings.showToggleButtonTooltip       = "Show the UI toggle button at all times"
+DolgubonSetCrafter.localizedMatScrollWidth 											= 250
 
 DolgubonSetCrafter.localizedStrings.weaponNames = 
 {

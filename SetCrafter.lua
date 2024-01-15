@@ -40,7 +40,8 @@ DolgubonSetCrafter.default = {
 	{
 		['homeStation'] = false,
 		['priceSwitch'] = false,
-	}
+	},
+	["initialFurniture"] = false,
 }
 local newFeatureInfo =
 {
@@ -77,6 +78,57 @@ end
 
 function DolgubonSetCrafter.onEnter()
 	--d(DolgubonsGuildBlacklistWindowInputBox:GetText())
+end
+
+local craftingHouses = 
+{
+	["NA Megaserver"] = 
+	{
+		{displayName = "@xGAMxHQ", houseId = 71, greeting = "Welcome to Moon's Edge's guild house!", subheading = "Stations straight ahead", 
+			chatMessage = "Like their guild house and want to join? Check them out here: |H1:guild:391101|hMoon's Edge|h"},
+		{displayName = "@Amrayia", houseId = 71, greeting = "Welcome to Auction House Central's guild house!", subheading = "Stations straight ahead", 
+			chatMessage = "Like their house? Join AHC in Alinor - where friendly traders thrive. Check it out here: |H1:guild:370167|hAuction House Central|h"},
+		{displayName = "@Kelinmiriel", houseId = 40, greeting = "Welcome to Kelinmiriel's house!", subheading = "Stations to your left", chatMessage = ""},
+		{displayName = "@AuctionsBMW", houseId = 62, greeting = "Welcome to Black Market Wares' guild house!", subheading = "Stations to your left", 
+			chatMessage ="Like their guild house and want to join? Check them out here: |H1:guild:1427|hBlack Market Wares|h"},
+	},
+	["EU Megaswerver"] = 
+	{
+		{displayName = "@JN_Slevin", houseId = 56, greeting = "Welcome to JNSlevin's house!", subheading = "Stations to the left", 
+			chatMessage = "Welcome to the Independent Trading Team [ITT]'s guild house! if you find yourself in need of a "..
+		"trading guild please join discord.gg/itt or contact @JN_Slevin, @LouAnja or @RichestGuyinESO. From Mournhold to Alinor we have a space for every every type of trader you might be!"},
+		{displayName = "@Ek1", houseId = 66, greeting = "Welcome to Ek1's house!", subheading = "Stations right here!", chatMessage = ""},
+	}
+}
+
+
+---Join AHC in Alinor - where traders thrive in a friendly community. Check it out here: |H1:guild:370167|hAuction House Central|h
+-- Like their guild house? Join AHC in Alinor here: |H1:guild:370167|hAuction House Central|h
+-- Like their house? Join AHC in Alinor - where friendly traders thrive. Check it out here: |H1:guild:370167|hAuction House Central|h
+--GetCurrentHouseOwner()
+-- GetCurrentZoneHouseId()
+local houseToUse
+local function displayGreeting(greeting, subHeading)
+	local messageParams = CENTER_SCREEN_ANNOUNCE:CreateMessageParams(CSA_CATEGORY_LARGE_TEXT)
+    messageParams:SetText(greeting, subHeading)
+    CENTER_SCREEN_ANNOUNCE:AddMessageWithParams(messageParams)
+end
+
+local function welcomePlayerToHouse()
+	if houseToUse and GetCurrentHouseOwner() == houseToUse.displayName and GetCurrentZoneHouseId()==houseToUse.houseId then
+		displayGreeting(houseToUse.greeting, houseToUse.subheading)
+		if houseToUse.chatMessage and houseToUse.chatMessage~="" then
+			d(houseToUse.chatMessage)
+		end
+		houseToUse = nil
+		EVENT_MANAGER:UnregisterForEvent(DolgubonSetCrafter.name.."_houseWelcome", EVENT_PLAYER_ACTIVATED )
+	end
+end
+
+function DolgubonSetCrafter.portToCraftingHouse()
+	houseToUse = craftingHouses[GetWorldName()][math.random(1, #craftingHouses[GetWorldName()] ) ]
+	JumpToSpecificHouse(houseToUse.displayName, houseToUse.houseId)
+	EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name.."_houseWelcome", EVENT_PLAYER_ACTIVATED , welcomePlayerToHouse)
 end
 
 function DolgubonSetCrafter:GetSettings()
@@ -120,12 +172,20 @@ function DolgubonSetCrafter:Initialize()
 	DolgubonSetCrafter.initializeFunctions.initializeCrafting()
 	--if pcall(DolgubonSetCrafter.initializeFunctions.setupUI) then else d("Dolgubon's Lazy Set Crafter: UI not loaded") end
 	DolgubonSetCrafter.initializeFunctions.setupUI()
+	DolgubonSetCrafter.initializeFunctions.InitializeFurnitureUI()
 	
 	--DolgubonSetCrafter.initializeFeedbackWindow()
+	local buttonInfo = {0,25000,100000, "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7CZ3LW6E66NAU"}
+	if GetWorldName() == "NA Megaserver" then
+		buttonInfo[#buttonInfo+1] = { function()JumpToSpecificHouse( "@Dolgubon", 36) end, "Visit Maze 1"}
+		buttonInfo[#buttonInfo+1] = { function()JumpToSpecificHouse( "@Dolgubon", 9) end, "Visit Maze 2"}
+		-- feedbackString = "If you found a bug, have a request or a suggestion, or simply wish to donate, send a mail. You can also check out my house, or donate through Paypal or on Patreon."
+	end
+
 	local LibFeedback = LibFeedback
 	local button, window = LibFeedback:initializeFeedbackWindow(DolgubonSetCrafter, "Dolgubon's Lazy Set Crafter",DolgubonSetCrafterWindow, "@Dolgubon", 
 		{TOPLEFT , DolgubonSetCrafterWindow , TOPLEFT , 10, 10}, 
-		{0,5000,50000, "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7CZ3LW6E66NAU"}, 
+		buttonInfo, 
 		"If you found a bug, have a request or a suggestion, or wish to donate, you can send me a mail here.")
 	window:SetHidden(true)
 
@@ -150,7 +210,6 @@ function DolgubonSetCrafter:Initialize()
 		DolgubonSetCrafter.updateList()
 	end
 	DolgubonSetCrafter.initializeMailButtons()
-	DolgubonSetCrafterWindowFavourites:SetHidden(not DolgubonSetCrafter:GetSettings().showFavourites)
 
 	local updateString = ""
 	local showUpdate = false
