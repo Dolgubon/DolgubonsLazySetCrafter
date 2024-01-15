@@ -131,8 +131,12 @@ function DolgubonSetCrafter.setupLocalizedLabels()
 	DolgubonSetCrafterWindowLeftCraft:SetText				(langStrings.UIStrings.craftStart)
 	DolgubonSetCrafterWindowRightOutputRequirements:SetText (langStrings.UIStrings.chatRequirements)
 	DolgubonSetCrafterWindowRightMailRequirements:SetText	(langStrings.UIStrings.mailRequirements)
-	DolgubonSetCrafterWindowRightLabel:SetText 				(langStrings.UIStrings.materialScrollTitle)
-
+	DolgubonSetCrafterWindowRightLabel:SetText				(langStrings.UIStrings.materialScrollTitle)
+	DolgubonSetCrafterWindowLeftResetPatterns:SetText		(langStrings.UIStrings.resetPatterns)
+	DolgubonSetCrafterWindowRightOutputRequest:SetText		(langStrings.UIStrings.chatRequest)
+	DolgubonSetCrafterWindowRightMailQueue:SetText			(langStrings.UIStrings.mailRequest)
+	DolgubonSetCrafterWindowRightCost:SetText				(langStrings.UIStrings.totalCostTitle)
+	DolgubonSetCrafterWindowFavouritesTitle:SetText			(langStrings.UIStrings.FavouritesTitle)
 end
 
 
@@ -196,12 +200,8 @@ function DolgubonSetCrafter.setupBehaviourToggles()
 		"esoui/art/cadwell/checkboxicon_unchecked.dds", "esoui/art/cadwell/checkboxicon_checked.dds", false )
 
 	autoCraft:GetNamedChild("Label"):SetText(DolgubonSetCrafter.localizedStrings.UIStrings.autoCraft)
-	if GetCVar("language.2") == "fr" then
-		mimicStones:GetNamedChild("Label"):SetText("Utiliser Pierre Cameleon")
-	else
-		mimicStones:GetNamedChild("Label"):SetText(GetString(SI_CRAFTING_CONFIRM_USE_UNIVERSAL_STYLE_ITEM_TITLE))
-		
-	end
+	mimicStones:GetNamedChild("Label"):SetText(DolgubonSetCrafter.localizedStrings.UIStrings.mimicStones)
+
 	if DolgubonSetCrafter.savedvars.saveLastChoice then
 		autoCraft:setState(DolgubonSetCrafter.savedvars["autoCraft"])
 		DolgubonSetCrafter.toggleCraftButton( false)
@@ -276,7 +276,11 @@ function DolgubonSetCrafter.toggleFurnitureUI(toggleButton)
 	DolgubonSetCrafterWindowMultiplierInput:SetHidden(newHidden)
 	DolgubonSetCrafterWindowFurniture:SetHidden(not newHidden)
 	DolgubonSetCrafter:GetSettings().initialFurniture = toggleButton.isCurrentUIFurniture
-	out("Please select a recipe to craft")
+	if toggleButton.isCurrentUIFurniture then
+		out("Please select a recipe to craft")
+	else
+		out(DolgubonSetCrafter.localizedStrings.UIStrings.patternHeader)
+	end
 end
 
 function DolgubonSetCrafter.resetChoices()

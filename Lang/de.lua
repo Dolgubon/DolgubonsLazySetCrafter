@@ -54,6 +54,7 @@ DolgubonSetCrafter.localizedStrings.SettingsStrings.useCharacterSettings        
 DolgubonSetCrafter.localizedStrings.SettingsStrings.useCharacterSettingsTooltip  = "Speichert für diesen Charakter die Einstellungen spezifisch ab, nicht für das gesamte Konto."
 DolgubonSetCrafter.localizedStrings.SettingsStrings.showToggleButton              = "Umschaltknopf anzeigen"
 DolgubonSetCrafter.localizedStrings.SettingsStrings.showToggleButtonTooltip       = "Zeigt den Knopf zum Umschalten der Benutzeroberfläche des Addons immer an"
+DolgubonSetCrafter.localizedMatScrollWidth                                          = 300
 
 
 DolgubonSetCrafter.localizedStrings.weaponNames = 
