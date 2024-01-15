@@ -276,6 +276,7 @@ function DolgubonSetCrafter.toggleFurnitureUI(toggleButton)
 	DolgubonSetCrafterWindowMultiplierInput:SetHidden(newHidden)
 	DolgubonSetCrafterWindowFurniture:SetHidden(not newHidden)
 	DolgubonSetCrafter:GetSettings().initialFurniture = toggleButton.isCurrentUIFurniture
+	out("Please select a recipe to craft")
 end
 
 function DolgubonSetCrafter.resetChoices()

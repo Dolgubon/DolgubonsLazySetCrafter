@@ -728,7 +728,7 @@ function DolgubonSetCrafter.compileMatRequirements()
 end
 
 function DolgubonSetCrafter.addFurniture()
-	if DolgubonSetCrafter.selectedFurniture ~= "" then
+	if DolgubonSetCrafter.selectedFurniture and DolgubonSetCrafter.selectedFurniture ~= "" then
 		requestTableCopy = {}
 		requestTableCopy["Reference"]	= DolgubonSetCrafter.savedvars.counter
 		DolgubonSetCrafter.savedvars.counter = DolgubonSetCrafter.savedvars.counter + 1
@@ -750,6 +750,8 @@ function DolgubonSetCrafter.addFurniture()
 		requestTableCopy["Station"] = {station, GetCraftingSkillName(station)}
 		requestTableCopy.typeId = 2
 		queue[#queue+1] = requestTableCopy
+	else
+		out("No item to craft was selected!")
 	end
 end
 
