@@ -12,12 +12,34 @@ local colours =
 local mySetColor
 local selectedMult = 1.7
 local mouseOverSelected = 0.9
+local out = DolgubonSetCrafter.out
 
+
+function DolgubonSetCrafter.isCurrentlyInFurniture()
+	return DolgubonSetCrafterWindowToggleFurniture.isCurrentUIFurniture
+end
+
+function DolgubonSetCrafter.toggleFurnitureUI(toggleButton)
+	toggleButton.isCurrentUIFurniture = not toggleButton.isCurrentUIFurniture
+	local newHidden = toggleButton.isCurrentUIFurniture
+	DolgubonSetCrafterWindowFavourites:SetHidden(newHidden)
+	DolgubonSetCrafterWindowPatternInput:SetHidden(newHidden)
+	DolgubonSetCrafterWindowComboboxes:SetHidden(newHidden)
+	DolgubonSetCrafterWindowInput:SetHidden(newHidden)
+	-- DolgubonSetCrafterWindowMultiplierInput:SetHidden(newHidden)
+	DolgubonSetCrafterWindowFurniture:SetHidden(not newHidden)
+	DolgubonSetCrafter:GetSettings().initialFurniture = toggleButton.isCurrentUIFurniture
+	if toggleButton.isCurrentUIFurniture then
+		out("Please select a recipe to craft")
+	else
+		out(DolgubonSetCrafter.localizedStrings.UIStrings.patternHeader)
+	end
+end
 
 local function onMouseEnterHook(self)
 	local data = self.data
 	InitializeTooltip(ItemTooltip, self, LEFT, 205, 0, RIGHT)
-	local itemLink = GetRecipeResultItemLink(data.recipeListIndex , data.recipeIndex)
+	local itemLink = data.itemLink
 	ItemTooltip:SetLink(itemLink)
 	if self:IsSelected() then
 		local r, g, b = GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, data.quality)
@@ -139,10 +161,10 @@ function DolgubonSetCrafter:InitializeRecipeTree()
 		control.meetsQualityReq = true -- DolgubonSetCrafter:PassesQualityLevelReq(data.qualityReq)
 		control.enabled = enabled
 		control.text = control -- Attempt to fix conflict between this and MRL
-
+		control.questPin:SetTexture("/esoui/art/cadwell/check.dds")
 		-- We're not using quest pins
-		control.questPin:SetHidden(true)
-
+		control.questPin:SetHidden(not data.isKnown)
+		control.questPin:SetDimensions(16, 16)
 		if data.maxIterationsForIngredients > 0 and enabled then
 			control:SetText(zo_strformat(SI_PROVISIONER_RECIPE_NAME_COUNT, data.name, data.maxIterationsForIngredients))
 		else
@@ -153,11 +175,11 @@ function DolgubonSetCrafter:InitializeRecipeTree()
 		
 		ZO_PostHookHandler(control, "OnMouseEnter", onMouseEnterHook )
 		ZO_PostHookHandler(control, "OnMouseExit", onMouseExitHook )
-		if WINDOW_MANAGER:GetMouseOverControl() == control then
-			zo_callHandler(control, enabled and "OnMouseEnter" or "OnMouseExit")
-		else
-			ClearTooltip(ItemTooltip)
-		end
+		-- if WINDOW_MANAGER:GetMouseOverControl() == control then
+		-- 	zo_callHandler(control, enabled and "OnMouseEnter" or "OnMouseExit")
+		-- else
+		-- 	ClearTooltip(ItemTooltip)
+		-- end
 		-- ZO_PostHook(node ,"OnUnselected", function() control:mySetColor( GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, data.quality)) end)
 		
 		control:mySetColor( GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, data.quality))
@@ -167,7 +189,7 @@ function DolgubonSetCrafter:InitializeRecipeTree()
 		if selected then
 			-- DolgubonSetCrafter.furnitureTooltip:SetHidden(true)	
 			-- DolgubonSetCrafter.furnitureTooltip:ClearLines()
-			local itemLink = GetRecipeResultItemLink(data.recipeListIndex , data.recipeIndex)
+			local itemLink = data.itemLink
 			DolgubonSetCrafter.selectedFurniture = GetItemLinkItemId(itemLink)
 			DolgubonSetCrafter.selectedFurnitureLink = itemLink
 			DolgubonSetCrafter.selectedRecipeListIndex = data.recipeListIndex
@@ -179,6 +201,7 @@ function DolgubonSetCrafter:InitializeRecipeTree()
 			control:mySetColor( r*selectedMult,g*selectedMult,b*selectedMult, 1.5)
 			DolgubonSetCrafterWindowFurnitureSelectedItem:SetText("Selected: "..GetItemLinkName(itemLink))
 			DolgubonSetCrafterWindowFurnitureSelectedItem:SetColor(GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, data.quality))
+			DolgubonSetCrafterWindowFurnitureSelectedItem.itemLink = itemLink
 			-- DolgubonSetCrafter.furnitureTooltip:SetProvisionerResultItem(data.recipeListIndex , data.recipeIndex)
 			-- d(data)
 			-- DolgubonSetCrafter.furnitureTooltip:SetProvisionerResultItem()
@@ -195,19 +218,32 @@ function DolgubonSetCrafter:InitializeRecipeTree()
 	DolgubonSetCrafter.recipeTree:SetOpenAnimation("ZO_TreeOpenAnimation")
 	-- This override should allow the user to close open nodes
 	function DolgubonSetCrafter.recipeTree:ToggleNode(treeNode)
-    if treeNode:IsEnabled() and not treeNode:IsOpen() then
-        if self.scrollControl and not treeNode:IsOpen() then
-            self:SetScrollToTargetNode(treeNode)
-        end
-        self:SetNodeOpen(treeNode, not treeNode:IsOpen(), USER_REQUESTED_OPEN)
-    else
-    	self:SetNodeOpen(treeNode, not treeNode:IsOpen(), USER_REQUESTED_OPEN)
-    end
-end
+	    if treeNode:IsEnabled() and not treeNode:IsOpen() then
+	        if self.scrollControl and not treeNode:IsOpen() then
+	            self:SetScrollToTargetNode(treeNode)
+	        end
+	        self:SetNodeOpen(treeNode, not treeNode:IsOpen(), USER_REQUESTED_OPEN)
+	    else
+	    	self:SetNodeOpen(treeNode, not treeNode:IsOpen(), USER_REQUESTED_OPEN)
+	    end
+	    
+	end
+	local isKnown = DolgubonSetCrafterWindowFurnitureIsKnownCheckbox
+	DolgubonSetCrafter.createToggle(isKnown,"esoui/art/cadwell/checkboxicon_checked.dds", "esoui/art/cadwell/checkboxicon_unchecked.dds", 
+		"esoui/art/cadwell/checkboxicon_unchecked.dds", "esoui/art/cadwell/checkboxicon_checked.dds", DolgubonSetCrafter.savedvars['showKnownFurniture'] )
+	isKnown:GetNamedChild("Label"):SetText(DolgubonSetCrafter.localizedStrings.UIStrings.onlyKnownRecipes)
+	isKnown.onToggle = function(self, state) 
+		DolgubonSetCrafter:RefreshRecipeList()
+		DolgubonSetCrafter.savedvars['showKnownFurniture'] = state
+	end
 	-- ZO_CraftingUtils_ConnectTreeToCraftingProcess(self.recipeTree)
 
 	-- DolgubonSetCrafter:DirtyRecipeList()
 	DolgubonSetCrafter:RefreshRecipeList()
+end
+
+function DolgubonSetCrafter.includeKnownRecipes()
+	return DolgubonSetCrafterWindowFurnitureIsKnownCheckbox.toggleValue
 end
 
 local function RecipeComparator(left, right)
@@ -241,111 +277,70 @@ function generateCompleteRecipeList()
     for recipeListIndex = 1, GetNumRecipeLists() do
         local recipeListName, numRecipes, upIcon, downIcon, overIcon, _, recipeListCreateSound = GetRecipeListInfo(recipeListIndex)
         local recipeList = DolgubonSetCrafter.recipeLists[recipeListIndex]
-        for currentCraftingStation = 1, 7 do
-            for recipeIndex in IterateKnownRecipes(recipeListIndex, currentCraftingStation) do
-                local _, recipeName, numIngredients, _, qualityReq, specialIngredientType, requiredCraftingStationType, itemId = GetRecipeInfo(recipeListIndex, recipeIndex)
-                local name, resultIcon = GetRecipeResultItemInfo(recipeListIndex, recipeIndex)
-                if  true then -- recipeFilter(name, searchText, simpleSearch) then
-	                local maxIterationsForIngredients = PROVISIONER_MANAGER:CalculateMaxIterationsForIngredients(recipeListIndex, recipeIndex, numIngredients)
-	                local tradeskillsLevelReqs = {}
-	                for tradeskillIndex = 1, GetNumRecipeTradeskillRequirements(recipeListIndex, recipeIndex) do
-	                    local tradeskill, levelReq = GetRecipeTradeskillRequirement(recipeListIndex, recipeIndex, tradeskillIndex)
-	                    tradeskillsLevelReqs[tradeskill] = levelReq
-	                end
+        for recipeIndex = 1, numRecipes do
+            local isKnown, recipeName, numIngredients, _, qualityReq, specialIngredientType, requiredCraftingStationType, itemId = GetRecipeInfo(recipeListIndex, recipeIndex)
+            local name, resultIcon = GetRecipeResultItemInfo(recipeListIndex, recipeIndex)
+            if recipeName ~= "" and true then -- recipeFilter(name, searchText, simpleSearch) then
+                local maxIterationsForIngredients = PROVISIONER_MANAGER:CalculateMaxIterationsForIngredients(recipeListIndex, recipeIndex, numIngredients)
+                local tradeskillsLevelReqs = {}
+                for tradeskillIndex = 1, GetNumRecipeTradeskillRequirements(recipeListIndex, recipeIndex) do
+                    local tradeskill, levelReq = GetRecipeTradeskillRequirement(recipeListIndex, recipeIndex, tradeskillIndex)
+                    tradeskillsLevelReqs[tradeskill] = levelReq
+                end
 
-	                local itemLink = GetRecipeResultItemLink(recipeListIndex, recipeIndex)
-	                local displayQuality = GetItemLinkDisplayQuality(itemLink)
-	                local createSound = recipeListCreateSound
-	                if createSound == "" then
-	                    createSound = DEFAULT_RECIPE_CREATE_SOUND
-	                end
-	                local recipe =
-	                {
-	                    recipeListName = recipeListName,
-	                    recipeListIndex = recipeListIndex,
-	                    recipeIndex = recipeIndex,
-	                    qualityReq = qualityReq,
-	                    passesTradeskillLevelReqs = PROVISIONER_MANAGER:PassesTradeskillLevelReqs(tradeskillsLevelReqs),
-	                    passesQualityLevelReq = PROVISIONER_MANAGER :PassesQualityLevelReq(qualityReq),
-	                    specialIngredientType = specialIngredientType,
-	                    numIngredients = numIngredients,
-	                    maxIterationsForIngredients = maxIterationsForIngredients,
-	                    createSound = createSound,
-	                    iconFile = resultIcon,
-	                    displayQuality = displayQuality,
-	                    -- quality is deprecated, included here for addon backwards compatibility
-	                    quality = displayQuality,
-	                    tradeskillsLevelReqs = tradeskillsLevelReqs,
-	                    name = recipeName,
-	                    requiredCraftingStationType = requiredCraftingStationType,
-	                    resultItemId = itemId,
-	                }
+                local itemLink = DolgubonSetCrafter.LazyCrafter.getItemLinkFromItemId(itemId)
+                local displayQuality = GetItemLinkDisplayQuality(itemLink)
+                local createSound = recipeListCreateSound
+                if createSound == "" then
+                    createSound = DEFAULT_RECIPE_CREATE_SOUND
+                end
+                local recipe =
+                {
+                    recipeListName = recipeListName,
+                    recipeListIndex = recipeListIndex,
+                    recipeIndex = recipeIndex,
+                    qualityReq = qualityReq,
+                    passesTradeskillLevelReqs = PROVISIONER_MANAGER:PassesTradeskillLevelReqs(tradeskillsLevelReqs),
+                    passesQualityLevelReq = PROVISIONER_MANAGER :PassesQualityLevelReq(qualityReq),
+                    specialIngredientType = specialIngredientType,
+                    numIngredients = numIngredients,
+                    maxIterationsForIngredients = maxIterationsForIngredients,
+                    createSound = createSound,
+                    iconFile = resultIcon,
+                    displayQuality = displayQuality,
+                    -- quality is deprecated, included here for addon backwards compatibility
+                    quality = displayQuality,
+                    tradeskillsLevelReqs = tradeskillsLevelReqs,
+                    name = recipeName,
+                    requiredCraftingStationType = requiredCraftingStationType,
+                    resultItemId = itemId,
+                    isKnown = isKnown,
+                    itemLink = itemLink
+                }
 
-	                if not recipeList then
-	                    recipeList =
-	                    {
-	                        recipeListName = recipeListName,
-	                        recipeListIndex = recipeListIndex,
-	                        upIcon = upIcon,
-	                        downIcon = downIcon,
-	                        overIcon = overIcon,
-	                        recipes = {}
-	                    }
-	                    DolgubonSetCrafter.recipeLists[recipeListIndex] = recipeList
-	                end
+                if not recipeList then
+                    recipeList =
+                    {
+                        recipeListName = recipeListName,
+                        recipeListIndex = recipeListIndex,
+                        upIcon = upIcon,
+                        downIcon = downIcon,
+                        overIcon = overIcon,
+                        recipes = {}
+                    }
+                    DolgubonSetCrafter.recipeLists[recipeListIndex] = recipeList
+                end
 
-	                table.insert(recipeList.recipes, recipe)
-	            end
+                table.insert(recipeList.recipes, recipe)
             end
+        end
 
-            if recipeList then
-                table.sort(recipeList.recipes, RecipeComparator)
-            end
+        if recipeList then
+            table.sort(recipeList.recipes, RecipeComparator)
         end
     end
     return DolgubonSetCrafter.recipeLists
 end
-
--- PROVISIONER_MANAGER = ZO_ProvisionerManager:New()
--- local function generateCompleteRecipeList()
--- 	local recipeList = {}
--- 	for recipeListIndex = 1, GetNumRecipeLists() do 
--- 		local name, numberRecipes, upIcon, downIcon, overIcon, _, createSound = GetRecipeListInfo(recipeListIndex)
--- 		recipeList[recipeListIndex] = {
--- 			["name"] = name,
--- 			["downIcon"] = downIcon,
--- 			["upIcon"] = upIcon,
--- 			["overIcon"] = overIcon,
--- 			["recipeListName"] = name,
--- 			["recipeListIndex"] = recipeListIndex,
--- 			["recipes"] = {},
-
--- 		}
--- 		for j = 1, numberRecipes do
--- 			local recipe =
---                 {
---                     recipeListName = recipeListName,
---                     recipeListIndex = recipeListIndex,
---                     recipeIndex = recipeIndex,
---                     qualityReq = qualityReq,
---                     passesTradeskillLevelReqs = self:PassesTradeskillLevelReqs(tradeskillsLevelReqs),
---                     passesQualityLevelReq = self:PassesQualityLevelReq(qualityReq),
---                     specialIngredientType = specialIngredientType,
---                     numIngredients = numIngredients,
---                     maxIterationsForIngredients = maxIterationsForIngredients,
---                     createSound = createSound,
---                     iconFile = resultIcon,
---                     displayQuality = displayQuality,
---                     -- quality is deprecated, included here for addon backwards compatibility
---                     quality = displayQuality,
---                     tradeskillsLevelReqs = tradeskillsLevelReqs,
---                     name = recipeName,
---                     requiredCraftingStationType = requiredCraftingStationType,
---                     resultItemId = itemId,
---                 }
--- 		end
--- 	end
--- end
 
 -- If the search text is just one letter, it lags slightly, so we will only check the first letter
 local function simpleRecipeFilter(resultName, searchText)
@@ -368,6 +363,11 @@ local recipeListIndexPartitions =
 	['food'] = {1,2,3,4,5,6,7,15},
 	['drinks'] = {8,9,10,11,12,13,14,16},
 	['furniture'] = {17,18,19,20,21,22,23,24,25,26,27,28,29,30},
+	['furniture1'] = {17,18,19,20},
+	['furniture2'] = {21,22},
+	['furniture3'] = {23,24},
+	['furniture4'] = {25, 26,},
+	['furniture5'] = {27,28,29,30},
 }
 
 -- local function recipeListIndexIterator(fullList)
@@ -383,9 +383,152 @@ local function determinePartition()
 	end
 end
 
-function DolgubonSetCrafter:RefreshRecipeList()
-	self.recipeTree:Reset()
+function DolgubonSetCrafter:loadPartition(partition)
+	local knowAnyRecipesInTab = false
+	local hasRecipesWithFilter = false
+	local requireIngredients = false -- ZO_CheckButton_IsChecked(self.haveIngredientsCheckBox)
+	local requireSkills = false -- ZO_CheckButton_IsChecked(self.haveSkillsCheckBox)
+	local requireQuests = false -- ZO_CheckButton_IsChecked(self.isQuestItemCheckbox)
+	local craftingInteractionType = 1
+	local searchText = DolgubonSetCrafterWindowFurnitureInputBox:GetText():lower()
+	local filterFunctionToUse
+	local recipeLists = completeRecipeList
+	if searchText:len() < 3 then
+		filterFunctionToUse = filterFunctions.startsWith
+	else
+		filterFunctionToUse = filterFunctions.find
+	end
+	for _, listIndex in pairs(partition) do
+		local recipeList = recipeLists[listIndex]
+		-- If user does not know any of the recipes, then skip
+		if recipeList then
+			local parent = self.recipeTree.parents and self.recipeTree.parents[listIndex]
+			for _, recipe in ipairs(recipeList.recipes) do
+				if true then --- recipe.requiredCraftingStationType == craftingInteractionType and self.filterType == recipe.specialIngredientType then
+					knowAnyRecipesInTab = true
+					if  filterFunctionToUse(recipe.name, searchText) then --recipeFilter(recipe.resultItemId) then -- does recipe pass filter
+						parent = parent or self.recipeTree:AddNode("ZO_ProvisionerNavigationHeader", {
+								recipeListIndex = recipeList.recipeListIndex,
+								name = recipeList.recipeListName,
+								upIcon = recipeList.upIcon,
+								downIcon = recipeList.downIcon,
+								overIcon = recipeList.overIcon,
+								})
+						self.recipeTree:AddNode("ZO_ProvisionerNavigationEntry", recipe, parent)
+						hasRecipesWithFilter = true
+					end
+				end
+			end
+		end
+	end
+	-- Keep the first node closed for easy scrolling
+	local origSelectAnything = DolgubonSetCrafter.recipeTree.SelectAnything
+	DolgubonSetCrafter.recipeTree.SelectAnything = function() end
+	self.recipeTree:Commit()
+	DolgubonSetCrafter.recipeTree.SelectAnything = origSelectAnything
+end
+local currentConglomerateBatch = 0
 
+function DolgubonSetCrafter:loadPartialConglomerate()
+	currentConglomerateBatch = currentConglomerateBatch or 0
+	currentConglomerateBatch = currentConglomerateBatch + 1
+	local batchUnit = 20
+	local timeSpacer = 125
+	local batches = math.floor(#conglomeratedList/batchUnit) + 1
+	-- DolgubonSetCrafter:loadAllParents()
+	-- DolgubonSetCrafter.recipeTree:SetEnabled(false)
+	
+	local startIndex = (currentConglomerateBatch-1) * batchUnit + 1
+	local endIndex = currentConglomerateBatch * batchUnit
+
+	local knowAnyRecipesInTab = false
+	local hasRecipesWithFilter = false
+	local requireIngredients = false -- ZO_CheckButton_IsChecked(self.haveIngredientsCheckBox)
+	local requireSkills = false -- ZO_CheckButton_IsChecked(self.haveSkillsCheckBox)
+	local requireQuests = false -- ZO_CheckButton_IsChecked(self.isQuestItemCheckbox)
+	local craftingInteractionType = 1
+	local searchText = DolgubonSetCrafterWindowFurnitureInputBox:GetText():lower()
+	local filterFunctionToUse
+	local recipeLists = completeRecipeList
+	if searchText:len() < 3 then
+		filterFunctionToUse = filterFunctions.startsWith
+	else
+		filterFunctionToUse = filterFunctions.find
+	end
+	for i = startIndex, endIndex do
+		local recipe = conglomeratedList[i]
+		if recipe then
+			local parent = DolgubonSetCrafter.recipeTree.parents and DolgubonSetCrafter.recipeTree.parents[recipe.recipeListIndex]
+			if parent then --recipeFilter(recipe.resultItemId) then -- does recipe pass filter
+				DolgubonSetCrafter.recipeTree:AddNode("ZO_ProvisionerNavigationEntry", recipe, parent)
+			end
+		end
+	end
+	-- Keep the first node closed for easy scrolling
+	local origSelectAnything = DolgubonSetCrafter.recipeTree.SelectAnything
+	DolgubonSetCrafter.recipeTree.SelectAnything = function() end
+	DolgubonSetCrafter.recipeTree:Commit()
+	DolgubonSetCrafter.recipeTree.SelectAnything = origSelectAnything
+	if currentConglomerateBatch * batchUnit > #conglomeratedList then
+		DolgubonSetCrafter.recipeTree:SetEnabled(true)
+		EVENT_MANAGER:UnregisterForUpdate(DolgubonSetCrafter.name .. "FurnitureTreeRefresh")
+	end
+end
+
+local conglomerateParents = {}
+
+function DolgubonSetCrafter:loadAllParents()
+	local searchText = DolgubonSetCrafterWindowFurnitureInputBox:GetText():lower()
+	local filterFunctionToUse
+	if searchText:len() < 3 then
+		filterFunctionToUse = filterFunctions.startsWith
+	else
+		filterFunctionToUse = filterFunctions.find
+	end
+	local recipeLists = completeRecipeList
+	self.recipeTree.parents = {}
+	for listIndex, v in pairs(conglomerateParents) do
+		local recipeList = recipeLists[listIndex]
+		-- If user does not know any of the recipes, then skip
+		if recipeList then
+			local parent
+			parent = parent or self.recipeTree:AddNode("ZO_ProvisionerNavigationHeader", {
+				recipeListIndex = recipeList.recipeListIndex,
+				name = recipeList.recipeListName,
+				upIcon = recipeList.upIcon,
+				downIcon = recipeList.downIcon,
+				overIcon = recipeList.overIcon,
+				})
+			self.recipeTree.parents[listIndex] = parent
+		end
+	end
+end
+
+local function generateConglomerateRecipeList()
+	conglomerateParents = {}
+	local searchText = DolgubonSetCrafterWindowFurnitureInputBox:GetText():lower()
+	local filterFunctionToUse
+	if searchText:len() < 3 then
+		filterFunctionToUse = filterFunctions.startsWith
+	else
+		filterFunctionToUse = filterFunctions.find
+	end
+	local partition = determinePartition()
+	local conglomeratedList = {}
+	for _, recipeListIndex in pairs(partition) do
+		for k, recipe in pairs(completeRecipeList[recipeListIndex].recipes) do
+			if filterFunctionToUse(recipe.name, searchText) and (not DolgubonSetCrafter.includeKnownRecipes() or recipe.isKnown) then
+				table.insert(conglomeratedList, recipe)
+				conglomerateParents[recipeListIndex] = true
+			end
+		end
+	end
+	return conglomeratedList
+end
+
+
+function DolgubonSetCrafter:RefreshRecipeList()
+	DolgubonSetCrafter.recipeTree:Reset()
 	local knowAnyRecipesInTab = false
 	local hasRecipesWithFilter = false
 	local requireIngredients = false -- ZO_CheckButton_IsChecked(self.haveIngredientsCheckBox)
@@ -400,39 +543,81 @@ function DolgubonSetCrafter:RefreshRecipeList()
 		filterFunctionToUse = filterFunctions.find
 	end
 
-
+	local timeSpacer = 10
+	if DolgubonSetCrafterWindowFurnitureFood.toggleValue or DolgubonSetCrafterWindowFurnitureDrinks.toggleValue then
+		timeSpacer = 2
+	end
 	-- local recipeLists = PROVISIONER_MANAGER:GetRecipeListData(craftingInteractionType)
 	completeRecipeList = completeRecipeList or generateCompleteRecipeList()
 	local recipeLists = completeRecipeList
+	conglomeratedList = generateConglomerateRecipeList()
+	DolgubonSetCrafter:loadAllParents()
+	currentConglomerateBatch = 0
+	DolgubonSetCrafter.recipeTree:SetEnabled(false)
+	EVENT_MANAGER:UnregisterForUpdate(DolgubonSetCrafter.name .. "FurnitureTreeRefresh")
+	EVENT_MANAGER:RegisterForUpdate(DolgubonSetCrafter.name .. "FurnitureTreeRefresh", timeSpacer ,  DolgubonSetCrafter.loadPartialConglomerate)
 
-	for _, listIndex in pairs(determinePartition()) do
-		local recipeList = recipeLists[listIndex]
-		-- If user does not know any of the recipes, then skip
-		if recipeList then
-			local parent
-			for _, recipe in ipairs(recipeList.recipes) do
-				if true then --- recipe.requiredCraftingStationType == craftingInteractionType and self.filterType == recipe.specialIngredientType then
-					knowAnyRecipesInTab = true
-					if  filterFunctionToUse(recipe.name, searchText) then --recipeFilter(recipe.resultItemId) then -- does recipe pass filter
-						parent = parent or self.recipeTree:AddNode("ZO_ProvisionerNavigationHeader", {
-							recipeListIndex = recipeList.recipeListIndex,
-							name = recipeList.recipeListName,
-							upIcon = recipeList.upIcon,
-							downIcon = recipeList.downIcon,
-							overIcon = recipeList.overIcon,
-							})
-						self.recipeTree:AddNode("ZO_ProvisionerNavigationEntry", recipe, parent)
-						hasRecipesWithFilter = true
-					end
-				end
-			end
-		end
-	end
+
+	
+	-- local batchUnit = 25
+	-- local timeSpacer = 125
+	-- local batches = math.floor(#conglomeratedList/batchUnit) + 1
+	-- DolgubonSetCrafter:loadAllParents()
+	-- DolgubonSetCrafter.recipeTree:SetEnabled(false)
+	
+	-- for i = 1, batches do
+	-- 	local startIndex = (i-1) * batchUnit + 1
+	-- 	local endIndex = i * batchUnit
+	-- 	zo_callLater(function() DolgubonSetCrafter:loadPartialConglomerate(conglomeratedList , startIndex, endIndex) end , i * timeSpacer )
+	-- end
+	-- zo_callLater(function() DolgubonSetCrafter.recipeTree:SetEnabled(true) end , batches * timeSpacer)
+
+
+	-- if DolgubonSetCrafterWindowFurnitureFood.toggleValue then
+	-- 	DolgubonSetCrafter:loadAllParents()
+	-- 	DolgubonSetCrafter:loadPartition(recipeListIndexPartitions['food'])
+	-- elseif DolgubonSetCrafterWindowFurnitureDrinks.toggleValue then
+	-- 	DolgubonSetCrafter:loadAllParents()
+	-- 	DolgubonSetCrafter:loadPartition(recipeListIndexPartitions['drinks'])
+	-- elseif DolgubonSetCrafterWindowFurnitureFurniture.toggleValue then
+	-- 	if searchText:len() > 1 then
+	-- 		DolgubonSetCrafter:loadPartition(recipeListIndexPartitions['furniture'])
+	-- 	else
+	-- 		DolgubonSetCrafter:loadAllParents()
+	-- 		-- DolgubonSetCrafter:loadPartition(recipeListIndexPartitions['furniture1'])
+	-- 		for i = 17, 30 do
+	-- 			zo_callLater(function()DolgubonSetCrafter:loadPartition({i}) end , 500 * (i-17))
+	-- 		end
+	-- 	end
+	-- end
+	-- for _, listIndex in pairs(determinePartition()) do
+	-- 	local recipeList = recipeLists[listIndex]
+	-- 	-- If user does not know any of the recipes, then skip
+	-- 	if recipeList then
+	-- 		local parent
+	-- 		for _, recipe in ipairs(recipeList.recipes) do
+	-- 			if true then --- recipe.requiredCraftingStationType == craftingInteractionType and self.filterType == recipe.specialIngredientType then
+	-- 				knowAnyRecipesInTab = true
+	-- 				if  filterFunctionToUse(recipe.name, searchText) then --recipeFilter(recipe.resultItemId) then -- does recipe pass filter
+	-- 					parent = parent or self.recipeTree:AddNode("ZO_ProvisionerNavigationHeader", {
+	-- 						recipeListIndex = recipeList.recipeListIndex,
+	-- 						name = recipeList.recipeListName,
+	-- 						upIcon = recipeList.upIcon,
+	-- 						downIcon = recipeList.downIcon,
+	-- 						overIcon = recipeList.overIcon,
+	-- 						})
+	-- 					self.recipeTree:AddNode("ZO_ProvisionerNavigationEntry", recipe, parent)
+	-- 					hasRecipesWithFilter = true
+	-- 				end
+	-- 			end
+	-- 		end
+	-- 	end
+	-- end
 	-- Keep the first node closed for easy scrolling
-	local origSelectAnything = DolgubonSetCrafter.recipeTree.SelectAnything
-	DolgubonSetCrafter.recipeTree.SelectAnything = function() end
-	self.recipeTree:Commit()
-	DolgubonSetCrafter.recipeTree.SelectAnything = origSelectAnything
+	-- local origSelectAnything = DolgubonSetCrafter.recipeTree.SelectAnything
+	-- DolgubonSetCrafter.recipeTree.SelectAnything = function() end
+	-- self.recipeTree:Commit()
+	-- DolgubonSetCrafter.recipeTree.SelectAnything = origSelectAnything
 	
 	-- DolgubonSetCrafter.recipeTree.rootNode.children[1]:SetOpen(false)
 	-- DolgubonSetCrafter.recipeTree.exclusive = false

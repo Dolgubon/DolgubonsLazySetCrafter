@@ -262,26 +262,6 @@ end
 ---------------------
 --- OTHER
 
-function DolgubonSetCrafter.isCurrentlyInFurniture()
-	return DolgubonSetCrafterWindowToggleFurniture.isCurrentUIFurniture
-end
-
-function DolgubonSetCrafter.toggleFurnitureUI(toggleButton)
-	toggleButton.isCurrentUIFurniture = not toggleButton.isCurrentUIFurniture
-	local newHidden = toggleButton.isCurrentUIFurniture
-	DolgubonSetCrafterWindowFavourites:SetHidden(newHidden)
-	DolgubonSetCrafterWindowPatternInput:SetHidden(newHidden)
-	DolgubonSetCrafterWindowComboboxes:SetHidden(newHidden)
-	DolgubonSetCrafterWindowInput:SetHidden(newHidden)
-	DolgubonSetCrafterWindowMultiplierInput:SetHidden(newHidden)
-	DolgubonSetCrafterWindowFurniture:SetHidden(not newHidden)
-	DolgubonSetCrafter:GetSettings().initialFurniture = toggleButton.isCurrentUIFurniture
-	if toggleButton.isCurrentUIFurniture then
-		out("Please select a recipe to craft")
-	else
-		out(DolgubonSetCrafter.localizedStrings.UIStrings.patternHeader)
-	end
-end
 
 function DolgubonSetCrafter.resetChoices()
 

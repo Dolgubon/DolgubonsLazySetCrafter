@@ -394,16 +394,12 @@ Created by Dolgubon (Joseph Heinzle)
 						<Control name="$(grandparent)Furniture" hidden="true" mouseEnabled="true" clampedToScreen="true" movable="false" inherits="ZO_ScrollContainer">
 							<Dimensions x="450" y="400" />
 							<DimensionConstraints minY="80" minX="380" />
-							<Anchor point="TOP" relativeTo="$(grandparent)Title" relativePoint="BOTTOM" offsetX="-200" offsetY="35" />
-							<Anchor point="BOTTOM" relativeTo="$(parent)Add" relativePoint="BOTTOM" offsetX="-200" offsetY="-35" />
+							<Anchor point="TOP" relativeTo="$(grandparent)Title" relativePoint="BOTTOM" offsetX="-220" offsetY="35" />
+							<Anchor point="BOTTOM" relativeTo="$(parent)Add" relativePoint="BOTTOM" offsetX="-220" offsetY="-35" />
 							<Controls>
-								<Label name="$(parent)Test" font="ZoFontWinH4" horizontalAlignment="CENTER" text="Furniture currently in Beta. More features will be added later!">
+								<Label name="$(parent)Test" font="ZoFontWinH4" horizontalAlignment="CENTER" text="Furniture crafting is still new to this addon. More furniture features will be added later!">
 									<Dimensions x="350"  />
-		                            <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="20" offsetY="20" />
-		                        </Label>
-		                        <Label name="$(parent)SelectedItem" font="ZoFontWinH4" horizontalAlignment="LEFT" text="">
-									<Dimensions x="350" />
-		                            <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="20" offsetY="75" />
+		                            <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="40" offsetY="20" />
 		                        </Label>
 		                        <Button name="$(parent)Food" inherits="PieceButtonTemplate">
 		    						<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="30" offsetY="40" />
@@ -414,11 +410,19 @@ Created by Dolgubon (Joseph Heinzle)
 		    					<Button name="$(parent)Furniture" inherits="PieceButtonTemplate">
 		    						<Anchor point="LEFT" relativeTo="$(parent)Drinks" relativePoint="RIGHT" offsetX="10" offsetY="0" />
 		    					</Button>
+		    					<Label name="$(parent)SelectedItem" font="ZoFontWinH4" horizontalAlignment="LEFT" text="" inherits="DSC_ItemLinkMouseOverLabel">
+									<Dimensions x="350" />
+		                            <Anchor point="TOPLEFT" relativeTo="$(parent)Food" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+		                        </Label>
+		                        <Control name="$(parent)IsKnown" inherits="BehaviourToggleTemplate">
+		    						<Anchor point="TOPLEFT" relativeTo="$(parent)Food" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="20" />
+
+		    					</Control>
 		                        <!-- <Tooltip name="$(parent)Tooltip" inherits="ZO_CraftingTooltip" hidden="false" >
 		                        	<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="20" offsetY="0" />
 		                        </Tooltip> -->
 		                        <Backdrop name="$(parent)Input"  inherits="ZO_EditBackdrop">
-									<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="175" offsetY="-30" />
+									<Anchor point="LEFT" relativeTo="$(parent)Furniture" relativePoint="RIGHT" offsetX="10" offsetY="0" />
 									<Dimensions x="150"/>
 									<Controls>
 										<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" textType="TEXT_TYPE_ALL" text="" mouseEnabled="true">

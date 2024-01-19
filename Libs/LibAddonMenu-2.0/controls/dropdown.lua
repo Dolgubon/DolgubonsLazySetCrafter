@@ -15,11 +15,12 @@
     requiresReload = false, -- boolean, if set to true, the warning text will contain a notice that changes are only applied after an UI reload and any change to the value will make the "Apply Settings" button appear on the panel which will reload the UI when pressed (optional)
     default = defaults.var, -- default value or function that returns the default value (optional)
     helpUrl = "https://www.esoui.com/portal.php?id=218&a=faq", -- a string URL or a function that returns the string URL (optional)
-    reference = "MyAddonDropdown" -- unique global reference to control (optional)
+    reference = "MyAddonDropdown", -- unique global reference to control (optional)
+    resetFunc = function(dropdownControl) d("defaults reset") end, -- custom function to run after the control is reset to defaults (optional)
 } ]]
 
 
-local widgetVersion = 23
+local widgetVersion = 24
 local LAM = LibAddonMenu2
 if not LAM:RegisterWidget("dropdown", widgetVersion) then return end
 
@@ -392,6 +393,7 @@ function LAMCreateControl.dropdown(parent, dropdownData, controlName)
     control.dropdown = ZO_ComboBox_ObjectFromContainer(combobox)
     local dropdown = control.dropdown
     dropdown:SetSortsItems(false) -- need to sort ourselves in order to be able to sort by value
+    dropdown.m_dropdown:SetParent(combobox:GetOwningWindow()) -- TODO remove workaround once the problem is fixed in the game
 
     if dropdownData.scrollable then
         local visibleRows = type(dropdownData.scrollable) == "number" and dropdownData.scrollable or DEFAULT_VISIBLE_ROWS

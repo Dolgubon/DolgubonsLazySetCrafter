@@ -3,7 +3,7 @@
 ------------------------------------------------------------------
 
 
-local MAJOR, MINOR = "LibAddonMenu-2.0", 34
+local MAJOR, MINOR = "LibAddonMenu-2.0", 35
 
 local lam
 if(not LibStub) then
@@ -916,6 +916,8 @@ local function CreateOptionsControls(panel)
 
                     err, anchorOffset, lastAddedControl, wasHalf = CreateAndAnchorWidget(parent, widgetData, offsetX, anchorOffset, lastAddedControl, wasHalf)
                     if err then
+                        d(GetStringFromValue(widgetData.name or "unnamed"))
+                        d(widgetData)
                         PrintLater(("Could not create %s '%s' of %s."):format(widgetData.type, GetStringFromValue(widgetData.name or "unnamed"), addonID))
                         logger:Error(err)
                     end

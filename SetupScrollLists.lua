@@ -302,19 +302,19 @@ local function outputMultipleLinesChat(textToOutput)
 	local function OutputNextLine(eventCode,  channelType, fromName, text, isCustomerService, fromDisplayName)
 	
 		if fromDisplayName == GetDisplayName() or channelType == CHAT_CHANNEL_WHISPER_SENT then
-			testActualOutput = text
-			testAssume = textToOutput[1]
 			if text == textToOutput[1] then
 				table.remove(textToOutput, 1)
 				if #textToOutput>0 then
 					StartChatInput(textToOutput[1])
 				else
+					d("Chat sending complete!")
 					EVENT_MANAGER:UnregisterForEvent(DolgubonSetCrafter.name,EVENT_CHAT_MESSAGE_CHANNEL)
 				end
 			else
 			end
 		end
 	end
+	EVENT_MANAGER:UnregisterForEvent(DolgubonSetCrafter.name,EVENT_CHAT_MESSAGE_CHANNEL)
 	EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name,EVENT_CHAT_MESSAGE_CHANNEL, OutputNextLine)
 end
 

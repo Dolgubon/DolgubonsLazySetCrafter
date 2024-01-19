@@ -732,9 +732,12 @@ function DolgubonSetCrafter.addFurniture()
 		requestTableCopy = {}
 		requestTableCopy["Reference"]	= DolgubonSetCrafter.savedvars.counter
 		DolgubonSetCrafter.savedvars.counter = DolgubonSetCrafter.savedvars.counter + 1
+		local craftMultiplier = DolgubonSetCrafter:GetMultiplier()
+		requestTableCopy["Quantity"] = {craftMultiplier, tostring(craftMultiplier).."x"}
+
 		local requestParameters = 
 		{
-			DolgubonSetCrafter.selectedFurniture, 1, DolgubonSetCrafter:GetAutocraft(), requestTableCopy["Reference"]
+			DolgubonSetCrafter.selectedFurniture, requestTableCopy["Quantity"][1], DolgubonSetCrafter:GetAutocraft(), requestTableCopy["Reference"]
 		}
 		local returnedTable = LazyCrafter:CraftProvisioningItemByResultItemId(unpack(requestParameters))
 		requestTableCopy["CraftRequestTable"] = requestParameters
@@ -743,8 +746,7 @@ function DolgubonSetCrafter.addFurniture()
 			addRequirements(returnedTable, true)
 		end
 		local _,_,_,_,_,_, station = GetRecipeInfo(DolgubonSetCrafter.selectedRecipeListIndex, DolgubonSetCrafter.selectedRecipeIndex)
-
-		requestTableCopy["Quantity"] = {1, "1x"}
+		
 		requestTableCopy["Quality"]  = DolgubonSetCrafter.quality[GetItemLinkQuality(DolgubonSetCrafter.selectedFurnitureLink)]
 		requestTableCopy["Name"] = {GetItemLinkName(DolgubonSetCrafter.selectedFurnitureLink), GetItemLinkName(DolgubonSetCrafter.selectedFurnitureLink)}
 		requestTableCopy["Station"] = {station, GetCraftingSkillName(station)}

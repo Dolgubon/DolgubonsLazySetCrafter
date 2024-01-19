@@ -53,6 +53,7 @@ DolgubonSetCrafter.localizedStrings.UIStrings.loadQueueAsIs 		= "Load with saved
 DolgubonSetCrafter.localizedStrings.UIStrings.loadQueueCurrentLevel	= "Load with currently selected level"
 DolgubonSetCrafter.localizedStrings.UIStrings.resetPatterns			= "Reset Patterns"
 DolgubonSetCrafter.localizedStrings.UIStrings.totalCostTitle		= "Total Cost"
+DolgubonSetCrafter.localizedStrings.UIStrings.onlyKnownRecipes		= "Only Known Recipes"
 
 DolgubonSetCrafter.localizedStrings.SettingsStrings = {}
 

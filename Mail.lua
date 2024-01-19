@@ -123,7 +123,7 @@ function DolgubonSetCrafter.convertRequestToText(curReq)
 	else
 		text= itemLink..", "..level..", "..style..", "..trait..", "..quality
 	end
-	if enchant then
+	if enchant and enchant ~= "" then
 		text = text.." with "..enchantQuality.." "..enchant.." enchant"
 	end
 	return text

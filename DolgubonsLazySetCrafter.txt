@@ -4,18 +4,16 @@
 ; States and/or other countries. All rights reserved.
 ; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
 
-## Title: Dolgubon's Lazy Set Crafter v2.8.7
+## Title: Dolgubon's Lazy Set Crafter v3.0.1
 ## APIVersion: 101040
 ## Author: Dolgubon
-## Version: 2.8.7
+## Version: 3.0.1
 ## SavedVariables: dolgubonslazysetcraftersavedvars
-## DependsOn: LibLazyCrafting>=3086 LibAddonMenu-2.0 LibStub
+## DependsOn: LibLazyCrafting>=4000 LibAddonMenu-2.0 LibStub
 ## OptionalDependsOn: pChat LibFeedback LibCustomMenu LibPrice
 
 ; Libraries
 
-; LibCustomTitles
-Libs\LibCustomTitles\LibCustomTitles.lua
 ; Feedback library
 libs\LibFeedback\feedback.lua
 
