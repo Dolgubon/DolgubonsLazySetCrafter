@@ -1,3 +1,8 @@
+RecipeScrollList = ZO_SortFilterList:Subclass()
+DolgubonSetCrafter.RecipeScrollList = RecipeScrollList
+CategoryScrollList = ZO_SortFilterList:Subclass()
+DolgubonSetCrafter.CategoryScrollList = CategoryScrollList
+
 DolgubonSetCrafter = DolgubonSetCrafter or {}
 DolgubonSetCrafter.initializeFunctions = DolgubonSetCrafter.initializeFunctions or {}
 local createToggle = DolgubonSetCrafter.createToggle
@@ -13,7 +18,48 @@ local mySetColor
 local selectedMult = 1.7
 local mouseOverSelected = 0.9
 local out = DolgubonSetCrafter.out
+local filterFunctions =
+{
+	["find"] = function(resultName, searchText, simpleSearch)
+		-- return string.find(name:lower(), text:lower())
+		return string.find(resultName:lower(), searchText)
+	end,
+	["startsWith"] = function(resultName, searchText, simpleSearch)
+		return string.startsWith(resultName:lower(), searchText)
+	end,
+}
 
+local recipeListIndexPartitions = 
+{
+	['all'] = {},
+	['food'] = {1,2,3,4,5,6,7,15},
+	['drinks'] = {8,9,10,11,12,13,14,16},
+	['furniture'] = {17,18,19,20,21,22,23,24,25,26,27,28,29,30},
+	['furniture1'] = {17,18,19,20},
+	['furniture2'] = {21,22},
+	['furniture3'] = {23,24},
+	['furniture4'] = {25, 26,},
+	['furniture5'] = {27,28,29,30},
+}
+
+local visiblePartitions = 
+{
+	["allSelected"] = true,
+	["individualSelections"] = {}
+}
+
+-- local function recipeListIndexIterator(fullList)
+-- 	if 
+-- end
+local function determinePartition()
+	if DolgubonSetCrafterWindowFurnitureFood.toggleValue then
+		return recipeListIndexPartitions['food']
+	elseif DolgubonSetCrafterWindowFurnitureDrinks.toggleValue then
+		return recipeListIndexPartitions['drinks']
+	elseif DolgubonSetCrafterWindowFurnitureFurniture.toggleValue then
+		return recipeListIndexPartitions['furniture']
+	end
+end
 
 function DolgubonSetCrafter.isCurrentlyInFurniture()
 	return DolgubonSetCrafterWindowToggleFurniture.isCurrentUIFurniture
@@ -22,11 +68,10 @@ end
 function DolgubonSetCrafter.toggleFurnitureUI(toggleButton)
 	toggleButton.isCurrentUIFurniture = not toggleButton.isCurrentUIFurniture
 	local newHidden = toggleButton.isCurrentUIFurniture
-	DolgubonSetCrafterWindowFavourites:SetHidden(newHidden)
 	DolgubonSetCrafterWindowPatternInput:SetHidden(newHidden)
 	DolgubonSetCrafterWindowComboboxes:SetHidden(newHidden)
 	DolgubonSetCrafterWindowInput:SetHidden(newHidden)
-	-- DolgubonSetCrafterWindowMultiplierInput:SetHidden(newHidden)
+	DolgubonSetCrafterWindowMultiplierInput:SetHidden(newHidden)
 	DolgubonSetCrafterWindowFurniture:SetHidden(not newHidden)
 	DolgubonSetCrafter:GetSettings().initialFurniture = toggleButton.isCurrentUIFurniture
 	if toggleButton.isCurrentUIFurniture then
@@ -38,7 +83,7 @@ end
 
 local function onMouseEnterHook(self)
 	local data = self.data
-	InitializeTooltip(ItemTooltip, self, LEFT, 205, 0, RIGHT)
+	InitializeTooltip(ItemTooltip, self, LEFT, 250, 0, RIGHT)
 	local itemLink = data.itemLink
 	ItemTooltip:SetLink(itemLink)
 	if self:IsSelected() then
@@ -75,6 +120,10 @@ local function toggleOthersOff(self)
 			button:toggleOff()
 		end
 	end
+	visiblePartitions = {
+		["allSelected"] = true,
+		["individualSelections"] = {}
+	}
 end
 local function recipePartitionToggle(self)
 	-- One button should always be active, so we do not want to toggle off when clicked
@@ -117,129 +166,249 @@ local function setupPartitionToggles()
 
 end
 
+local function RecipeScrollDeselectedEntry(control)
+	control:mySetColor( GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, control.data.quality))
+	control.selected = false
+	control:SetText(control.data.name)
+end
 
-function DolgubonSetCrafter:InitializeRecipeTree()
-	setupPartitionToggles()
-
-	DolgubonSetCrafter.navigationContainer = DolgubonSetCrafterWindowFurniture
-	DolgubonSetCrafter.recipeTree = ZO_Tree:New(DolgubonSetCrafter.navigationContainer:GetNamedChild("ScrollChild"), 74, -10, 535)
-	DolgubonSetCrafter.furnitureTooltip = DolgubonSetCrafterWindowFurniture:GetNamedChild("Tooltip")
-	local function TreeHeaderSetup(node, control, data, open, userRequested, enabled)
-		control.text:SetModifyTextType(MODIFY_TEXT_TYPE_UPPERCASE)
-		control.text:SetDimensionConstraints(0, 0, 260, 0)
-		control.text:SetText(data.name)
-		local shouldHide =true --  DolgubonSetCrafter.questRecipeLists[data.recipeListIndex] ~= true
-		control.questPin:SetHidden(shouldHide)
-
-		if not enabled then
-			control.icon:SetDesaturation(1)
-			control.icon:SetTexture(data.upIcon)
-		elseif open then
-			control.icon:SetDesaturation(0)
-			control.icon:SetTexture(data.downIcon)
-		else
-			control.icon:SetDesaturation(0)
-			control.icon:SetTexture(data.upIcon)
+local function RecipeScrollEntrySelected(control, data, selected, reselectingDuringRebuild)
+	control:SetSelected(selected)
+	if selected then
+		if RecipeScrollList.lastSelected then
+			RecipeScrollDeselectedEntry(RecipeScrollList.lastSelected)
 		end
-
-		control.iconHighlight:SetTexture(data.overIcon)
-
-		ZO_IconHeader_Setup(control, open, enabled)
-	end
-	local function TreeHeaderEquality(left, right)
-		return left.recipeListIndex == right.recipeListIndex
-	end
-	DolgubonSetCrafter.recipeTree:AddTemplate("ZO_ProvisionerNavigationHeader", TreeHeaderSetup, nil, TreeHeaderEquality, nil, 0)
-
-
-	local function TreeEntrySetup(node, control, data, open, userRequested, enabled)
-		mySetColor = mySetColor or control.SetColor
-		control.mySetColor = mySetColor
-		control.SetColor = function() end -- Stop messing with my colours!!
-		control.data = data
-		control.meetsLevelReq = true -- DolgubonSetCrafter:PassesTradeskillLevelReqs(data.tradeskillsLevelReqs)
-		control.meetsQualityReq = true -- DolgubonSetCrafter:PassesQualityLevelReq(data.qualityReq)
-		control.enabled = enabled
-		control.text = control -- Attempt to fix conflict between this and MRL
+		RecipeScrollList.lastSelected = control
+		-- DolgubonSetCrafter.furnitureTooltip:SetHidden(true)	
+		-- DolgubonSetCrafter.furnitureTooltip:ClearLines()
+		local itemLink = data.itemLink
+		DolgubonSetCrafter.selectedFurniture = GetItemLinkItemId(itemLink)
+		DolgubonSetCrafter.selectedFurnitureLink = itemLink
+		DolgubonSetCrafter.selectedRecipeListIndex = data.recipeListIndex
+		DolgubonSetCrafter.selectedRecipeIndex = data.recipeIndex
+		local r, g, b = GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, data.quality)
+		if colours[data.quality] and colours[data.quality]["selected"] then
+			r,g,b = unpack(colours[data.quality]["selected"])
+		end
+		control:mySetColor( r*selectedMult,g*selectedMult,b*selectedMult, 1.5)
+		DolgubonSetCrafterWindowFurnitureSelectedItem:SetText("Selected: "..GetItemLinkName(itemLink))
+		DolgubonSetCrafterWindowFurnitureSelectedItem:SetColor(GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, data.quality))
+		DolgubonSetCrafterWindowFurnitureSelectedItem.itemLink = itemLink
+		control:SetText(control:GetText().."  <")
 		control.questPin:SetTexture("/esoui/art/cadwell/check.dds")
-		-- We're not using quest pins
-		control.questPin:SetHidden(not data.isKnown)
+		control.questPin:SetHidden(false)
 		control.questPin:SetDimensions(16, 16)
-		if data.maxIterationsForIngredients > 0 and enabled then
-			control:SetText(zo_strformat(SI_PROVISIONER_RECIPE_NAME_COUNT, data.name, data.maxIterationsForIngredients))
-		else
-			control:SetText(zo_strformat(SI_PROVISIONER_RECIPE_NAME_COUNT_NONE, data.name))
-		end
-		control:SetEnabled(enabled)
-		control:SetSelected(node:IsSelected())
-		
-		ZO_PostHookHandler(control, "OnMouseEnter", onMouseEnterHook )
-		ZO_PostHookHandler(control, "OnMouseExit", onMouseExitHook )
-		-- if WINDOW_MANAGER:GetMouseOverControl() == control then
-		-- 	zo_callHandler(control, enabled and "OnMouseEnter" or "OnMouseExit")
-		-- else
-		-- 	ClearTooltip(ItemTooltip)
-		-- end
-		-- ZO_PostHook(node ,"OnUnselected", function() control:mySetColor( GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, data.quality)) end)
-		
+		-- DolgubonSetCrafter.furnitureTooltip:SetProvisionerResultItem(data.recipeListIndex , data.recipeIndex)
+		-- d(data)
+		-- DolgubonSetCrafter.furnitureTooltip:SetProvisionerResultItem()
+	else
 		control:mySetColor( GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, data.quality))
+		RecipeScrollDeselectedEntry(RecipeScrollList.lastSelected)
 	end
-	local function TreeEntryOnSelected(control, data, selected, reselectingDuringRebuild)
-		control:SetSelected(selected)
-		if selected then
-			-- DolgubonSetCrafter.furnitureTooltip:SetHidden(true)	
-			-- DolgubonSetCrafter.furnitureTooltip:ClearLines()
-			local itemLink = data.itemLink
-			DolgubonSetCrafter.selectedFurniture = GetItemLinkItemId(itemLink)
-			DolgubonSetCrafter.selectedFurnitureLink = itemLink
-			DolgubonSetCrafter.selectedRecipeListIndex = data.recipeListIndex
-			DolgubonSetCrafter.selectedRecipeIndex = data.recipeIndex
-			local r, g, b = GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, data.quality)
-			if colours[data.quality] and colours[data.quality]["selected"] then
-				r,g,b = unpack(colours[data.quality]["selected"])
-			end
-			control:mySetColor( r*selectedMult,g*selectedMult,b*selectedMult, 1.5)
-			DolgubonSetCrafterWindowFurnitureSelectedItem:SetText("Selected: "..GetItemLinkName(itemLink))
-			DolgubonSetCrafterWindowFurnitureSelectedItem:SetColor(GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, data.quality))
-			DolgubonSetCrafterWindowFurnitureSelectedItem.itemLink = itemLink
-			-- DolgubonSetCrafter.furnitureTooltip:SetProvisionerResultItem(data.recipeListIndex , data.recipeIndex)
-			-- d(data)
-			-- DolgubonSetCrafter.furnitureTooltip:SetProvisionerResultItem()
+end
+
+
+function RecipeScrollList:New(control)
+	ZO_SortFilterList.InitializeSortFilterList(self, control)
+	
+	local SorterKeys =
+	{
+		name = {},
+		Reference = {},
+	}
+	
+ 	self.masterList = {}
+	
+ 	ZO_ScrollList_AddDataType(self.list, 1, "ZO_ProvisionerNavigationEntry", 23.4, function(control, data) self:SetupEntry(control, data) end)
+ 	ZO_ScrollList_EnableHighlight(self.list, "ZO_ThinListHighlight")
+	
+	self.currentSortKey = "name"
+	self.currentSortOrder = ZO_SORT_ORDER_UP
+ 	self.sortFunction = function(listEntry1, listEntry2) return ZO_TableOrderingFunction(listEntry1.data[1], listEntry2.data[1], "name", SorterKeys, self.currentSortOrder) end
+	self.data = generateCompleteRecipeList()
+
+	return self
+end
+
+function CategoryScrollList:New(control)
+	ZO_SortFilterList.InitializeSortFilterList(self, control)
+	
+	local SorterKeys =
+	{
+		name = {},
+		Reference = {},
+	}
+	
+ 	self.masterList = {}
+ 	ZO_ScrollList_AddDataType(self.list, 1, "PieceButtonTemplate", 35, function(control, data) self:SetupEntry(control, data) end)
+ 	-- ZO_ScrollList_EnableHighlight(self.list, "ZO_ThinListHighlight")
+	
+	self.currentSortKey = "name"
+	self.currentSortOrder = ZO_SORT_ORDER_UP
+ 	self.sortFunction = function(listEntry1, listEntry2) return ZO_TableOrderingFunction(listEntry1.data[1], listEntry2.data[1], "name", SorterKeys, self.currentSortOrder) end
+	self.data = DolgubonSetCrafter.recipeLists
+	return self
+end
+
+local function toggleSelectedCategory(categoryId)
+	visiblePartitions.individualSelections[ categoryId] = not visiblePartitions.individualSelections[ categoryId]
+	-- check if there's any others selected
+	local anySelected = false
+	for k, v in pairs(visiblePartitions.individualSelections) do
+		anySelected = anySelected or v
+	end
+	visiblePartitions.allSelected = not anySelected
+end
+
+function CategoryScrollList:SetupEntry(control, data)
+	-- control.icon:SetTexture(data.downIcon)
+	-- control.text:SetModifyTextType(MODIFY_TEXT_TYPE_UPPERCASE)
+	-- control.text:SetDimensionConstraints(0, 0, 260, 0)
+	-- control.text:SetText(data.name)
+	-- local shouldHide =true --  DolgubonSetCrafter.questRecipeLists[data.recipeListIndex] ~= true
+	-- control.questPin:SetHidden(shouldHide)
+
+	-- if not enabled then
+	-- 	control.icon:SetDesaturation(1)
+	-- 	control.icon:SetTexture(data.upIcon)
+	-- elseif open then
+	-- 	control.icon:SetDesaturation(0)
+	-- 	control.icon:SetTexture(data.downIcon)
+	-- else
+	-- 	control.icon:SetDesaturation(0)
+	-- 	control.icon:SetTexture(data.upIcon)
+	-- end
+	control:SetMouseOverTexture(data[1].overIcon)
+	control:SetPressedMouseOverTexture(data[1].downIcon)
+	control.tooltip = data[1].recipeListName
+	if data[1].active then
+		control:SetNormalTexture(data[1].downIcon) 
+	else
+		control:SetNormalTexture(data[1].upIcon) 
+	end
+	control.data = data
+	control.toggle = function() 
+		data[1].active = not data[1].active
+		if data[1].active then
+			control:SetNormalTexture(data[1].downIcon) 
 		else
-			control:mySetColor( GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, data.quality))
+			control:SetNormalTexture(data[1].upIcon) 
+		end
+		toggleSelectedCategory(data[1].recipeListIndex)
+		DolgubonSetCrafter.recipeScroll:RefreshData()
+	end
+end
+
+
+function RecipeScrollList:SetupEntry(control, data)
+	data = data[1]
+	mySetColor = mySetColor or control.SetColor
+	control.mySetColor = mySetColor
+	control.SetColor = function() end -- Stop messing with my colours!!
+	control.data = data
+	control.meetsLevelReq = true -- DolgubonSetCrafter:PassesTradeskillLevelReqs(data.tradeskillsLevelReqs)
+	control.meetsQualityReq = true -- DolgubonSetCrafter:PassesQualityLevelReq(data.qualityReq)
+	control.enabled = enabled
+	control.text = control -- Attempt to fix conflict between this and MRL
+	control.questPin:SetTexture("/esoui/art/cadwell/check.dds")
+	control.questPin:SetHidden(not data.isKnown)
+	control.questPin:SetDimensions(16, 16)
+	data.maxIterationsForIngredients = data.maxIterationsForIngredients or 0
+	if data.maxIterationsForIngredients > 0 and enabled then
+		control:SetText(zo_strformat(SI_PROVISIONER_RECIPE_NAME_COUNT, data.name, data.maxIterationsForIngredients))
+	else
+		control:SetText(zo_strformat(SI_PROVISIONER_RECIPE_NAME_COUNT_NONE, data.name))
+	end
+	control:SetSelected(false)
+	
+	ZO_PostHookHandler(control, "OnMouseEnter", onMouseEnterHook )
+	ZO_PostHookHandler(control, "OnMouseExit" , onMouseExitHook )
+	control:SetHandler("OnMouseUp" , function()RecipeScrollEntrySelected(control, data ,  true) end)
+	control:mySetColor( GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, data.quality))
+	ZO_SortFilterList.SetupRow(self, control, data)
+end
+
+function RecipeScrollList:SortScrollList()
+	local scrollData = ZO_ScrollList_GetDataList(self.list)
+	table.sort(scrollData, self.sortFunction)
+end
+
+
+function RecipeScrollList:FilterScrollList()
+	local scrollData = ZO_ScrollList_GetDataList(self.list)
+	ZO_ClearNumericallyIndexedTable(scrollData)
+	local partition = determinePartition()
+
+	local keyedTable= {}
+	for k, v in pairs(partition) do
+		keyedTable[v] = true
+	end
+	if not visiblePartitions.allSelected then
+		keyedTable = visiblePartitions.individualSelections
+	end
+
+	local searchText = DolgubonSetCrafterWindowFurnitureInputBox:GetText():lower()
+	if searchText:len() < 3 then
+		filterFunctionToUse = filterFunctions.startsWith
+	else
+		filterFunctionToUse = filterFunctions.find
+	end
+	local includeUnknown = not DolgubonSetCrafter.includeKnownRecipes()
+	local masterList = self.masterList
+	for i = 1, #self.masterList do
+		local data = masterList[i]
+		local info = data[1]
+		local include = includeUnknown or info.isKnown
+		if include and keyedTable[info.recipeListIndex] and filterFunctionToUse(info.name, searchText) then
+			table.insert(scrollData, ZO_ScrollList_CreateDataEntry(data.typeId or 1, data))
 		end
 	end
-	local function TreeEntryEquality(left, right)
-		return left.recipeListIndex == right.recipeListIndex and left.recipeIndex == right.recipeIndex and left.name == right.name
-	end
-	DolgubonSetCrafter.recipeTree:AddTemplate("ZO_ProvisionerNavigationEntry", TreeEntrySetup, TreeEntryOnSelected, TreeEntryEquality)
+end
+function CategoryScrollList:FilterScrollList()
+	local scrollData = ZO_ScrollList_GetDataList(self.list)
 
-	DolgubonSetCrafter.recipeTree:SetExclusive(true)
-	DolgubonSetCrafter.recipeTree:SetOpenAnimation("ZO_TreeOpenAnimation")
-	-- This override should allow the user to close open nodes
-	function DolgubonSetCrafter.recipeTree:ToggleNode(treeNode)
-	    if treeNode:IsEnabled() and not treeNode:IsOpen() then
-	        if self.scrollControl and not treeNode:IsOpen() then
-	            self:SetScrollToTargetNode(treeNode)
-	        end
-	        self:SetNodeOpen(treeNode, not treeNode:IsOpen(), USER_REQUESTED_OPEN)
-	    else
-	    	self:SetNodeOpen(treeNode, not treeNode:IsOpen(), USER_REQUESTED_OPEN)
-	    end
-	    
+	ZO_ClearNumericallyIndexedTable(scrollData)
+	local partition = determinePartition()
+	local keyedTable= {}
+
+
+	local searchText = DolgubonSetCrafterWindowFurnitureInputBox:GetText():lower()
+	if searchText:len() < 3 then
+		filterFunctionToUse = filterFunctions.startsWith
+	else
+		filterFunctionToUse = filterFunctions.find
 	end
+	local masterList = self.masterList
+	for k, v in pairs(partition) do
+		local data = masterList[v]
+		table.insert(scrollData, ZO_ScrollList_CreateDataEntry(data.typeId or 1, data))
+		keyedTable[v] = true
+	end
+	
+	for i = 1, #self.masterList do
+		local data = masterList[i]
+		-- table.insert(scrollData, ZO_ScrollList_CreateDataEntry(data.typeId or 1, data))
+	end
+end
+
+function DolgubonSetCrafter:InitializeRecipeScroll()
+	setupPartitionToggles()
+	DolgubonSetCrafter.furnitureContainer = DolgubonSetCrafterWindowFurniture
+	DolgubonSetCrafter.recipeScroll = RecipeScrollList:New(DolgubonSetCrafter.furnitureContainer)
+
+	DolgubonSetCrafter.furnitureTooltip = DolgubonSetCrafterWindowFurniture:GetNamedChild("Tooltip")
+	DolgubonSetCrafter.categoryScroll = CategoryScrollList:New(DolgubonSetCrafterWindowFurnitureCategory)
+
 	local isKnown = DolgubonSetCrafterWindowFurnitureIsKnownCheckbox
 	DolgubonSetCrafter.createToggle(isKnown,"esoui/art/cadwell/checkboxicon_checked.dds", "esoui/art/cadwell/checkboxicon_unchecked.dds", 
-		"esoui/art/cadwell/checkboxicon_unchecked.dds", "esoui/art/cadwell/checkboxicon_checked.dds", DolgubonSetCrafter.savedvars['showKnownFurniture'] )
+		"esoui/art/cadwell/checkboxicon_unchecked.dds", "esoui/art/cadwell/checkboxicon_unchecked.dds", DolgubonSetCrafter.savedvars['showKnownFurniture'] )
 	isKnown:GetNamedChild("Label"):SetText(DolgubonSetCrafter.localizedStrings.UIStrings.onlyKnownRecipes)
 	isKnown.onToggle = function(self, state) 
 		DolgubonSetCrafter:RefreshRecipeList()
 		DolgubonSetCrafter.savedvars['showKnownFurniture'] = state
 	end
-	-- ZO_CraftingUtils_ConnectTreeToCraftingProcess(self.recipeTree)
-
-	-- DolgubonSetCrafter:DirtyRecipeList()
-	DolgubonSetCrafter:RefreshRecipeList()
+	DolgubonSetCrafter.recipeScroll:RefreshData()
+	DolgubonSetCrafter.categoryScroll:RefreshData()
 end
 
 function DolgubonSetCrafter.includeKnownRecipes()
@@ -272,6 +441,7 @@ completeRecipeList = nil
 
 function generateCompleteRecipeList()
     DolgubonSetCrafter.recipeLists = {}
+    DolgubonSetCrafter.recipeList = {}
 	local searchText = DolgubonSetCrafterWindowFurnitureInputBox:GetText():lower()
 	local simpleSearch = searchText:len() == 1
     for recipeListIndex = 1, GetNumRecipeLists() do
@@ -330,7 +500,7 @@ function generateCompleteRecipeList()
                     }
                     DolgubonSetCrafter.recipeLists[recipeListIndex] = recipeList
                 end
-
+                table.insert(DolgubonSetCrafter.recipeList , recipe)
                 table.insert(recipeList.recipes, recipe)
             end
         end
@@ -339,49 +509,13 @@ function generateCompleteRecipeList()
             table.sort(recipeList.recipes, RecipeComparator)
         end
     end
-    return DolgubonSetCrafter.recipeLists
+    return DolgubonSetCrafter.recipeList
 end
 
 -- If the search text is just one letter, it lags slightly, so we will only check the first letter
 local function simpleRecipeFilter(resultName, searchText)
 end
 
-local filterFunctions =
-{
-	["find"] = function(resultName, searchText, simpleSearch)
-		-- return string.find(name:lower(), text:lower())
-		return string.find(resultName:lower(), searchText)
-	end,
-	["startsWith"] = function(resultName, searchText, simpleSearch)
-		return string.startsWith(resultName:lower(), searchText)
-	end,
-}
-
-local recipeListIndexPartitions = 
-{
-	['all'] = {},
-	['food'] = {1,2,3,4,5,6,7,15},
-	['drinks'] = {8,9,10,11,12,13,14,16},
-	['furniture'] = {17,18,19,20,21,22,23,24,25,26,27,28,29,30},
-	['furniture1'] = {17,18,19,20},
-	['furniture2'] = {21,22},
-	['furniture3'] = {23,24},
-	['furniture4'] = {25, 26,},
-	['furniture5'] = {27,28,29,30},
-}
-
--- local function recipeListIndexIterator(fullList)
--- 	if 
--- end
-local function determinePartition()
-	if DolgubonSetCrafterWindowFurnitureFood.toggleValue then
-		return recipeListIndexPartitions['food']
-	elseif DolgubonSetCrafterWindowFurnitureDrinks.toggleValue then
-		return recipeListIndexPartitions['drinks']
-	elseif DolgubonSetCrafterWindowFurnitureFurniture.toggleValue then
-		return recipeListIndexPartitions['furniture']
-	end
-end
 
 function DolgubonSetCrafter:loadPartition(partition)
 	local knowAnyRecipesInTab = false
@@ -402,19 +536,19 @@ function DolgubonSetCrafter:loadPartition(partition)
 		local recipeList = recipeLists[listIndex]
 		-- If user does not know any of the recipes, then skip
 		if recipeList then
-			local parent = self.recipeTree.parents and self.recipeTree.parents[listIndex]
+			local parent = self.recipeScroll.parents and self.recipeScroll.parents[listIndex]
 			for _, recipe in ipairs(recipeList.recipes) do
 				if true then --- recipe.requiredCraftingStationType == craftingInteractionType and self.filterType == recipe.specialIngredientType then
 					knowAnyRecipesInTab = true
 					if  filterFunctionToUse(recipe.name, searchText) then --recipeFilter(recipe.resultItemId) then -- does recipe pass filter
-						parent = parent or self.recipeTree:AddNode("ZO_ProvisionerNavigationHeader", {
+						parent = parent or self.recipeScroll:AddNode("ZO_ProvisionerNavigationHeader", {
 								recipeListIndex = recipeList.recipeListIndex,
 								name = recipeList.recipeListName,
 								upIcon = recipeList.upIcon,
 								downIcon = recipeList.downIcon,
 								overIcon = recipeList.overIcon,
 								})
-						self.recipeTree:AddNode("ZO_ProvisionerNavigationEntry", recipe, parent)
+						self.recipeScroll:AddNode("ZO_ProvisionerNavigationEntry", recipe, parent)
 						hasRecipesWithFilter = true
 					end
 				end
@@ -422,10 +556,10 @@ function DolgubonSetCrafter:loadPartition(partition)
 		end
 	end
 	-- Keep the first node closed for easy scrolling
-	local origSelectAnything = DolgubonSetCrafter.recipeTree.SelectAnything
-	DolgubonSetCrafter.recipeTree.SelectAnything = function() end
-	self.recipeTree:Commit()
-	DolgubonSetCrafter.recipeTree.SelectAnything = origSelectAnything
+	local origSelectAnything = DolgubonSetCrafter.recipeScroll.SelectAnything
+	DolgubonSetCrafter.recipeScroll.SelectAnything = function() end
+	self.recipeScroll:Commit()
+	DolgubonSetCrafter.recipeScroll.SelectAnything = origSelectAnything
 end
 local currentConglomerateBatch = 0
 
@@ -436,7 +570,7 @@ function DolgubonSetCrafter:loadPartialConglomerate()
 	local timeSpacer = 125
 	local batches = math.floor(#conglomeratedList/batchUnit) + 1
 	-- DolgubonSetCrafter:loadAllParents()
-	-- DolgubonSetCrafter.recipeTree:SetEnabled(false)
+	-- DolgubonSetCrafter.recipeScroll:SetEnabled(false)
 	
 	local startIndex = (currentConglomerateBatch-1) * batchUnit + 1
 	local endIndex = currentConglomerateBatch * batchUnit
@@ -458,19 +592,19 @@ function DolgubonSetCrafter:loadPartialConglomerate()
 	for i = startIndex, endIndex do
 		local recipe = conglomeratedList[i]
 		if recipe then
-			local parent = DolgubonSetCrafter.recipeTree.parents and DolgubonSetCrafter.recipeTree.parents[recipe.recipeListIndex]
+			local parent = DolgubonSetCrafter.recipeScroll.parents and DolgubonSetCrafter.recipeScroll.parents[recipe.recipeListIndex]
 			if parent then --recipeFilter(recipe.resultItemId) then -- does recipe pass filter
-				DolgubonSetCrafter.recipeTree:AddNode("ZO_ProvisionerNavigationEntry", recipe, parent)
+				DolgubonSetCrafter.recipeScroll:AddNode("ZO_ProvisionerNavigationEntry", recipe, parent)
 			end
 		end
 	end
 	-- Keep the first node closed for easy scrolling
-	local origSelectAnything = DolgubonSetCrafter.recipeTree.SelectAnything
-	DolgubonSetCrafter.recipeTree.SelectAnything = function() end
-	DolgubonSetCrafter.recipeTree:Commit()
-	DolgubonSetCrafter.recipeTree.SelectAnything = origSelectAnything
+	local origSelectAnything = DolgubonSetCrafter.recipeScroll.SelectAnything
+	DolgubonSetCrafter.recipeScroll.SelectAnything = function() end
+	DolgubonSetCrafter.recipeScroll:Commit()
+	DolgubonSetCrafter.recipeScroll.SelectAnything = origSelectAnything
 	if currentConglomerateBatch * batchUnit > #conglomeratedList then
-		DolgubonSetCrafter.recipeTree:SetEnabled(true)
+		DolgubonSetCrafter.recipeScroll:SetEnabled(true)
 		EVENT_MANAGER:UnregisterForUpdate(DolgubonSetCrafter.name .. "FurnitureTreeRefresh")
 	end
 end
@@ -486,20 +620,20 @@ function DolgubonSetCrafter:loadAllParents()
 		filterFunctionToUse = filterFunctions.find
 	end
 	local recipeLists = completeRecipeList
-	self.recipeTree.parents = {}
+	self.recipeScroll.parents = {}
 	for listIndex, v in pairs(conglomerateParents) do
 		local recipeList = recipeLists[listIndex]
 		-- If user does not know any of the recipes, then skip
 		if recipeList then
 			local parent
-			parent = parent or self.recipeTree:AddNode("ZO_ProvisionerNavigationHeader", {
+			parent = parent or self.recipeScroll:AddNode("ZO_ProvisionerNavigationHeader", {
 				recipeListIndex = recipeList.recipeListIndex,
 				name = recipeList.recipeListName,
 				upIcon = recipeList.upIcon,
 				downIcon = recipeList.downIcon,
 				overIcon = recipeList.overIcon,
 				})
-			self.recipeTree.parents[listIndex] = parent
+			self.recipeScroll.parents[listIndex] = parent
 		end
 	end
 end
@@ -528,7 +662,10 @@ end
 
 
 function DolgubonSetCrafter:RefreshRecipeList()
-	DolgubonSetCrafter.recipeTree:Reset()
+	DolgubonSetCrafter.recipeScroll:RefreshData()
+	DolgubonSetCrafter.categoryScroll:RefreshData()
+	if true then return end
+	DolgubonSetCrafter.recipeScroll:Reset()
 	local knowAnyRecipesInTab = false
 	local hasRecipesWithFilter = false
 	local requireIngredients = false -- ZO_CheckButton_IsChecked(self.haveIngredientsCheckBox)
@@ -553,91 +690,39 @@ function DolgubonSetCrafter:RefreshRecipeList()
 	conglomeratedList = generateConglomerateRecipeList()
 	DolgubonSetCrafter:loadAllParents()
 	currentConglomerateBatch = 0
-	DolgubonSetCrafter.recipeTree:SetEnabled(false)
+	DolgubonSetCrafter.recipeScroll:SetEnabled(false)
 	EVENT_MANAGER:UnregisterForUpdate(DolgubonSetCrafter.name .. "FurnitureTreeRefresh")
 	EVENT_MANAGER:RegisterForUpdate(DolgubonSetCrafter.name .. "FurnitureTreeRefresh", timeSpacer ,  DolgubonSetCrafter.loadPartialConglomerate)
 
 
 	
-	-- local batchUnit = 25
-	-- local timeSpacer = 125
-	-- local batches = math.floor(#conglomeratedList/batchUnit) + 1
-	-- DolgubonSetCrafter:loadAllParents()
-	-- DolgubonSetCrafter.recipeTree:SetEnabled(false)
-	
-	-- for i = 1, batches do
-	-- 	local startIndex = (i-1) * batchUnit + 1
-	-- 	local endIndex = i * batchUnit
-	-- 	zo_callLater(function() DolgubonSetCrafter:loadPartialConglomerate(conglomeratedList , startIndex, endIndex) end , i * timeSpacer )
-	-- end
-	-- zo_callLater(function() DolgubonSetCrafter.recipeTree:SetEnabled(true) end , batches * timeSpacer)
-
-
-	-- if DolgubonSetCrafterWindowFurnitureFood.toggleValue then
-	-- 	DolgubonSetCrafter:loadAllParents()
-	-- 	DolgubonSetCrafter:loadPartition(recipeListIndexPartitions['food'])
-	-- elseif DolgubonSetCrafterWindowFurnitureDrinks.toggleValue then
-	-- 	DolgubonSetCrafter:loadAllParents()
-	-- 	DolgubonSetCrafter:loadPartition(recipeListIndexPartitions['drinks'])
-	-- elseif DolgubonSetCrafterWindowFurnitureFurniture.toggleValue then
-	-- 	if searchText:len() > 1 then
-	-- 		DolgubonSetCrafter:loadPartition(recipeListIndexPartitions['furniture'])
-	-- 	else
-	-- 		DolgubonSetCrafter:loadAllParents()
-	-- 		-- DolgubonSetCrafter:loadPartition(recipeListIndexPartitions['furniture1'])
-	-- 		for i = 17, 30 do
-	-- 			zo_callLater(function()DolgubonSetCrafter:loadPartition({i}) end , 500 * (i-17))
-	-- 		end
-	-- 	end
-	-- end
-	-- for _, listIndex in pairs(determinePartition()) do
-	-- 	local recipeList = recipeLists[listIndex]
-	-- 	-- If user does not know any of the recipes, then skip
-	-- 	if recipeList then
-	-- 		local parent
-	-- 		for _, recipe in ipairs(recipeList.recipes) do
-	-- 			if true then --- recipe.requiredCraftingStationType == craftingInteractionType and self.filterType == recipe.specialIngredientType then
-	-- 				knowAnyRecipesInTab = true
-	-- 				if  filterFunctionToUse(recipe.name, searchText) then --recipeFilter(recipe.resultItemId) then -- does recipe pass filter
-	-- 					parent = parent or self.recipeTree:AddNode("ZO_ProvisionerNavigationHeader", {
-	-- 						recipeListIndex = recipeList.recipeListIndex,
-	-- 						name = recipeList.recipeListName,
-	-- 						upIcon = recipeList.upIcon,
-	-- 						downIcon = recipeList.downIcon,
-	-- 						overIcon = recipeList.overIcon,
-	-- 						})
-	-- 					self.recipeTree:AddNode("ZO_ProvisionerNavigationEntry", recipe, parent)
-	-- 					hasRecipesWithFilter = true
-	-- 				end
-	-- 			end
-	-- 		end
-	-- 	end
-	-- end
-	-- Keep the first node closed for easy scrolling
-	-- local origSelectAnything = DolgubonSetCrafter.recipeTree.SelectAnything
-	-- DolgubonSetCrafter.recipeTree.SelectAnything = function() end
-	-- self.recipeTree:Commit()
-	-- DolgubonSetCrafter.recipeTree.SelectAnything = origSelectAnything
-	
-	-- DolgubonSetCrafter.recipeTree.rootNode.children[1]:SetOpen(false)
-	-- DolgubonSetCrafter.recipeTree.exclusive = false
-	-- self.noRecipesLabel:SetHidden(hasRecipesWithFilter)
 	if not hasRecipesWithFilter then
 		if knowAnyRecipesInTab then
 			-- self.noRecipesLabel:SetText(GetString(SI_PROVISIONER_NONE_MATCHING_FILTER))
 		else
-			--If there are no recipes all the types show the same message.
-			-- self.noRecipesLabel:SetText(GetString(SI_PROVISIONER_NO_RECIPES))
-			-- ZO_CheckButton_SetChecked(self.haveIngredientsCheckBox)
-			-- ZO_CheckButton_SetChecked(self.haveSkillsCheckBox)
-			-- ZO_CheckButton_SetUnchecked(self.isQuestItemCheckbox)
 		end
 		-- self:RefreshRecipeDetails()
 	end
 
-	-- ZO_CheckButton_SetEnableState(self.haveIngredientsCheckBox, knowAnyRecipesInTab)
-	-- ZO_CheckButton_SetEnableState(self.haveSkillsCheckBox, knowAnyRecipesInTab)
-	-- ZO_CheckButton_SetEnableState(self.isQuestItemCheckbox, knowAnyRecipesInTab)
 end
 
-DolgubonSetCrafter.initializeFunctions.InitializeFurnitureUI = DolgubonSetCrafter.InitializeRecipeTree
+function RecipeScrollList:BuildMasterList()
+	if self.masterListGenerated then return end
+	self.masterListGenerated = true
+	self.masterList = {}
+	for k, recipeInfo in pairs(generateCompleteRecipeList()) do
+		table.insert(self.masterList,{recipeInfo} )
+	end
+end
+
+function CategoryScrollList:BuildMasterList()
+	self.masterList = {}
+	-- self.masterList = generateCompleteRecipeList()
+	for k, recipeInfo in pairs(DolgubonSetCrafter.recipeLists) do
+		table.insert(self.masterList,{recipeInfo} )
+	end
+end
+
+
+
+DolgubonSetCrafter.initializeFunctions.InitializeFurnitureUI = DolgubonSetCrafter.InitializeRecipeScroll

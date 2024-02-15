@@ -305,7 +305,7 @@ function DolgubonSetCrafter.recompileMatRequirements()
 	for station, stationQueue in pairs( LazyCrafter.personalQueue) do
 		
 		for queuePosition, request in pairs(stationQueue) do
-			if (request.smithingQuantity == 0)  or not (station == CRAFTING_TYPE_ENCHANTING ) then
+			if (request.smithingQuantity == 0)  or not (station == CRAFTING_TYPE_ENCHANTING ) or (request.recipeListIndex) then
 				addRequirements(request, true)
 			end
 		end
@@ -750,6 +750,7 @@ function DolgubonSetCrafter.addFurniture()
 		requestTableCopy["Quality"]  = DolgubonSetCrafter.quality[GetItemLinkQuality(DolgubonSetCrafter.selectedFurnitureLink)]
 		requestTableCopy["Name"] = {GetItemLinkName(DolgubonSetCrafter.selectedFurnitureLink), GetItemLinkName(DolgubonSetCrafter.selectedFurnitureLink)}
 		requestTableCopy["Station"] = {station, GetCraftingSkillName(station)}
+		requestTableCopy["isRecipe"] = true
 		requestTableCopy.typeId = 2
 		queue[#queue+1] = requestTableCopy
 	else
@@ -757,7 +758,8 @@ function DolgubonSetCrafter.addFurniture()
 	end
 end
 
-function DolgubonSetCrafter.addFurnitureByLink(itemLink)
+function DolgubonSetCrafter.addFurnitureByLink(itemLink, quantity)
+	quantity = quantity or 1
 	requestTableCopy = {}
 	requestTableCopy["Reference"]	= DolgubonSetCrafter.savedvars.counter
 	DolgubonSetCrafter.savedvars.counter = DolgubonSetCrafter.savedvars.counter + 1
@@ -771,13 +773,14 @@ function DolgubonSetCrafter.addFurnitureByLink(itemLink)
 	if returnedTable then
 		addRequirements(returnedTable, true)
 	end
-	local _, recipeListIndex, recipeList =  GetRecipeInfoFromItemId(GetItemLinkItemId(link))
-	local _,_,_,_,_,_, station = GetRecipeInfo(recipeListIndex, recipeList)
+	local station, recipeListIndex, recipeList =  GetRecipeInfoFromItemId(GetItemLinkItemId(itemLink))
+	-- local _,_,_,_,_,_, station = GetRecipeInfo(recipeListIndex, recipeList)
 
-	requestTableCopy["Quantity"] = {1, "1x"}
+	requestTableCopy["Quantity"] = {quantity, quantity.."x"}
 	requestTableCopy["Quality"]  = DolgubonSetCrafter.quality[GetItemLinkQuality(itemLink)]
 	requestTableCopy["Name"] = {GetItemLinkName(itemLink), GetItemLinkName(itemLink)}
 	requestTableCopy["Station"] = {station, GetCraftingSkillName(station)}
+	requestTableCopy["isRecipe"] = true
 	requestTableCopy.typeId = 2
 	queue[#queue+1] = requestTableCopy
 	DolgubonSetCrafter.updateList()

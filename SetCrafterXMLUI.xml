@@ -386,16 +386,16 @@ Created by Dolgubon (Joseph Heinzle)
 								</Backdrop>
 
 								<Label name="$(parent)Label"  height="25" alpha="1" text="Multiplier:" color="FFFFFF" font="ZoFontGameLargeBold">
-									5<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" />
+									<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" />
 									
 								</Label>
 							</Controls>
 						</Control>
-						<Control name="$(grandparent)Furniture" hidden="true" mouseEnabled="true" clampedToScreen="true" movable="false" inherits="ZO_ScrollContainer">
-							<Dimensions x="450" y="400" />
+						<Control name="$(grandparent)Furniture" hidden="true" mouseEnabled="true" clampedToScreen="true" movable="false">
+							<Dimensions x="250" y="400" />
 							<DimensionConstraints minY="80" minX="380" />
-							<Anchor point="TOP" relativeTo="$(grandparent)Title" relativePoint="BOTTOM" offsetX="-220" offsetY="35" />
-							<Anchor point="BOTTOM" relativeTo="$(parent)Add" relativePoint="BOTTOM" offsetX="-220" offsetY="-35" />
+							<Anchor point="TOP" relativeTo="$(grandparent)Title" relativePoint="BOTTOM" offsetX="-180" offsetY="35" />
+							<Anchor point="BOTTOM" relativeTo="$(parent)Add" relativePoint="BOTTOM" offsetX="-180" offsetY="-35" />
 							<Controls>
 								<Label name="$(parent)Test" font="ZoFontWinH4" horizontalAlignment="CENTER" text="Furniture crafting is still new to this addon. More furniture features will be added later!">
 									<Dimensions x="350"  />
@@ -416,8 +416,22 @@ Created by Dolgubon (Joseph Heinzle)
 		                        </Label>
 		                        <Control name="$(parent)IsKnown" inherits="BehaviourToggleTemplate">
 		    						<Anchor point="TOPLEFT" relativeTo="$(parent)Food" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="20" />
-
 		    					</Control>
+		    					<Control name="$(parent)List" inherits="ZO_ScrollList">
+									<Anchor point="TOPLET" relativeTo="$(parent)" offsetY="25" offsetX="10" relativePoint="TOPLET"/>
+									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" offsetY="-10" offsetX="-10" relativePoint="BOTTOMRIGHT"/>
+								</Control>
+								<Control name="$(parent)Category" >
+									<Dimensions x="50" y="340" />
+									<!-- <Anchor point="TOPRIGHT" relativeTo="$(parent)List"  offsetX="-60" relativePoint="TOPLEFT"/> -->
+									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)List"  offsetX="-10" offsetY="20" relativePoint="BOTTOMLEFT"/>
+									<Controls>
+										<Control name="$(parent)List" inherits="ZO_ScrollList">
+											<AnchorFill/>
+										</Control>
+									</Controls>
+								</Control>
+								
 		                        <!-- <Tooltip name="$(parent)Tooltip" inherits="ZO_CraftingTooltip" hidden="false" >
 		                        	<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="20" offsetY="0" />
 		                        </Tooltip> -->

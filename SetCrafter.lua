@@ -126,6 +126,10 @@ local function welcomePlayerToHouse()
 end
 
 function DolgubonSetCrafter.portToCraftingHouse()
+	if GetWorldName()~="PTS" then
+		d("No houses on PTS, since it changes where the copy comes from")
+		return
+	end
 	houseToUse = craftingHouses[GetWorldName()][math.random(1, #craftingHouses[GetWorldName()] ) ]
 	JumpToSpecificHouse(houseToUse.displayName, houseToUse.houseId)
 	EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name.."_houseWelcome", EVENT_PLAYER_ACTIVATED , welcomePlayerToHouse)

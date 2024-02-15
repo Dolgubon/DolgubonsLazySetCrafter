@@ -212,21 +212,15 @@ function FavouriteScroll:New(control)
 	self.currentSortOrder = ZO_SORT_ORDER_DOWN
  	self.sortFunction = function(listEntry1, listEntry2) return 1 end
 	self.data = DolgubonSetCrafter.savedvars.faves
-	local originalRefresh = self.RefreshData
-	self.RefreshData = function(...)
-		originalRefresh(...)
-	end
 	return self
 	
 end
 
 function FavouriteScroll:SetupEntry(control, data)
-	--d("Setting up")
 	control.data = data
 	control:setCurrent(data[1])
 	control.label = control:GetNamedChild("Name")
 	
-	control.label:SetText("Hello")
 	control.label:SetText(data[1].name)
 
 	ZO_SortFilterList.SetupRow(self, control, data)
@@ -409,7 +403,7 @@ local function removeFauxRequest(reference)
 end
 
 function DolgubonScroll:SetupEntry(control, data)
-
+	control.A_ScrollList = self
 	control.data = data
 	if data[1].CraftRequestTable[7] ~= CRAFTING_TYPE_JEWELRYCRAFTING then
 		control.usesMimicStone = data[1].CraftRequestTable[6]
@@ -532,7 +526,7 @@ FavouriteScroll.BuildMasterList = DolgubonScroll.BuildMasterList
 FavouriteScroll.FilterScrollList = DolgubonScroll.FilterScrollList
 
 function DolgubonSetCrafter.setupScrollLists()
-	DolgubonSetCrafter.manager = DolgubonScroll:New(CraftingQueueScroll) -- check
+	DolgubonSetCrafter.manager = DolgubonScroll:New(CraftingQueueScroll)
 	
 	DolgubonSetCrafter.materialManager = MaterialScroll:New(DolgubonSetCrafterWindowMaterialList)
 	DolgubonSetCrafter.favouritesManager = FavouriteScroll:New(DolgubonSetCrafterWindowFavouritesScroll)

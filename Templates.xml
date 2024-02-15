@@ -5,7 +5,7 @@
 		<Button name="PieceButtonTemplate"  virtual="true" alpha="1"  topmost="true" ><!--inherits="ToggleButton">-->
 			<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"  />
 			<Dimensions x="48" y="48" />
-			<Textures mouseOver="esoui/art/characterwindow/gearslot_over.dds"/>
+			<Textures mouseOver="esoui/art/characterwindow/gearslot_over.dds" normal="esoui/art/cadwell/checkboxicon_unchecked.dds"/>
 			<OnMouseEnter>
 				InitializeTooltip(InformationTooltip, self, BOTTOM, 0, -5)
 				SetTooltipText(InformationTooltip, self.tooltip)

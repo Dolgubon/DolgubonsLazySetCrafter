@@ -143,6 +143,11 @@ local function loadSelectionFavourite(selectedFavourite)
 	DolgubonSetCrafter.armourTypes[selectedFavourite.weight.id]:toggleOn()
 end
 
+local function loadRecipeQueueItem(queueInfo)
+	d(queueInfo)
+	DolgubonSetCrafter.addFurnitureByLink(queueInfo.Link, queueInfo.Quantity[1])
+end
+
 local function loadQueueFavourite(selectedFavourite, useCurrentLevel, useCurrentQuality, useCurrentSet, useCurrentStyle)
 	if useCurrentLevel then
 		d("LOADING Set Crafter selection: '"..selectedFavourite.name.."' with currently selected level")
@@ -151,50 +156,55 @@ local function loadQueueFavourite(selectedFavourite, useCurrentLevel, useCurrent
 	end
 	
 	for k, v in pairs(selectedFavourite.queue) do
-		local copy = ZO_DeepTableCopy(v)
-		copy["CraftRequestTable"][11] = DolgubonSetCrafter.savedvars.counter
-		copy["Reference"] = DolgubonSetCrafter.savedvars.counter
-		local returnedTable
-		if useCurrentLevel then
-			local level, isCP = DolgubonSetCrafter:GetLevel()
-			local levelString = level
-			if isCP then
-				levelString = "CP "..levelString
-			end
-			-- re-generate level stuff
-			copy["Level"] = {
-				level, levelString, isCP
-			}
-			copy["CraftRequestTable"][2] = isCP
-			copy["CraftRequestTable"][3] = level
-			local r = copy["CraftRequestTable"]
-
-			returnedTable = DolgubonSetCrafter.LazyCrafter:CraftSmithingItemByLevel(r[1], r[2], r[3],r[4], r[5], r[6], r[7], r[8], r[9], r[10], r[11], nil, nil, nil, r[15])
-
-			copy["Link"] = DolgubonSetCrafter.LazyCrafter.getItemLinkFromParticulars( returnedTable.setIndex,returnedTable.trait ,returnedTable.pattern ,returnedTable.station ,level, 
-			isCP,returnedTable.quality,returnedTable.style, returnedTable.potencyItemId , returnedTable.essenceItemId, returnedTable.aspectItemId)
-			
-			if r[12] and r[13] and r[14] then -- If these are nil then there's no glyph
-				local enchantLevel = LibLazyCrafting.closestGlyphLevel(isCP, level)
-				enchantRequestTable = DolgubonSetCrafter.LazyCrafter:CraftEnchantingGlyphByAttributes(isCP, enchantLevel, 
-				copy["Enchant"][1], copy["EnchantQuality"] , 
-				DolgubonSetCrafter:GetAutocraft(), returnedTable["Reference"], returnedTable)
-				r[12] = enchantRequestTable.potencyItemID
-				r[13] = enchantRequestTable.essenceItemID
-				r[14] = enchantRequestTable.aspectItemID
-			end
-
+		d(v)
+		if v.isRecipe then
+			loadRecipeQueueItem(v)
 		else
-			local r = copy["CraftRequestTable"]
-			returnedTable = DolgubonSetCrafter.LazyCrafter:CraftSmithingItemByLevel(r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10], r[11], r[12], r[13], r[14], r[15])
-			-- returnedTable = DolgubonSetCrafter.LazyCrafter:CraftSmithingItemByLevel(unpack(copy["CraftRequestTable"]))
-		end
-		DolgubonSetCrafter.savedvars.counter = DolgubonSetCrafter.savedvars.counter + 1
-		
-		DolgubonSetCrafter.addRequirements(returnedTable, true)
+			local copy = ZO_DeepTableCopy(v)
+			copy["CraftRequestTable"][11] = DolgubonSetCrafter.savedvars.counter
+			copy["Reference"] = DolgubonSetCrafter.savedvars.counter
+			local returnedTable
+			if useCurrentLevel then
+				local level, isCP = DolgubonSetCrafter:GetLevel()
+				local levelString = level
+				if isCP then
+					levelString = "CP "..levelString
+				end
+				-- re-generate level stuff
+				copy["Level"] = {
+					level, levelString, isCP
+				}
+				copy["CraftRequestTable"][2] = isCP
+				copy["CraftRequestTable"][3] = level
+				local r = copy["CraftRequestTable"]
 
-		if pcall(function()DolgubonSetCrafter.applyValidityFunctions(v)end) then else d("Request could not be displayed. However, you should still be able to craft it.") end
-		table.insert(DolgubonSetCrafter.savedvars.queue, copy)
+				returnedTable = DolgubonSetCrafter.LazyCrafter:CraftSmithingItemByLevel(r[1], r[2], r[3],r[4], r[5], r[6], r[7], r[8], r[9], r[10], r[11], nil, nil, nil, r[15])
+
+				copy["Link"] = DolgubonSetCrafter.LazyCrafter.getItemLinkFromParticulars( returnedTable.setIndex,returnedTable.trait ,returnedTable.pattern ,returnedTable.station ,level, 
+				isCP,returnedTable.quality,returnedTable.style, returnedTable.potencyItemId , returnedTable.essenceItemId, returnedTable.aspectItemId)
+				
+				if r[12] and r[13] and r[14] then -- If these are nil then there's no glyph
+					local enchantLevel = LibLazyCrafting.closestGlyphLevel(isCP, level)
+					enchantRequestTable = DolgubonSetCrafter.LazyCrafter:CraftEnchantingGlyphByAttributes(isCP, enchantLevel, 
+					copy["Enchant"][1], copy["EnchantQuality"] , 
+					DolgubonSetCrafter:GetAutocraft(), returnedTable["Reference"], returnedTable)
+					r[12] = enchantRequestTable.potencyItemID
+					r[13] = enchantRequestTable.essenceItemID
+					r[14] = enchantRequestTable.aspectItemID
+				end
+
+			else
+				local r = copy["CraftRequestTable"]
+				returnedTable = DolgubonSetCrafter.LazyCrafter:CraftSmithingItemByLevel(r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10], r[11], r[12], r[13], r[14], r[15])
+				-- returnedTable = DolgubonSetCrafter.LazyCrafter:CraftSmithingItemByLevel(unpack(copy["CraftRequestTable"]))
+			end
+			DolgubonSetCrafter.savedvars.counter = DolgubonSetCrafter.savedvars.counter + 1
+			
+			DolgubonSetCrafter.addRequirements(returnedTable, true)
+
+			if pcall(function()DolgubonSetCrafter.applyValidityFunctions(v)end) then else d("Request could not be displayed. However, you should still be able to craft it.") end
+			table.insert(DolgubonSetCrafter.savedvars.queue, copy)
+		end
 	end
 	DolgubonSetCrafter.LazyCrafter:SetAllAutoCraft(DolgubonSetCrafter.savedvars.autoCraft)
 	DolgubonSetCrafter.updateList()
