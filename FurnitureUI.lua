@@ -71,7 +71,6 @@ function DolgubonSetCrafter.toggleFurnitureUI(toggleButton)
 	DolgubonSetCrafterWindowPatternInput:SetHidden(newHidden)
 	DolgubonSetCrafterWindowComboboxes:SetHidden(newHidden)
 	DolgubonSetCrafterWindowInput:SetHidden(newHidden)
-	DolgubonSetCrafterWindowMultiplierInput:SetHidden(newHidden)
 	DolgubonSetCrafterWindowFurniture:SetHidden(not newHidden)
 	DolgubonSetCrafter:GetSettings().initialFurniture = toggleButton.isCurrentUIFurniture
 	if toggleButton.isCurrentUIFurniture then
