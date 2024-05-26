@@ -156,7 +156,6 @@ local function loadQueueFavourite(selectedFavourite, useCurrentLevel, useCurrent
 	end
 	
 	for k, v in pairs(selectedFavourite.queue) do
-		d(v)
 		if v.isRecipe then
 			loadRecipeQueueItem(v)
 		else

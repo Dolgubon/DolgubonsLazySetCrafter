@@ -92,7 +92,7 @@ local craftingHouses =
 		{displayName = "@AuctionsBMW", houseId = 62, greeting = "Welcome to Black Market Wares' guild house!", subheading = "Stations to your left", 
 			chatMessage ="Like their guild house and want to join? Check them out here: |H1:guild:1427|hBlack Market Wares|h"},
 	},
-	["EU Megaswerver"] = 
+	["EU Megaserver"] = 
 	{
 		{displayName = "@JN_Slevin", houseId = 56, greeting = "Welcome to JNSlevin's house!", subheading = "Stations to the left", 
 			chatMessage = "Welcome to the Independent Trading Team [ITT]'s guild house! if you find yourself in need of a "..
@@ -126,7 +126,7 @@ local function welcomePlayerToHouse()
 end
 
 function DolgubonSetCrafter.portToCraftingHouse()
-	if GetWorldName()~="PTS" then
+	if GetWorldName()=="PTS" then
 		d("No houses on PTS, since it changes where the copy comes from")
 		return
 	end
@@ -193,7 +193,7 @@ function DolgubonSetCrafter:Initialize()
 		"If you found a bug, have a request or a suggestion, or wish to donate, you can send me a mail here.")
 	window:SetHidden(true)
 
-	local currentAPIVersionOfAddon = 101040
+	local currentAPIVersionOfAddon = 101042
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" then 
 		d("Update your addons!") 
