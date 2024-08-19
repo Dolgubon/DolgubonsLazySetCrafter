@@ -183,18 +183,18 @@ local validityFunctions = --stuff that's not here will automatically recieve a v
 
 -- uses the info in validityFunctions to recheck and see if attributes are an impediment to crafting.
 local function applyValidityFunctions(requestTable) 
-	for attribute, t in pairs(validityFunctions) do
+	for attribute, validationInfo in pairs(validityFunctions) do
 		if requestTable["Station"] == 7 and attribute == "Style" then
 		else
 			local params = {}
 
-			for i = 1, #t[2]  do
+			for i = 1, #validationInfo[2]  do
 
-				params[#params + 1] = requestTable["CraftRequestTable"][t[2][i]]
+				params[#params + 1] = requestTable["CraftRequestTable"][validationInfo[2][i]]
 
 			end
 			--d("one application for: "..attribute)
-			requestTable[attribute].isKnown = t[1](unpack(params) )
+			requestTable[attribute].isKnown = validationInfo[1](unpack(params) )
 		end
 	end
 end
@@ -661,6 +661,11 @@ local function addByItemLinkToQueue(itemLink)
 
 	local styleIndex = GetItemLinkItemStyle(itemLink)
 	requestTable["Style"] = findMatchingSelected(DolgubonSetCrafter.styleNames, styleIndex)
+	if requestTable["Style"] == nil then
+		d("The item link is missing a style, and could not be added to the queue")
+		ZO_Alert(ERROR, SOUNDS.GENERAL_ALERT_ERROR ,"The item link is missing a style, and could not be added to the queue")
+		return
+	end
 
 	local traitIndex = GetItemLinkTraitInfo(itemLink)+1
 

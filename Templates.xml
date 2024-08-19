@@ -1,11 +1,11 @@
-<GuiXml> 
+<GuiXml>
 	<Controls>
 		<!-- This button template is used as a template for all the piece toggle buttons.-->
 
-		<Button name="PieceButtonTemplate"  virtual="true" alpha="1"  topmost="true" ><!--inherits="ToggleButton">-->
-			<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"  />
+		<Button name="PieceButtonTemplate" virtual="true" alpha="1"><!--inherits="ToggleButton">-->
+			<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
 			<Dimensions x="48" y="48" />
-			<Textures mouseOver="esoui/art/characterwindow/gearslot_over.dds" normal="esoui/art/cadwell/checkboxicon_unchecked.dds"/>
+			<Textures mouseOver="esoui/art/characterwindow/gearslot_over.dds" normal="esoui/art/cadwell/checkboxicon_unchecked.dds" />
 			<OnMouseEnter>
 				InitializeTooltip(InformationTooltip, self, BOTTOM, 0, -5)
 				SetTooltipText(InformationTooltip, self.tooltip)
@@ -18,8 +18,8 @@
 				self:toggle()
 			</OnClicked>
 		</Button>
-		<Label name="DSC_ItemLinkMouseOverLabel"  virtual="true" alpha="1"  topmost="true" mouseEnabled="true" ><!--inherits="ToggleButton">-->
-			<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"  />
+		<Label name="DSC_ItemLinkMouseOverLabel" virtual="true" alpha="1" mouseEnabled="true"><!--inherits="ToggleButton">-->
+			<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
 			<OnMouseEnter>
 				InitializeTooltip(ItemTooltip, self , TOP, 0, 20)
 				ItemTooltip:SetLink(self.itemLink)
@@ -28,20 +28,20 @@
 				ClearTooltip(ItemTooltip)
 			</OnMouseExit>
 		</Label>
-		<Control name="BehaviourToggleTemplate"  virtual="true" alpha="1"  topmost="true" tier="HIGH" resizeToFitDescendents="true" ><!--inherits="ToggleButton">-->
-			<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"  />
+		<Control name="BehaviourToggleTemplate" virtual="true" alpha="1" tier="HIGH" resizeToFitDescendents="true"><!--inherits="ToggleButton">-->
+			<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
 			<Controls>
-				
+
 				<Button name="$(parent)Checkbox">
-					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT"  />
-					<Textures mouseOver="esoui/art/cadwell/checkboxicon_unchecked.dds" normal="esoui/art/cadwell/checkboxicon_unchecked.dds"/>
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" />
+					<Textures mouseOver="esoui/art/cadwell/checkboxicon_unchecked.dds" normal="esoui/art/cadwell/checkboxicon_unchecked.dds" />
 					<Dimensions x="24" y="24" />
 					<OnClicked>
 						self:toggle()
 					</OnClicked>
 					<Controls>
-						<Label name="$(parent)Label" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Auto Craft" mouseEnabled="true" >
-							<Anchor point="LEFT" relativeTo="$(parent)Checkbox" relativePoint="RIGHT"  />
+						<Label name="$(parent)Label" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Auto Craft" mouseEnabled="true">
+							<Anchor point="LEFT" relativeTo="$(parent)Checkbox" relativePoint="RIGHT" />
 							<OnMouseEnter>
 								--d("1")
 								--d(self:GetParent():GetHandler("OnMouseEnter"))
@@ -57,15 +57,15 @@
 
 			</Controls>
 		</Control>
-		<Control name="SpacerTemplate"  virtual="true" alpha="0"  topmost="false" ><!--inherits="ToggleButton">-->
+		<Control name="SpacerTemplate" virtual="true" alpha="0"><!--inherits="ToggleButton">-->
 			<Dimensions x="48" y="48" />
 		</Control>
 		<!-- This template is used for all the scrolling comboboxes which have a large amount of options (e.g. style, set)-->
-		<Label name="ScrollComboboxTemplate" virtual="true" >
+		<Label name="ScrollComboboxTemplate" virtual="true">
 			<Dimensions x="250" y="30" />
 			<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="20" />
 			<Controls>
-				
+
 				<Label name="$(parent)Name" font="ZoFontGame" verticalAlignment="CENTER">
 					<Dimensions x="250" y="48" />
 					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
@@ -77,11 +77,11 @@
 			</Controls>
 		</Label>
 		<!-- This combobox template is used for all the non scrolling comboboxes-->
-		<Label name="ComboboxTemplate" virtual="true" >
+		<Label name="ComboboxTemplate" virtual="true">
 			<Dimensions x="250" y="30" />
 
 			<Controls>
-				
+
 				<Label name="$(parent)Name" font="ZoFontGame" verticalAlignment="CENTER">
 					<Dimensions x="250" y="48" />
 					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
@@ -167,21 +167,21 @@
 			</OnClicked>
 			<Dimensions x="850" y="30" />
 			<Controls>
-				<Backdrop name="$(parent)BG" mouseEnabled="false"/>
+				<Backdrop name="$(parent)BG" mouseEnabled="false" />
 
-				
+
 				<Label name="$(parent)Name" inherits="QueueRowLabelTemplate" color="76BCC3" mouseEnabled="false" wrapMode="TEXT_WRAP_MODE_TRUNCATE">
 
-					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" color="000000" />
-					<Anchor point="RIGHT" relativeTo="$(parent)Amount" relativePoint="LEFT" offsetX="0" color="000000" />
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" />
+					<Anchor point="RIGHT" relativeTo="$(parent)Amount" relativePoint="LEFT" offsetX="0" />
 
 				</Label>
 
-				<Label name="$(parent)Amount" inherits="QueueRowLabelTemplate" color="76BCC3" horizontalAlignment="RIGHT" mouseEnabled="false" >
+				<Label name="$(parent)Amount" inherits="QueueRowLabelTemplate" color="76BCC3" horizontalAlignment="RIGHT" mouseEnabled="false">
 					<Dimensions x="90" y="48" />
-					<Anchor point="RIGHT" relativeTo="$(parent)" offsetX="-5" color="000000" />
+					<Anchor point="RIGHT" relativeTo="$(parent)" offsetX="-5" />
 				</Label>
-				
+
 			</Controls>
 		</Button>
 		<Control name="SetCrafterFavouriteTemplate" virtual="true" mouseEnabled="true">
@@ -204,7 +204,7 @@
 
 				<Label name="$(parent)Name" font="ZoFontGame" verticalAlignment="CENTER" color="76BCC3" mouseEnabled="false" wrapMode="TEXT_WRAP_MODE_TRUNCATE">
 
-					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" color="000000" />
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" />
 				</Label>
 
 				<Button name="$(parent)Delete" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
@@ -215,8 +215,8 @@
 						DolgubonSetCrafter.deleteFavourite(self:GetParent():getCurrent())
 					</OnClicked>
 				</Button>
-				<Button name="$(parent)Rename" alpha="1" clickSound="Default_Click" topmost="true">
-					<Textures normal="/esoui/art/buttons/edit_up.dds" mouseOver="/esoui/art/buttons/edit_over.dds" mouseDown="/esoui/art/buttons/edit_down.dds" />
+				<Button name="$(parent)Rename" alpha="1" clickSound="Default_Click">
+					<Textures normal="/esoui/art/buttons/edit_up.dds" mouseOver="/esoui/art/buttons/edit_over.dds" />
 					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-40" offsetY="0" />
 					<Dimensions x="36" y="36" />
 					<OnClicked>
@@ -227,7 +227,7 @@
 						self:GetParent():GetNamedChild("Name"):SetHidden(true)
 					</OnClicked>
 				</Button>
-				<EditBox name="$(parent)EditName" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" textType="number" hidden="true" horizontalAlignment="RIGHT">
+				<EditBox name="$(parent)EditName" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" textType="number" hidden="true">
 
 					<OnInitialized>
 						ZO_EditDefaultText_Initialize(self, "")
@@ -240,11 +240,11 @@
 					</OnFocusLost>
 
 				</EditBox>
-				
+
 			</Controls>
 		</Control>
 		<!-- This template is for the craft request rows. It has the close button, and copies of all of the labels-->
-		<Button name="CraftingRequestTemplate" virtual="true" mouseEnabled="true" >
+		<Button name="CraftingRequestTemplate" virtual="true" mouseEnabled="true">
 			<OnMouseEnter>
 				DolgubonSetCrafter.scroll:Row_OnMouseEnter(self)
 				local added = false
@@ -305,13 +305,13 @@
 						DolgubonSetCrafter.scroll:Row_OnMouseExit(self:GetParent())
 						self:GetParent():GetHandler("OnMouseExit")(self:GetParent(), true)
 					</OnMouseExit>
-					
+
 				</Button>
 				<Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
 
-				<Button name="$(parent)MimicStone" >
+				<Button name="$(parent)MimicStone">
 					<Dimensions x="24" y="24" />
-					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)" offsetX="0"  />
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)" offsetX="0" />
 					<Textures normal="/esoui/art/icons/crafing_universal_item.dds" />
 					<OnInitialized>
 						self.tooltip = DolgubonSetCrafter.localizedStrings.UIStrings.usesMimicStone
@@ -333,15 +333,15 @@
 					<Dimensions x="50" y="48" />
 					<Anchor point="LEFT" relativeTo="$(parent)Weight" relativePoint="RIGHT" offsetX="0" />
 				</Label>
-				<Label name="$(parent)Style" inherits="QueueRowLabelTemplate" >
+				<Label name="$(parent)Style" inherits="QueueRowLabelTemplate">
 					<Dimensions x="150" y="48" />
 					<Anchor point="LEFT" relativeTo="$(parent)Level" relativePoint="RIGHT" offsetX="0" />
 				</Label>
-				<Label name="$(parent)Trait" inherits="QueueRowLabelTemplate" >
+				<Label name="$(parent)Trait" inherits="QueueRowLabelTemplate">
 					<Dimensions x="110" y="48" />
 					<Anchor point="LEFT" relativeTo="$(parent)Style" relativePoint="RIGHT" offsetX="0" />
 				</Label>
-				<Label name="$(parent)Set" inherits="QueueRowLabelTemplate" >
+				<Label name="$(parent)Set" inherits="QueueRowLabelTemplate">
 					<Dimensions x="140" y="48" />
 					<Anchor point="LEFT" relativeTo="$(parent)Trait" relativePoint="RIGHT" offsetX="0" />
 				</Label>
@@ -364,10 +364,10 @@
 						self:GetParent():GetHandler("OnMouseExit")(self:GetParent(), true)
 					</OnMouseExit>
 				</Label>
-				
+
 			</Controls>
 		</Button>
-		<Button name="FurnitureRequestTemplate" virtual="true" mouseEnabled="true" >
+		<Button name="FurnitureRequestTemplate" virtual="true" mouseEnabled="true">
 			<OnMouseEnter>
 				DolgubonSetCrafter.scroll:Row_OnMouseEnter(self)
 				local added = false
@@ -423,7 +423,7 @@
 						DolgubonSetCrafter.scroll:Row_OnMouseExit(self:GetParent())
 						self:GetParent():GetHandler("OnMouseExit")(self:GetParent(), true)
 					</OnMouseExit>
-					
+
 				</Button>
 				<Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
 
@@ -453,10 +453,10 @@
 						self:GetParent():GetHandler("OnMouseExit")(self:GetParent(), true)
 					</OnMouseExit>
 				</Label>
-				
+
 			</Controls>
 		</Button>
-		<Button name="SetCrafterRequestInProgress" virtual="true" >
+		<Button name="SetCrafterRequestInProgress" virtual="true">
 			<Textures
 				normal="esoui/art/icons/achievements_indexicon_crafting_up.dds"
 				pressed="esoui/art/icons/achievements_indexicon_crafting_down.dds"
@@ -468,14 +468,14 @@
 					SetTooltipText(InformationTooltip, self.tooltip)
 				end
 			</OnMouseEnter>
-					
+
 		</Button>
-		<Button name="SetCrafterRequestNotInProgress" virtual="true" >
+		<Button name="SetCrafterRequestNotInProgress" virtual="true">
 			<Textures normal="/esoui/art/hud/radialicon_cancel_up.dds" mouseOver="/esoui/art/hud/radialicon_cancel_over.dds" pressed="" />
 			<OnMouseEnter>
 				
 			</OnMouseEnter>
-					
+
 		</Button>
 	</Controls>
 </GuiXml>

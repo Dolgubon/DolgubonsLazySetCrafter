@@ -6,11 +6,11 @@ Last Modified: December 2016
 Created by Dolgubon (Joseph Heinzle)
 -->
 
-<GuiXml> 
+<GuiXml>
 	<Controls>
-		<TopLevelControl name="DolgubonSetCrafterToggle" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false" resizeToFitDescendents="true">	
+		<TopLevelControl name="DolgubonSetCrafterToggle" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false" resizeToFitDescendents="true">
 			<Dimensions x="75" y="75" />
-			
+
 			<OnMoveStop>
 
 				DolgubonSetCrafter.savedvars.toggleXPos = self:GetLeft()
@@ -20,44 +20,44 @@ Created by Dolgubon (Joseph Heinzle)
 				DolgubonSetCrafter.close()
 			</OnMouseDown>
 			<Controls>
-				<Button name="$(parent)Button" clampedToScreen="true" mouseEnabled="false" movable="true" hidden="false"  >
-					<Anchor point="TOPRIGHT"  relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+				<Button name="$(parent)Button" clampedToScreen="true" mouseEnabled="false" movable="true" hidden="false">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
 					<Dimensions x="75" y="75" />
-					<Textures normal="esoui/art/icons/housing_dwe_inc_anvila001.dds"/>
+					<Textures normal="esoui/art/icons/housing_dwe_inc_anvila001.dds" />
 
 				</Button>
 			</Controls>
 		</TopLevelControl>
-		<TopLevelControl name="DolgubonSetCrafterUpdateInfo" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true">	
+		<TopLevelControl name="DolgubonSetCrafterUpdateInfo" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true">
 			<Dimensions x="600" y="200" />
-			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
 			<Controls>
-				<Label name="$(parent)Title" scale="1" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Dolgubon's Lazy Set Crafter Update Info">
+				<Label name="$(parent)Title" scale="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Dolgubon's Lazy Set Crafter Update Info">
 
-        			<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="10" />
-        			<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" offsetY="10" />
-    			</Label>
-    			<Label name="$(parent)UpdateInfo" scale="1" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="LEFT" >
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="10" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" offsetY="10" />
+				</Label>
+				<Label name="$(parent)UpdateInfo" scale="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="LEFT">
 
-        			<Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="TOPLEFT" offsetX="0" offsetY="10" />
-    			</Label>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="TOPLEFT" offsetX="0" offsetY="10" />
+				</Label>
 				<Backdrop name="$(parent)Backdrop" alpha="1" inherits="ZO_DefaultBackdrop" centerColor="666666">
-		    		<AnchorFill/>
+					<AnchorFill />
 				</Backdrop>
-		    	<Button name="$(parent)ResetPatterns" alpha="1"  topmost="true" text="Close" inherits="ZO_DefaultButton">
-				     				
-     				<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-20" />
+				<Button name="$(parent)ResetPatterns" alpha="1" text="Close" inherits="ZO_DefaultButton">
+
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-20" />
 					<OnClicked>
 						self:GetOwningWindow():SetHidden(true)
 					</OnClicked>
-		    	</Button>
+				</Button>
 			</Controls>
 		</TopLevelControl>
 
-		<TopLevelControl name="DolgubonSetCrafterWindow" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true" resizeHandleSize="10" >	
+		<TopLevelControl name="DolgubonSetCrafterWindow" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true" resizeHandleSize="10">
 			<Dimensions x="1200" y="650" />
 			<DimensionConstraints minX="780" minY="470" />
-			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="300" offsetY="-100"/>
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="300" offsetY="-100" />
 			<OnResizeStart>
 				DolgubonSetCrafter.onWindowResizeStart(self)
 			</OnResizeStart>
@@ -65,79 +65,79 @@ Created by Dolgubon (Joseph Heinzle)
 				DolgubonSetCrafter.onWindowResizeStop(self)
 			</OnResizeStop>
 			<OnMoveStop>DolgubonSetCrafter.onWindowMove(self) </OnMoveStop>
-		    <Controls>
-		    	<Button name="$(parent)ToggleFurniture" alpha="1" clickSound="Default_Click" topmost="true" inherits="ZO_DefaultButton" text="Toggle Furniture">
-     				<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="200" offsetY="20" />
+			<Controls>
+				<Button name="$(parent)ToggleFurniture" alpha="1" clickSound="Default_Click" inherits="ZO_DefaultButton" text="Toggle Furniture">
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="200" offsetY="20" />
 					<OnClicked>
 						DolgubonSetCrafter.toggleFurnitureUI(self)
 					</OnClicked>
-		    	</Button>
-		    	<Control name="$(parent)Favourites" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false">
-		    		<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="2" offsetY="0"/>
-		    		<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="2" offsetY="0"/>
-		    		<Dimensions x="240" y="600" />
-		    		<Controls>
-		    			<Button name="$(parent)AddFave" alpha="1" clickSound="Default_Click" topmost="true">
-				    		<Textures normal="/esoui/art/progression/addpoints_up.dds" mouseOver="/esoui/art/progression/addpoints_over.dds" mouseDown="/esoui/art/progression/addpoints_down.dds" />
-			 				<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-20" offsetY="20" />
-			  				<Dimensions x="36" y="36" />
+				</Button>
+				<Control name="$(parent)Favourites" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="2" offsetY="0" />
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="2" offsetY="0" />
+					<Dimensions x="240" y="600" />
+					<Controls>
+						<Button name="$(parent)AddFave" alpha="1" clickSound="Default_Click">
+							<Textures normal="/esoui/art/progression/addpoints_up.dds" mouseOver="/esoui/art/progression/addpoints_over.dds" />
+							<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-20" offsetY="20" />
+							<Dimensions x="36" y="36" />
 							<OnClicked>
 								ClearMenu()
 								AddMenuItem(DolgubonSetCrafter.localizedStrings.UIStrings.addSelectionFavourite, DolgubonSetCrafter.addFavourite )
 								AddMenuItem(DolgubonSetCrafter.localizedStrings.UIStrings.addQueueFavourite, DolgubonSetCrafter.addFavouriteQueue )
 								ShowMenu(dscont)
 							</OnClicked>
-				    	</Button>
-		    			<Label name="$(parent)Title" scale="1" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Favourites">
+						</Button>
+						<Label name="$(parent)Title" scale="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Favourites">
 
-		        			<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="10" />
-		        			<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="10" />
-		    			</Label>
-			    		<Backdrop name="$(parent)Backdrop" alpha="1" inherits="ZO_DefaultBackdrop" centerColor="666666">
-				    		<AnchorFill/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="10" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="10" />
+						</Label>
+						<Backdrop name="$(parent)Backdrop" alpha="1" inherits="ZO_DefaultBackdrop" centerColor="666666">
+							<AnchorFill />
 						</Backdrop>
 						<!-- Favourite Scroll list-->
-				    	<Control name="$(parent)Scroll" hidden="false" mouseEnabled="true" clampedToScreen="true" movable="false">
-							
+						<Control name="$(parent)Scroll" hidden="false" mouseEnabled="true" clampedToScreen="true" movable="false">
+
 							<Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
 							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-3" offsetY="-5" />
 							<Controls>
 								<Control name="$(parent)List" inherits="ZO_ScrollList">
-									
-									<Anchor point="TOPLET" relativeTo="$(parent)" offsetY="5" offsetX="5" relativePoint="TOPLET"/>
-									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" offsetY="-5" offsetX="8" relativePoint="BOTTOMRIGHT"/>
+
+									<Anchor point="TOPLET" relativeTo="$(parent)" offsetY="5" offsetX="5" relativePoint="TOPLET" />
+									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" offsetY="-5" offsetX="8" relativePoint="BOTTOMRIGHT" />
 
 								</Control>
 							</Controls>
 						</Control>
-						
-					</Controls>
-		    	</Control>
 
-		    	<Backdrop name="$(parent)Backdrop" alpha="1" inherits="ZO_DefaultBackdrop" centerColor="666666">
-		    		<AnchorFill/>
+					</Controls>
+				</Control>
+
+				<Backdrop name="$(parent)Backdrop" alpha="1" inherits="ZO_DefaultBackdrop" centerColor="666666">
+					<AnchorFill />
 				</Backdrop>
-		    	<Backdrop name="$(parent)Divider" edgeColor="696969">
-		    		<Edge edgeSize="2"/>
+				<Backdrop name="$(parent)Divider" edgeColor="696969">
+					<Edge edgeSize="2" />
 					<Dimensions x="3" y="650" />
 					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="-4" offsetX="275" />
 				</Backdrop>
-				<Button name="$(parent)Close" alpha="1" clickSound="Default_Click" topmost="true" inherits="ZO_DefaultButton">
-		    		<Textures normal="/esoui/art/hud/radialicon_cancel_up.dds" mouseOver="/esoui/art/hud/radialicon_cancel_over.dds"  pressed="/esoui/art/hud/radialicon_cancel_disabled.dds" />
-     				<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-20" offsetY="20" />
-      				<Dimensions x="60" y="48" />
+				<Button name="$(parent)Close" alpha="1" clickSound="Default_Click" inherits="ZO_DefaultButton">
+					<Textures normal="/esoui/art/hud/radialicon_cancel_up.dds" mouseOver="/esoui/art/hud/radialicon_cancel_over.dds" pressed="/esoui/art/hud/radialicon_cancel_disabled.dds" />
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-20" offsetY="20" />
+					<Dimensions x="60" y="48" />
 					<OnClicked>
 						DolgubonSetCrafter.close()
 					</OnClicked>
-		    	</Button>
-		    	
-		    	<!-- This control is all of the UI elements which are contained on the left side of the divider.
+				</Button>
+
+				<!-- This control is all of the UI elements which are contained on the left side of the divider.
 					 Note that there is extensive use of $(grandparent) in this section. I do not suggest this.
 					 However, due to a change in the XML file, I chose to use it so that the majority of names in
 					 SetCrafterUI.lua did not have to be changed. It does also make the names a bit cleaner though.
 		    	-->
 
-				<Control name="$(parent)Left" alpha="1" edgeColor="333300" centerColor="111111" >
+				<Control name="$(parent)Left" alpha="1">
 
 					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
 					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Divider" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
@@ -145,27 +145,27 @@ Created by Dolgubon (Joseph Heinzle)
 						self.GetName = function() return DolgubonSetCrafterWindow:GetName() end
 					</OnInitialized>
 					<Controls>
-				    	<!--Setting up the window -->
+						<!--Setting up the window -->
 
-				    	<Label name="$(grandparent)Title" scale="1" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Dolgubon's Lazy Set Crafter">
+						<Label name="$(grandparent)Title" scale="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Dolgubon's Lazy Set Crafter">
 
-		        			<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="10" />
-		        			<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="10" />
-		    			</Label>
-				    	<Label name="$(grandparent)Output" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="">
-				    		<Dimensions x="25"/>
-				    		
-		        			<Anchor point="TOPLEFT" relativeTo="$(grandparent)Title" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="5" />
-		        			<Anchor point="TOPRIGHT" relativeTo="$(grandparent)Title" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="5" />
-		    			</Label>
-    					<Button name="$(grandparent)CraftHousePort" alpha="1" clickSound="Default_Click" text="Crafting House" topmost="true" inherits="ZO_DefaultButton">
-		     				<Textures 
-								normal		="/esoui/art/lfg/lfg_indexicon_homeshow_up.dds"
-								pressed		="/esoui/art/lfg/lfg_indexicon_homeshow_down.dds"
-								mouseOver	="/esoui/art/lfg/lfg_indexicon_homeshow_over.dds"
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="10" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="10" />
+						</Label>
+						<Label name="$(grandparent)Output" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="">
+							<Dimensions x="25" />
+
+							<Anchor point="TOPLEFT" relativeTo="$(grandparent)Title" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="5" />
+							<Anchor point="TOPRIGHT" relativeTo="$(grandparent)Title" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="5" />
+						</Label>
+						<Button name="$(grandparent)CraftHousePort" alpha="1" clickSound="Default_Click" text="Crafting House" inherits="ZO_DefaultButton">
+							<Textures
+								normal="/esoui/art/lfg/lfg_indexicon_homeshow_up.dds"
+								pressed="/esoui/art/lfg/lfg_indexicon_homeshow_down.dds"
+								mouseOver="/esoui/art/lfg/lfg_indexicon_homeshow_over.dds"
 							/>
-		     				<Anchor point="LEFT" relativeTo="$(grandparent)Title" relativePoint="LEFT"  offsetX="50" offsetY="15"/>
-		      				<Dimensions x="65" y="55" />
+							<Anchor point="LEFT" relativeTo="$(grandparent)Title" relativePoint="LEFT" offsetX="50" offsetY="15" />
+							<Dimensions x="65" y="55" />
 							<OnClicked>
 								DolgubonSetCrafter.portToCraftingHouse()
 							</OnClicked>
@@ -176,157 +176,156 @@ Created by Dolgubon (Joseph Heinzle)
 							<OnMouseExit>
 								ClearTooltip(InformationTooltip)
 							</OnMouseExit>
-				    	</Button>
-		    			<!--  -->
-		    			<!-- Creating XML controls for Input/-->
-		    			<!-- Creating the holder for the pieces Input/-->
+						</Button>
+						<!--  -->
+						<!-- Creating XML controls for Input/-->
+						<!-- Creating the holder for the pieces Input/-->
 
-				    	<Control name="$(grandparent)PatternInput" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" >
-				    		<!--Controls><Backdrop name="$(parent)bg" edgeColor="FFFFFF" centerColor="000000"><Edge edgeWidth="2"/><AnchorFill /> </Backdrop></Controls-->
-				    		<Controls>
-				    			<Control name="$(parent)Armour" resizeToFitDescendents="true">
-				    				
-				    				<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="5" />
-				    			</Control>
-				    			<Control name="$(parent)Jewelry" resizeToFitDescendents="true">
-				    				
-				    				<Anchor point="LEFT" relativeTo="$(parent)Armour" relativePoint="RIGHT" offsetX="0" offsetY="0" />
-				    			</Control>
-				    			<Control name="$(parent)ArmourTypes" resizeToFitDescendents="true">
-				    				
-				    				<Anchor point="LEFT" relativeTo="$(parent)Jewelry" relativePoint="RIGHT" offsetX="0" offsetY="0" />
-				    			</Control>
-				    			<Control name="$(parent)Weapons" resizeToFitDescendents="true">
-				    				
-				    				<Anchor point="TOPLEFT" relativeTo="$(parent)Armour" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
-				    			</Control>
-				    			<Button name="$(grandparent)ResetPatterns" alpha="1"  topmost="true" text="Clear Patterns" inherits="ZO_DefaultButton">
-				     				
-				     				<Anchor point="LEFT" relativeTo="$(parent)Weapons" relativePoint="RIGHT" offsetX="15"/>
-				      				<Dimensions x="150" y="28" />
+						<Control name="$(grandparent)PatternInput">
+							<!--Controls><Backdrop name="$(parent)bg" edgeColor="FFFFFF" centerColor="000000"><Edge edgeWidth="2"/><AnchorFill /> </Backdrop></Controls-->
+							<Controls>
+								<Control name="$(parent)Armour" resizeToFitDescendents="true">
+
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="5" />
+								</Control>
+								<Control name="$(parent)Jewelry" resizeToFitDescendents="true">
+
+									<Anchor point="LEFT" relativeTo="$(parent)Armour" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+								</Control>
+								<Control name="$(parent)ArmourTypes" resizeToFitDescendents="true">
+
+									<Anchor point="LEFT" relativeTo="$(parent)Jewelry" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+								</Control>
+								<Control name="$(parent)Weapons" resizeToFitDescendents="true">
+
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Armour" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+								</Control>
+								<Button name="$(grandparent)ResetPatterns" alpha="1" text="Clear Patterns" inherits="ZO_DefaultButton">
+
+									<Anchor point="LEFT" relativeTo="$(parent)Weapons" relativePoint="RIGHT" offsetX="15" />
+									<Dimensions x="150" y="28" />
 									<OnClicked>
 										DolgubonSetCrafter.resetPatterns()
 									</OnClicked>
-						    	</Button>
-				    		</Controls>
-				    		<Dimensions y="110"/>
-		        			<Anchor point="TOPLEFT" relativeTo="$(grandparent)Output" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
-		        			<Anchor point="TOPRIGHT" relativeTo="$(grandparent)Output" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
-		    			</Control>
-		    			<!-- Creating the holder for the comboboxes/-->
-		    			<Label name="$(grandparent)Comboboxes" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Attributes" resizeToFitDescendents="false"  >
+								</Button>
+							</Controls>
+							<Dimensions y="110" />
+							<Anchor point="TOPLEFT" relativeTo="$(grandparent)Output" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+							<Anchor point="TOPRIGHT" relativeTo="$(grandparent)Output" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+						</Control>
+						<!-- Creating the holder for the comboboxes/-->
+						<Label name="$(grandparent)Comboboxes" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Attributes" resizeToFitDescendents="false">
 
-		    				<Dimensions x="800" y="105"/>
-		        			<Anchor point="TOPLEFT" relativeTo="$(grandparent)PatternInput" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="5" />
-		        			<Anchor point="TOPRIGHT" relativeTo="$(grandparent)PatternInput" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="5" />
-		    			</Label>
-		    			<Control name="$(parent)Toggles" resizeToFitDescendents="true">
-		    				<Dimensions x="300" y="75"/>
-		    				<Anchor point="RIGHT" relativeTo="$(grandparent)Output" relativePoint="TOPRIGHT" offsetX="80" offsetY="0"  />
-		    				
-		    				<Controls>
-		    					
-		    					<Control name="$(parent)Autocraft" inherits="BehaviourToggleTemplate">
-		    						<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+							<Dimensions x="800" y="105" />
+							<Anchor point="TOPLEFT" relativeTo="$(grandparent)PatternInput" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="5" />
+							<Anchor point="TOPRIGHT" relativeTo="$(grandparent)PatternInput" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="5" />
+						</Label>
+						<Control name="$(parent)Toggles" resizeToFitDescendents="true">
+							<Dimensions x="300" y="75" />
+							<Anchor point="RIGHT" relativeTo="$(grandparent)Output" relativePoint="TOPRIGHT" offsetX="80" offsetY="0" />
 
-		    					</Control>
-		    					<Control name="$(parent)MimicStones" inherits="BehaviourToggleTemplate">
-		    						<Anchor point="TOPLEFT" relativeTo="$(parent)Autocraft" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+							<Controls>
 
-		    					</Control>
-		    				</Controls>
-		    			</Control>
-		    			<Control name="$(parent)InteractionButtons" >
-		    				<Dimensions y="28" x="800"/>
+								<Control name="$(parent)Autocraft" inherits="BehaviourToggleTemplate">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
 
-		    				<Anchor point="TOPLEFT" relativeTo="$(grandparent)Comboboxes" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
-		    				<Anchor point="TOPRIGHT" relativeTo="$(grandparent)Comboboxes" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
-		    				<Controls>
-				    			<Control name="$(parent)PositionLeft">
-				    				<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT"/>
-				    				<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="CENTER"/>
-				    			</Control>
-				    			<Control name="$(parent)PositionRight">
-				    				<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT"/>
-				    				<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="CENTER"/>
-				    			</Control>
-						    	<Button name="$(grandparent)ResetSelections" alpha="1"  topmost="true" text="Reset to Default" inherits="ZO_DefaultButton">
-				     				
-				     				<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)PositionRight" relativePoint="BOTTOMRIGHT"/>
-				    				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)PositionRight" relativePoint="BOTTOM"/>
-				      				<Dimensions x="200" y="28" />
-				      				
+								</Control>
+								<Control name="$(parent)MimicStones" inherits="BehaviourToggleTemplate">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Autocraft" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+
+								</Control>
+							</Controls>
+						</Control>
+						<Control name="$(parent)InteractionButtons">
+							<Dimensions y="28" x="800" />
+
+							<Anchor point="TOPLEFT" relativeTo="$(grandparent)Comboboxes" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+							<Anchor point="TOPRIGHT" relativeTo="$(grandparent)Comboboxes" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+							<Controls>
+								<Control name="$(parent)PositionLeft">
+									<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" />
+									<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="CENTER" />
+								</Control>
+								<Control name="$(parent)PositionRight">
+									<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" />
+									<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="CENTER" />
+								</Control>
+								<Button name="$(grandparent)ResetSelections" alpha="1" text="Reset to Default" inherits="ZO_DefaultButton">
+
+									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)PositionRight" relativePoint="BOTTOMRIGHT" />
+									<Anchor point="BOTTOMLEFT" relativeTo="$(parent)PositionRight" relativePoint="BOTTOM" />
+									<Dimensions x="200" y="28" />
+
 									<OnClicked>
 										DolgubonSetCrafter.resetChoices()
 									</OnClicked>
-						    	</Button>
-						    	<Button name="$(grandparent)Add" alpha="1" clickSound="Default_Click" topmost="true" text="Add To Queue" inherits="ZO_DefaultButton">
-				     				<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)PositionLeft" relativePoint="BOTTOMRIGHT"/>
-				    				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)PositionLeft" relativePoint="BOTTOM"/>
-				      				<Dimensions x="200" y="28" />
+								</Button>
+								<Button name="$(grandparent)Add" alpha="1" clickSound="Default_Click" text="Add To Queue" inherits="ZO_DefaultButton">
+									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)PositionLeft" relativePoint="BOTTOMRIGHT" />
+									<Anchor point="BOTTOMLEFT" relativeTo="$(parent)PositionLeft" relativePoint="BOTTOM" />
+									<Dimensions x="200" y="28" />
 									<OnClicked>
 										
 										DolgubonSetCrafter.craft()
 									</OnClicked>
-						    	</Button>
-						    	<Button name="$(grandparent)ClearQueue" alpha="1"  topmost="true" text="Clear Queue" inherits="ZO_DefaultButton">
-				     				
-				     				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)PositionLeft" relativePoint="BOTTOMLEFT"/>
-				    				<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)PositionLeft" relativePoint="BOTTOM"/>
-				      				<Dimensions x="200" y="28" />
+								</Button>
+								<Button name="$(grandparent)ClearQueue" alpha="1" text="Clear Queue" inherits="ZO_DefaultButton">
+
+									<Anchor point="BOTTOMLEFT" relativeTo="$(parent)PositionLeft" relativePoint="BOTTOMLEFT" />
+									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)PositionLeft" relativePoint="BOTTOM" />
+									<Dimensions x="200" y="28" />
 									<OnClicked>
 										DolgubonSetCrafter.clearQueue()
 									</OnClicked>
-						    	</Button>
-						    	<Button name="$(grandparent)Craft" hidden="false" clickSound="Default_Click" topmost="true" text="Craft" inherits="ZO_DefaultButton">
-				     				
-				     				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)PositionRight" relativePoint="BOTTOMLEFT"/>
-				    				<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)PositionRight" relativePoint="BOTTOM"/>
-				      				<Dimensions x="200" y="28" />
+								</Button>
+								<Button name="$(grandparent)Craft" hidden="false" clickSound="Default_Click" text="Craft" inherits="ZO_DefaultButton">
+
+									<Anchor point="BOTTOMLEFT" relativeTo="$(parent)PositionRight" relativePoint="BOTTOMLEFT" />
+									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)PositionRight" relativePoint="BOTTOM" />
+									<Dimensions x="200" y="28" />
 									<OnClicked>
 										DolgubonSetCrafter.LazyCrafter:CraftAllItems()
 										DolgubonSetCrafter.LazyCrafter:craftInteract()
 										--DolgubonSetCrafter.craft()
 									</OnClicked>
-						    	</Button>
+								</Button>
 
-						    </Controls>
+							</Controls>
 						</Control>
 
-				    	<!-- Scroll queue list-->
-				    	<Control name="CraftingQueueScroll" hidden="false" mouseEnabled="true" clampedToScreen="true" movable="false">
+						<!-- Scroll queue list-->
+						<Control name="CraftingQueueScroll" hidden="false" mouseEnabled="true" clampedToScreen="true" movable="false">
 							<Dimensions x="750" y="250" />
 							<DimensionConstraints minY="80" minX="500" />
 							<Anchor point="TOPLEFT" relativeTo="$(parent)InteractionButtons" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
 							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="-20" />
 							<Controls>
-								<Label name="$(parent)Label" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Crafting Requests">
+								<Label name="$(parent)Label" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Crafting Requests">
 									<Anchor point="TOP" relativeTo="$(parent)Backdrop" relativePoint="TOP" offsetX="0" offsetY="0" />
 								</Label>
-								<Label name="$(parent)Counter" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="">
+								<Label name="$(parent)Counter" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="">
 									<Anchor point="LEFT" relativeTo="$(parent)Label" relativePoint="RIGHT" offsetX="0" offsetY="0" />
 								</Label>
 								<Control name="$(parent)List" inherits="ZO_ScrollList">
 
-									<Anchor point="TOPLET" relativeTo="$(parent)" offsetY="25" offsetX="10" relativePoint="TOPLET"/>
-									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" offsetY="-10" offsetX="-10" relativePoint="BOTTOMRIGHT"/>
+									<Anchor point="TOPLET" relativeTo="$(parent)" offsetY="25" offsetX="10" relativePoint="TOPLET" />
+									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" offsetY="-10" offsetX="-10" relativePoint="BOTTOMRIGHT" />
 
 								</Control>
 							</Controls>
 						</Control>
-						
-						
 
-		    			<!-- Creating the input box -->
-		    			<Control name="$(grandparent)Input" tier="HIGH" resizeToFitDescendents="true">
+
+						<!-- Creating the input box -->
+						<Control name="$(grandparent)Input" tier="HIGH" resizeToFitDescendents="true">
 							<Anchor point="BOTTOM" relativeTo="$(grandparent)Comboboxes" relativePoint="CENTER" offsetX="-50" offsetY="50" />
-							<Dimensions x="250"/>
+							<Dimensions x="250" />
 							<Controls>
 								<Backdrop name="$(parent)Input" tier="HIGH" inherits="ZO_EditBackdrop">
 									<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" offsetY="0" />
-									<Dimensions x="50"/>
+									<Dimensions x="50" />
 									<Controls>
-										<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" textType="NUMERIC_UNSIGNED_INT" horizontalAlignment="RIGHT">
+										<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" textType="NUMERIC_UNSIGNED_INT">
 
 											<OnInitialized>
 												ZO_EditDefaultText_Initialize(self, "")
@@ -338,28 +337,28 @@ Created by Dolgubon (Joseph Heinzle)
 										</EditBox>
 									</Controls>
 								</Backdrop>
-								<Button name="$(parent)ToggleChampion" alpha="1"  topmost="true" ><!--inherits="ToggleButton">-->
-			         				<Anchor point="RIGHT" relativeTo="$(parent)Input" relativePoint="LEFT" offsetX="-15" offsetY="0" />
-			          				<Dimensions x="30" y="30" />
-			          				<Textures mouseOver="esoui\art\treeicons\achievements_indexicon_champion_over.dds"/>
+								<Button name="$(parent)ToggleChampion" alpha="1"><!--inherits="ToggleButton">-->
+									<Anchor point="RIGHT" relativeTo="$(parent)Input" relativePoint="LEFT" offsetX="-15" offsetY="0" />
+									<Dimensions x="30" y="30" />
+									<Textures mouseOver="esoui\art\treeicons\achievements_indexicon_champion_over.dds" />
 									<OnClicked>
 										self:toggle()
 									</OnClicked>
-						    	</Button>
-								
-								<Label name="$(parent)CPLabel"  height="25" alpha="1" text="CP" color="FFFFFF" font="ZoFontGameLargeBold" hidden="true">
-									<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)ToggleChampion" offsetX="-15"/>
+								</Button>
+
+								<Label name="$(parent)CPLabel" alpha="1" text="CP" color="FFFFFF" font="ZoFontGameLargeBold" hidden="true">
+									<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)ToggleChampion" offsetX="-15" />
 
 								</Label>
-								<Label name="$(parent)LevelLabel"  height="25" alpha="1" text="Level:" color="FFFFFF" font="ZoFontGameLargeBold">
-									5<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" />
-									
+								<Label name="$(parent)LevelLabel" alpha="1" text="Level:" color="FFFFFF" font="ZoFontGameLargeBold">
+									<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" />
+
 								</Label>
 							</Controls>
 						</Control>
-				    	<Control name="$(grandparent)MultiplierInput" tier="HIGH" resizeToFitDescendents="true">
+						<Control name="$(grandparent)MultiplierInput" tier="HIGH" resizeToFitDescendents="true">
 							<Anchor point="BOTTOM" relativeTo="$(parent)Comboboxes" relativePoint="CENTER" offsetX="-50" offsetY="50" />
-							<Dimensions x="250"/>
+							<Dimensions x="250" />
 							<OnInitialized>
 								DolgubonSetCrafter = DolgubonSetCrafter or {}
 
@@ -370,7 +369,7 @@ Created by Dolgubon (Joseph Heinzle)
 							<Controls>
 								<Backdrop name="$(parent)Input" tier="HIGH" inherits="ZO_EditBackdrop">
 									<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" offsetY="0" />
-									<Dimensions x="150"/>
+									<Dimensions x="150" />
 									<Controls>
 										<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" textType="NUMERIC_UNSIGNED_INT" text="1">
 
@@ -385,9 +384,9 @@ Created by Dolgubon (Joseph Heinzle)
 									</Controls>
 								</Backdrop>
 
-								<Label name="$(parent)Label"  height="25" alpha="1" text="Multiplier:" color="FFFFFF" font="ZoFontGameLargeBold">
+								<Label name="$(parent)Label" alpha="1" text="Multiplier:" color="FFFFFF" font="ZoFontGameLargeBold">
 									<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" />
-									
+
 								</Label>
 							</Controls>
 						</Control>
@@ -398,46 +397,46 @@ Created by Dolgubon (Joseph Heinzle)
 							<Anchor point="BOTTOM" relativeTo="$(parent)Add" relativePoint="BOTTOM" offsetX="-180" offsetY="-35" />
 							<Controls>
 								<Label name="$(parent)Test" font="ZoFontWinH4" horizontalAlignment="CENTER" text="Furniture crafting is still new to this addon. More furniture features will be added later!">
-									<Dimensions x="350"  />
-		                            <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="40" offsetY="20" />
-		                        </Label>
-		                        <Button name="$(parent)Food" inherits="PieceButtonTemplate">
-		    						<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="30" offsetY="40" />
-		    					</Button>
-		    					<Button name="$(parent)Drinks" inherits="PieceButtonTemplate">
-		    						<Anchor point="LEFT" relativeTo="$(parent)Food" relativePoint="RIGHT" offsetX="10" offsetY="0" />
-		    					</Button>
-		    					<Button name="$(parent)Furniture" inherits="PieceButtonTemplate">
-		    						<Anchor point="LEFT" relativeTo="$(parent)Drinks" relativePoint="RIGHT" offsetX="10" offsetY="0" />
-		    					</Button>
-		    					<Label name="$(parent)SelectedItem" font="ZoFontWinH4" horizontalAlignment="LEFT" text="" inherits="DSC_ItemLinkMouseOverLabel">
 									<Dimensions x="350" />
-		                            <Anchor point="TOPLEFT" relativeTo="$(parent)Food" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
-		                        </Label>
-		                        <Control name="$(parent)IsKnown" inherits="BehaviourToggleTemplate">
-		    						<Anchor point="TOPLEFT" relativeTo="$(parent)Food" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="20" />
-		    					</Control>
-		    					<Control name="$(parent)List" inherits="ZO_ScrollList">
-									<Anchor point="TOPLET" relativeTo="$(parent)" offsetY="25" offsetX="10" relativePoint="TOPLET"/>
-									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" offsetY="-10" offsetX="-10" relativePoint="BOTTOMRIGHT"/>
+									<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="40" offsetY="20" />
+								</Label>
+								<Button name="$(parent)Food" inherits="PieceButtonTemplate">
+									<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="30" offsetY="40" />
+								</Button>
+								<Button name="$(parent)Drinks" inherits="PieceButtonTemplate">
+									<Anchor point="LEFT" relativeTo="$(parent)Food" relativePoint="RIGHT" offsetX="10" offsetY="0" />
+								</Button>
+								<Button name="$(parent)Furniture" inherits="PieceButtonTemplate">
+									<Anchor point="LEFT" relativeTo="$(parent)Drinks" relativePoint="RIGHT" offsetX="10" offsetY="0" />
+								</Button>
+								<Label name="$(parent)SelectedItem" font="ZoFontWinH4" horizontalAlignment="LEFT" text="" inherits="DSC_ItemLinkMouseOverLabel">
+									<Dimensions x="350" />
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Food" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+								</Label>
+								<Control name="$(parent)IsKnown" inherits="BehaviourToggleTemplate">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Food" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="20" />
 								</Control>
-								<Control name="$(parent)Category" >
+								<Control name="$(parent)List" inherits="ZO_ScrollList">
+									<Anchor point="TOPLET" relativeTo="$(parent)" offsetY="25" offsetX="10" relativePoint="TOPLET" />
+									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" offsetY="-10" offsetX="-10" relativePoint="BOTTOMRIGHT" />
+								</Control>
+								<Control name="$(parent)Category">
 									<Dimensions x="50" y="340" />
 									<!-- <Anchor point="TOPRIGHT" relativeTo="$(parent)List"  offsetX="-60" relativePoint="TOPLEFT"/> -->
-									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)List"  offsetX="-10" offsetY="20" relativePoint="BOTTOMLEFT"/>
+									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)List" offsetX="-10" offsetY="20" relativePoint="BOTTOMLEFT" />
 									<Controls>
 										<Control name="$(parent)List" inherits="ZO_ScrollList">
-											<AnchorFill/>
+											<AnchorFill />
 										</Control>
 									</Controls>
 								</Control>
-								
-		                        <!-- <Tooltip name="$(parent)Tooltip" inherits="ZO_CraftingTooltip" hidden="false" >
+
+								<!-- <Tooltip name="$(parent)Tooltip" inherits="ZO_CraftingTooltip" hidden="false" >
 		                        	<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="20" offsetY="0" />
 		                        </Tooltip> -->
-		                        <Backdrop name="$(parent)Input"  inherits="ZO_EditBackdrop">
+								<Backdrop name="$(parent)Input" inherits="ZO_EditBackdrop">
 									<Anchor point="LEFT" relativeTo="$(parent)Furniture" relativePoint="RIGHT" offsetX="10" offsetY="0" />
-									<Dimensions x="150"/>
+									<Dimensions x="150" />
 									<Controls>
 										<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" textType="TEXT_TYPE_ALL" text="" mouseEnabled="true">
 											<OnInitialized>
@@ -450,44 +449,44 @@ Created by Dolgubon (Joseph Heinzle)
 										</EditBox>
 									</Controls>
 								</Backdrop>
-	                    			
+
 							</Controls>
 						</Control>
 					</Controls>
 				</Control>
-				<Backdrop name="$(parent)Right" alpha="0" edgeColor="333300" centerColor="111111" inheritAlpha="false" >
-					<Edge edgeSize="4"/>
+				<Backdrop name="$(parent)Right" alpha="0" edgeColor="333300" centerColor="111111" inheritAlpha="false">
+					<Edge edgeSize="4" />
 					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="5" />
 					<Anchor point="TOPLEFT" relativeTo="$(parent)Divider" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
 					<OnInitialized>
 						self.GetName = function() return DolgubonSetCrafterWindow:GetName() end
 					</OnInitialized>
 					<Controls>
-						<Button name="$(parent)RefreshMaterials" alpha="1" clickSound="Default_Click" topmost="true" inheritAlpha="false">
-							<Textures 
-								normal		="esoui/art/help/help_tabicon_feedback_up.dds"
-								pressed		="esoui/art/hud/gamepad/gp_radialicon_trade_down.dds"
-								mouseOver	="esoui/art/help/help_tabicon_feedback_over.dds"
+						<Button name="$(parent)RefreshMaterials" alpha="1" clickSound="Default_Click" inheritAlpha="false">
+							<Textures
+								normal="esoui/art/help/help_tabicon_feedback_up.dds"
+								pressed="esoui/art/hud/gamepad/gp_radialicon_trade_down.dds"
+								mouseOver="esoui/art/help/help_tabicon_feedback_over.dds"
 							/>
-		     				<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="8" offsetY="18" />
-		      				<Dimensions x="36" y="36" />
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="8" offsetY="18" />
+							<Dimensions x="36" y="36" />
 							<OnClicked>
 								DolgubonSetCrafter.materialManager:RefreshData()
 							</OnClicked>
-				    	</Button>
-						
-						<Label name="$(parent)Label" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Material Requirements" inheritAlpha="false">
+						</Button>
+
+						<Label name="$(parent)Label" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Material Requirements" inheritAlpha="false">
 							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="10" />
 							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="10" />
 						</Label>
-						<Label name="$(parent)Cost" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Total Cost:" inheritAlpha="false">
+						<Label name="$(parent)Cost" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Total Cost:" inheritAlpha="false">
 							<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Label" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="20" />
 							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Label" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="20" />
 						</Label>
-						<Button name="$(parent)PriceHelp" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text=""  inheritAlpha="false">
+						<Button name="$(parent)PriceHelp" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="" inheritAlpha="false">
 							<Anchor point="LEFT" relativeTo="$(parent)Cost" relativePoint="RIGHT" offsetX="-60" offsetY="0" />
 							<Dimensions x="27" y="27" />
-							<Textures normal="/esoui/art/menubar/menubar_help_up.dds" mouseOver="/esoui/art/menubar/menubar_help_down.dds"/>
+							<Textures normal="/esoui/art/menubar/menubar_help_up.dds" mouseOver="/esoui/art/menubar/menubar_help_down.dds" />
 
 							<OnMouseEnter>
 								InitializeTooltip(InformationTooltip, self, TOP, 0, 0)
@@ -504,52 +503,52 @@ Created by Dolgubon (Joseph Heinzle)
 							</OnClicked>
 						</Button>
 
-						<Button name="$(parent)ShowFavourites" alpha="1" clickSound="Default_Click" topmost="true" text="Show Favourites" inherits="ZO_DefaultButton" inheritAlpha="false">
-		     				<Anchor point="BOTTOM" relativeTo="$(parent)Cost" relativePoint="BOTTOM" offsetX="0" offsetY="28" />
-		      				<Dimensions x="200" y="24" />
-		      				<OnInitialized>
+						<Button name="$(parent)ShowFavourites" alpha="1" clickSound="Default_Click" text="Show Favourites" inherits="ZO_DefaultButton" inheritAlpha="false">
+							<Anchor point="BOTTOM" relativeTo="$(parent)Cost" relativePoint="BOTTOM" offsetX="0" offsetY="28" />
+							<Dimensions x="200" y="24" />
+							<OnInitialized>
 		      					self:SetText(DolgubonSetCrafter.localizedStrings.UIStrings.showFavourites)
 		      				</OnInitialized>
 							<OnClicked>
 								DolgubonSetCrafter:GetSettings().showFavourites = not DolgubonSetCrafter:GetSettings().showFavourites
 								DolgubonSetCrafterWindowFavourites:SetHidden(not DolgubonSetCrafter:GetSettings().showFavourites)								
 							</OnClicked>
-				    	</Button>
+						</Button>
 
-						<Control name="$(grandparent)MaterialList" alpha="1"  mouseEnabled="false" inheritAlpha="false">
+						<Control name="$(grandparent)MaterialList" alpha="1" mouseEnabled="false" inheritAlpha="false">
 							<Anchor point="TOPLEFT" relativeTo="$(parent)Cost" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="30" />
 							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="-204" />
-							
+
 							<Controls>
-								
+
 								<Control name="$(parent)List" inherits="ZO_ScrollList" mouseEnabled="true">
-									<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetY="0" offsetX="10" relativePoint="TOPLEFT"/>
-									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" offsetY="0" offsetX="-10" relativePoint="BOTTOMRIGHT"/>
-									
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetY="0" offsetX="10" relativePoint="TOPLEFT" />
+									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" offsetY="0" offsetX="-10" relativePoint="BOTTOMRIGHT" />
+
 								</Control>
 							</Controls>
 
 						</Control>
-						<Button name="$(parent)MailRequirements" alpha="1" clickSound="Default_Click" topmost="true" text="Requirements To Mail" inherits="ZO_DefaultButton" inheritAlpha="false">
-		     				<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-10" />
-		      				<Dimensions x="200" y="28" />
+						<Button name="$(parent)MailRequirements" alpha="1" clickSound="Default_Click" text="Requirements To Mail" inherits="ZO_DefaultButton" inheritAlpha="false">
+							<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-10" />
+							<Dimensions x="200" y="28" />
 							<OnClicked>
 								local text = DolgubonSetCrafter.mailAllMats()
 								--StartChatInput("Requires: "..text)
 								
 							</OnClicked>
-				    	</Button>
-				    	<Button name="$(parent)MailQueue" alpha="1" topmost="true" text="Mail Request" inherits="ZO_DefaultButton" inheritAlpha="false">
-		     				<Anchor point="BOTTOM" relativeTo="$(parent)MailRequirements" relativePoint="TOP" offsetX="0" offsetY="-5" />
-		      				<Dimensions x="200" y="28" />
+						</Button>
+						<Button name="$(parent)MailQueue" alpha="1" text="Mail Request" inherits="ZO_DefaultButton" inheritAlpha="false">
+							<Anchor point="BOTTOM" relativeTo="$(parent)MailRequirements" relativePoint="TOP" offsetX="0" offsetY="-5" />
+							<Dimensions x="200" y="28" />
 							<OnClicked>
 								DolgubonSetCrafter.MailAsRequest()
 							</OnClicked>
-				    	</Button>
-				    	
-				    	<Backdrop name="$(parent)Input" tier="HIGH" inherits="ZO_EditBackdrop" inheritAlpha="false">
+						</Button>
+
+						<Backdrop name="$(parent)Input" tier="HIGH" inherits="ZO_EditBackdrop" inheritAlpha="false">
 							<Anchor point="BOTTOM" relativeTo="$(parent)MailQueue" relativePoint="TOP" offsetX="0" offsetY="-5" />
-							<Dimensions x="200"/>
+							<Dimensions x="200" />
 							<Controls>
 								<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText">
 
@@ -578,30 +577,29 @@ Created by Dolgubon (Joseph Heinzle)
 								</EditBox>
 							</Controls>
 						</Backdrop>
-						<Button name="$(parent)OutputRequirements" alpha="1" topmost="true" text="Requirements To Chat" inherits="ZO_DefaultButton" inheritAlpha="false">
-		     				<Anchor point="BOTTOM" relativeTo="$(parent)Input" relativePoint="TOP" offsetX="0" offsetY="-5" />
-		      				<Dimensions x="200" y="28" />
+						<Button name="$(parent)OutputRequirements" alpha="1" text="Requirements To Chat" inherits="ZO_DefaultButton" inheritAlpha="false">
+							<Anchor point="BOTTOM" relativeTo="$(parent)Input" relativePoint="TOP" offsetX="0" offsetY="-5" />
+							<Dimensions x="200" y="28" />
 							<OnClicked>
 								local text = DolgubonSetCrafter.outputAllMats()
 								--StartChatInput("Requires: "..text)
 								
 							</OnClicked>
-				    	</Button>
-				    	<Button name="$(parent)OutputRequest" alpha="1" topmost="true" text="Request To Chat" inherits="ZO_DefaultButton" inheritAlpha="false">
-		     				<Anchor point="BOTTOM" relativeTo="$(parent)OutputRequirements" relativePoint="TOP" offsetX="0" offsetY="-5" />
-		      				<Dimensions x="200" y="28" />
+						</Button>
+						<Button name="$(parent)OutputRequest" alpha="1" text="Request To Chat" inherits="ZO_DefaultButton" inheritAlpha="false">
+							<Anchor point="BOTTOM" relativeTo="$(parent)OutputRequirements" relativePoint="TOP" offsetX="0" offsetY="-5" />
+							<Dimensions x="200" y="28" />
 							<OnClicked>
 								local text = DolgubonSetCrafter.outputRequest()
 								--StartChatInput("Requires: "..text)
 								
 							</OnClicked>
-				    	</Button>
-				    	
+						</Button>
 
-				    	
+
 					</Controls>
 				</Backdrop>
-		    </Controls>
+			</Controls>
 		</TopLevelControl>
 	</Controls>
 </GuiXml>
