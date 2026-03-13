@@ -90,19 +90,22 @@ local function addonChoicePrice(itemLink)
 	end
 end
 
+
+
 local function generateValidPriceSources()
+	local blurbs = DolgubonSetCrafter.localizedStrings.UIStrings.priceSourceBlurbs
 	local validPriceSources = 
 	{
-		{"Currently using Set Crafter's choice", true, addonChoicePrice},
-		{"Currently using prices from LibPrice", LibPrice, getLibPrice},
-		{'Currently using prices from MasterMerchant', MasterMerchant, getMMPrice},
-		{'Currently using prices from Arkadius Trade Tools', ArkadiusTradeTools and ArkadiusTradeTools.Modules and ArkadiusTradeTools.Modules.Sales and ArkadiusTradeTools.Modules.Sales.addMenuItems, getATTPrice},
-		{'Currently using prices from Tamriel Trade Center', TamrielTradeCentrePrice, getTTCPrice},
-		{"Currently using the game's default prices", true, GetItemLinkValue},
+		{blurbs[1], true, addonChoicePrice},
+		{blurbs[2], LibPrice, getLibPrice},
+		{blurbs[3], MasterMerchant, getMMPrice},
+		{blurbs[4], ArkadiusTradeTools and ArkadiusTradeTools.Modules and ArkadiusTradeTools.Modules.Sales and ArkadiusTradeTools.Modules.Sales.addMenuItems, getATTPrice},
+		{blurbs[5], TamrielTradeCentrePrice, getTTCPrice},
+		{blurbs[6], true, GetItemLinkValue},
 	}
 	for i = 2, #validPriceSources do
 		if validPriceSources[i][2] then
-			validPriceSources[1][1] = validPriceSources[i][1].." (Set Crafter's choice)"
+			validPriceSources[1][1] = validPriceSources[i][1]..blurbs.defaultBlurbIndicator
 			validPriceSources[1][4] = i
 			return validPriceSources
 		end
@@ -149,7 +152,8 @@ local function updateCost()
 		cost = cost + price * v["Amount"]
 	end 
 	cost = zo_strformat(SI_NUMBER_FORMAT, ZO_AbbreviateNumber(cost, NUMBER_ABBREVIATION_PRECISION_HUNDREDTHS, USE_LOWERCASE_NUMBER_SUFFIXES))
-	DolgubonSetCrafterWindowRightCost:SetText("Total Cost: "..cost.." |t20:20:esoui/art/currency/currency_gold_64.dds|t")
+
+	DolgubonSetCrafterWindowRightCost:SetText(zo_strformat(DolgubonSetCrafter.localizedStrings.UIStrings.totalCost, cost))
 end
 
 local function updateCurrentAmounts()
@@ -157,16 +161,39 @@ local function updateCurrentAmounts()
 
 	for k, v in pairs(DolgubonSetCrafter.materialList) do
 		local link = v["Name"]
-		local bag, bank, craft = GetItemLinkStacks(link)
-		v["Current"] =  bag + bank + craft
+		if link ==  DolgubonSetCrafter.localizedStrings.UIStrings.variableStyleLink then
+			v["Current"] = DolgubonSetCrafter.getTotalVariableAmounts()
+		else
+			local bag, bank, craft = GetItemLinkStacks(link)
+			v["Current"] =  bag + bank + craft
+		end
 	end 
 end
+
+function MaterialScroll.materialSort(listEntry1, listEntry2) -- We want to prioritize materials we are missing
+	if listEntry1.data[1] == nil or listEntry2.data[1] == nil then
+		return ZO_TableOrderingFunction(listEntry1.data[1], listEntry2.data[1], "Amount", MaterialScroll.SorterKeys, MaterialScroll.currentSortOrder)
+	end
+	local entry1Enough = listEntry1.data[1].Amount < listEntry1.data[1].Current
+	local entry2Enough = listEntry2.data[1].Amount < listEntry2.data[1].Current
+	if entry1Enough and entry2Enough then
+		return ZO_TableOrderingFunction(listEntry1.data[1], listEntry2.data[1], "Amount", MaterialScroll.SorterKeys, MaterialScroll.currentSortOrder)
+	end
+	if entry1Enough then
+		return false
+	end
+	if entry2Enough then
+		return true
+	end
+	return ZO_TableOrderingFunction(listEntry1.data[1], listEntry2.data[1], "Amount", MaterialScroll.SorterKeys, MaterialScroll.currentSortOrder)
+end
+
 
 -- Create the scroll list for the materials
 function MaterialScroll:New(control)
 	ZO_SortFilterList.InitializeSortFilterList(self, control)
 	
-	local SorterKeys =
+	self.SorterKeys =
 	{
 		name = {},
 		Amount = {},
@@ -179,7 +206,8 @@ function MaterialScroll:New(control)
 	
 	self.currentSortKey = "Amount"
 	self.currentSortOrder = ZO_SORT_ORDER_DOWN
- 	self.sortFunction = function(listEntry1, listEntry2) return ZO_TableOrderingFunction(listEntry1.data[1], listEntry2.data[1], "Amount", SorterKeys, self.currentSortOrder) end
+ 	self.sortFunction = MaterialScroll.materialSort
+ 	-- self.sortFunction = function(listEntry1, listEntry2) d(listEntry1.data[1]) d(listEntry2.data[1]) return ZO_TableOrderingFunction(listEntry1.data[1], listEntry2.data[1], "Amount", SorterKeys, self.currentSortOrder) end
 	self.data = DolgubonSetCrafter.materialList
 
 	local originalRefresh = self.RefreshData
@@ -341,8 +369,9 @@ end
 
 
 function DolgubonSetCrafter.outputRequest()
-	if next(DolgubonSetCrafter.materialList) == nil then 
-		d("Dolgubon's Lazy Set Crafter: No items are in the queue! No mails sent")
+	if next(DolgubonSetCrafter.materialList) == nil then
+		
+		d(DolgubonSetCrafter.localizedStrings.UIStrings.noItemsQueuedMailError)
 		return 
 	end
 	local sets = {} -- A list of all items under the current set type.

@@ -222,7 +222,7 @@ function DolgubonSetCrafter.initializeMailButtons()
 	local controls = {}
 	local button_name = inbox:GetName() .. "SetCrafterMailAdd"
 	local control = inbox:CreateControl(button_name, CT_BUTTON)
-	control:SetAnchor(BELOW, subjectControl, BOTTOMLEFT, 0, 5+#controls*25)
+	control:SetAnchor(BOTTOMLEFT, subjectControl, BOTTOMLEFT, 0, 30)
 	control:SetFont('ZoFontWinH4')
 	-- control:SetColor(GetInterfaceColor(INTERFACE_COLOR_TYPE_TEXT_COLORS, INTERFACE_TEXT_COLOR_NORMAL))
 	ApplyTemplateToControl(control, "ZO_DefaultButton")

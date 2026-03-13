@@ -179,8 +179,7 @@ local function loadQueueFavourite(selectedFavourite, useCurrentLevel, useCurrent
 
 				returnedTable = DolgubonSetCrafter.LazyCrafter:CraftSmithingItemByLevel(r[1], r[2], r[3],r[4], r[5], r[6], r[7], r[8], r[9], r[10], r[11], nil, nil, nil, r[15])
 
-				copy["Link"] = DolgubonSetCrafter.LazyCrafter.getItemLinkFromParticulars( returnedTable.setIndex,returnedTable.trait ,returnedTable.pattern ,returnedTable.station ,level, 
-				isCP,returnedTable.quality,returnedTable.style, returnedTable.potencyItemId , returnedTable.essenceItemId, returnedTable.aspectItemId)
+				copy["Link"] = DolgubonSetCrafter.LazyCrafter.getItemLinkFromParticulars(returnedTable.pattern, isCP, level, returnedTable.style, returnedTable.trait, returnedTable.station, returnedTable.setIndex, returnedTable.quality, returnedTable.potencyItemId , returnedTable.essenceItemId, returnedTable.aspectItemId)
 				
 				if r[12] and r[13] and r[14] then -- If these are nil then there's no glyph
 					local enchantLevel = LibLazyCrafting.closestGlyphLevel(isCP, level)

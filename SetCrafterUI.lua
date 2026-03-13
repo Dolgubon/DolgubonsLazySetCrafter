@@ -137,6 +137,8 @@ function DolgubonSetCrafter.setupLocalizedLabels()
 	DolgubonSetCrafterWindowRightMailQueue:SetText			(langStrings.UIStrings.mailRequest)
 	DolgubonSetCrafterWindowRightCost:SetText				(langStrings.UIStrings.totalCostTitle)
 	DolgubonSetCrafterWindowFavouritesTitle:SetText			(langStrings.UIStrings.FavouritesTitle)
+	DolgubonSetCrafterWindowToggleFurniture:SetText 		(langStrings.UIStrings.furnitureCrafting)
+	DolgubonSetCrafterWindowCraftHousePort:SetText 			(langStrings.UIStrings.craftHousePortButton)
 end
 
 

@@ -26,7 +26,6 @@ local langStrings
  
 
 local spacingForButtons = 40
-DolgubonSetCrafter.isMurkmure = true
 -- A shortcut to output info to the user
 function DolgubonSetCrafter.out(text)
 	if text == "" then

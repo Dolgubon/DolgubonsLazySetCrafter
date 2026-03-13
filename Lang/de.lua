@@ -36,6 +36,7 @@ DolgubonSetCrafter.localizedStrings.UIStrings.mailRequirements 		="Voraussetzung
 DolgubonSetCrafter.localizedStrings.UIStrings.chatRequirements 		="In Chat einfügen"
 DolgubonSetCrafter.localizedStrings.UIStrings.defaultUserId 		="@UserId eingeben"
 DolgubonSetCrafter.localizedStrings.UIStrings.usesMimicStone		= "Ihr benötigt einen Kronen-Mimenstein um diesen Gegenstand herstellen zu können"
+DolgubonSetCrafter.localizedStrings.UIStrings.internalEnchantment   = {"Verzauberung: ", "Verzauberung mit "}
 
 DolgubonSetCrafter.localizedStrings.SettingsStrings = DolgubonSetCrafter.localizedStrings.SettingsStrings or {}
 
@@ -76,3 +77,5 @@ DolgubonSetCrafter.localizedStrings.armourTypes =
 
 
 ZO_CreateStringId("SI_BINDING_NAME_SET_CRAFTER_OPEN", "Öffne/Schließe Set Crafter Fenster")
+
+

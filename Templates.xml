@@ -148,6 +148,11 @@
 		<!-- These templates are for the crafting materials queue-->
 		<Button name="SetCrafterMaterialTemplate" virtual="true" mouseEnabled="true">
 			<OnMouseEnter>
+				if not CanItemLinkBeVirtual(self.data[1].Name) then
+					InitializeTooltip(InformationTooltip, self, TOP, 0, 0)
+					InformationTooltip:AddLine(DolgubonSetCrafter.localizedStrings.UIStrings.variableStoneInfoTip)
+					return
+				end
 				if not self.isKnown then
 					InitializeTooltip(ItemTooltip, self , TOP, 0, 20)
 					ItemTooltip:SetLink(self.data[1].Name)

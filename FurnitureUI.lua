@@ -74,9 +74,11 @@ function DolgubonSetCrafter.toggleFurnitureUI(toggleButton)
 	DolgubonSetCrafterWindowFurniture:SetHidden(not newHidden)
 	DolgubonSetCrafter:GetSettings().initialFurniture = toggleButton.isCurrentUIFurniture
 	if toggleButton.isCurrentUIFurniture then
-		out("Please select a recipe to craft")
+		out(DolgubonSetCrafter.localizedStrings.UIStrings.recipePrompt)
+		toggleButton:SetText(DolgubonSetCrafter.localizedStrings.UIStrings.furnitureCrafting)
 	else
 		out(DolgubonSetCrafter.localizedStrings.UIStrings.patternHeader)
+		toggleButton:SetText(DolgubonSetCrafter.localizedStrings.UIStrings.gearCrafting)
 	end
 end
 
@@ -155,9 +157,9 @@ local function setupPartitionToggles()
 		"/esoui/art/treeicons/housing_indexicon_suite_over.dds",
 		"/esoui/art/treeicons/housing_indexicon_suite_over.dds", 
 		false)
-	DolgubonSetCrafter.toggleFood.tooltip = "Food"
-	DolgubonSetCrafter.toggleDrinks.tooltip = "Drinks"
-	DolgubonSetCrafter.toggleFurniture.tooltip = "Furniture"
+	DolgubonSetCrafter.toggleFood.tooltip = DolgubonSetCrafter.localizedStrings.UIStrings.food
+	DolgubonSetCrafter.toggleDrinks.tooltip = DolgubonSetCrafter.localizedStrings.UIStrings.drinks
+	DolgubonSetCrafter.toggleFurniture.tooltip = DolgubonSetCrafter.localizedStrings.UIStrings.furniture
 	for _, button in pairs(DolgubonSetCrafter.recipeToggles) do
 		button.toggle = recipePartitionToggle
 		button.onToggleOn = toggleOthersOff
@@ -190,7 +192,7 @@ local function RecipeScrollEntrySelected(control, data, selected, reselectingDur
 			r,g,b = unpack(colours[data.quality]["selected"])
 		end
 		control:mySetColor( r*selectedMult,g*selectedMult,b*selectedMult, 1.5)
-		DolgubonSetCrafterWindowFurnitureSelectedItem:SetText("Selected: "..GetItemLinkName(itemLink))
+		DolgubonSetCrafterWindowFurnitureSelectedItem:SetText(zo_strformat(DolgubonSetCrafter.localizedStrings.UIStrings.selectedFurniture,GetItemLinkName(itemLink)) )
 		DolgubonSetCrafterWindowFurnitureSelectedItem:SetColor(GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, data.quality))
 		DolgubonSetCrafterWindowFurnitureSelectedItem.itemLink = itemLink
 		control:SetText(control:GetText().."  <")

@@ -117,7 +117,8 @@ local function showPreviewItemLink(control, comboBoxParent, overrideData)
 
 		comboBoxParent.previewDataPosition(params, info, isCP, level)
 		-- d(LibLazyCrafting.getItemLinkFromParticulars(setId, 1, 1, 1, 160, true, 5, 1))
-		local link = LibLazyCrafting.getItemLinkFromParticulars(unpack(params))
+		
+		local link = LibLazyCrafting.getItemLinkFromParticulars(params[3], params[6], params[5], params[8], params[2],params[4],params[1], params[7],params[9],params[10],params[11])
 		if not link or link == "" then
 			ClearTooltip(ItemTooltip)
 			return

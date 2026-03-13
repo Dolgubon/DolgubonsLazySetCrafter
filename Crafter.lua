@@ -118,45 +118,9 @@ local function shortenNames(requestTable)
 	end
 end
 
-function getNumTraitsKnown(station, pattern, trait) -- and if the trait is known
-	local count = 0
-	local traitKnown =false
-	for i =1 ,9 do 
-		if station == CRAFTING_TYPE_CLOTHIER then
-			if pattern > 1 then pattern = pattern - 1 end
-		end
-		local traitIndex,_,known = GetSmithingResearchLineTraitInfo(station, pattern, i)
-		
-		if known then
-			count = count + 1
-		end
-		
-		if traitIndex == trait then
-			traitKnown = known
-			
-		end
-	end
-	
-	return count, traitKnown
-end
-
-function isTraitKnown(station, pattern, trait, setIndex) -- more of a router than anything. Calls getNumTraitsKnown to do the work
-
-
-	trait = trait - 1
-	local known, number
-	if station ==CRAFTING_TYPE_WOODWORKING and pattern>1 then
-		if pattern == 2 then
-			number, known = getNumTraitsKnown(station, 6, trait)
-		else
-			number, known = getNumTraitsKnown(station, pattern -1, trait)
-		end
-	else
-		number, known = getNumTraitsKnown(station, pattern, trait)
-	end
-	if trait == 0 then known = true end
-	--d("Is trait known:"..tostring(known)..tostring(trait).. "with "..tostring(number).." traits known")
-	return known, number>= GetSetIndexes()[setIndex][3]
+local function isTraitKnown(station, pattern, trait, setIndex) 
+	local numTraitsKnown, isKnown = LibLazyCrafting.getTraitInfoFromResearch(station, pattern, trait)
+	return isKnown, numTraitsKnown>= GetSetIndexes()[setIndex][3]
 end
 
 function isStyleKnownForPattern(styleIndex, station, pattern)
@@ -166,7 +130,7 @@ function isStyleKnownForPattern(styleIndex, station, pattern)
 		[2] = {5, 5,3, 7, 8, 9, 12, 2, 5,3, 7, 8, 9, 12, 2},
 		[6] = {4, 13, 13, 13, 13, 11},
 	}
-	if IsSmithingStyleKnown(styleIndex) then return true end
+	if styleIndex == LLC_FREE_STYLE_CHOICE or IsSmithingStyleKnown(styleIndex) then return true end
 	if not achievements[styleIndex] then return false end
 	local _, isKnown = GetAchievementCriterion( achievements[styleIndex], map[station][pattern])
 	return isKnown == 1
@@ -263,14 +227,33 @@ local function getPatternIndex(patternButton,weight)
 	end
 end
 
+function DolgubonSetCrafter.getTotalVariableAmounts()
+	local total = 0
+	for k, v in pairs (LazyCrafter.styleTable) do
+		if v then
+			local link = GetItemStyleMaterialLink(k)
+			local bag, bank, craft = GetItemLinkStacks(link)
+			total = total + bag + bank + craft
+		end
+	end
+	return total
+end
+
 local function addRequirements(returnedTable, addAmounts)
 	DolgubonSetCrafter.materialList = DolgubonSetCrafter.materialList or {}
 	local parity = -1
 	if addAmounts then parity = 1 end
 	local requirements = LazyCrafter:getMatRequirements(returnedTable)
 	for itemId, amount in pairs(requirements) do
-		local link = getItemLinkFromItemId(itemId)
-		local bag, bank, craft = GetItemLinkStacks(link)
+		local link, currentAmount
+		if itemId == LLC_FREE_STYLE_CHOICE then
+			link = DolgubonSetCrafter.localizedStrings.UIStrings.variableStyleLink
+			currentAmount = DolgubonSetCrafter.getTotalVariableAmounts()
+		else
+			link = getItemLinkFromItemId(itemId)
+			local bag, bank, craft = GetItemLinkStacks(link)
+			currentAmount = bag + bank + craft
+		end
 		if GetItemLinkCraftingSkillType(link) == CRAFTING_TYPE_ENCHANTING then
 			if returnedTable.type=="improvement" then
 				amount = 0
@@ -282,9 +265,9 @@ local function addRequirements(returnedTable, addAmounts)
 		end
 		if DolgubonSetCrafter.materialList[itemId] then
 			DolgubonSetCrafter.materialList[itemId]["Amount"] = DolgubonSetCrafter.materialList[itemId]["Amount"] + amount
-			DolgubonSetCrafter.materialList[itemId]["Current"] = bag + bank + craft
+			DolgubonSetCrafter.materialList[itemId]["Current"] = currentAmount
 		else
-			DolgubonSetCrafter.materialList[itemId] = {["Name"] = link ,["Amount"] = amount,["Current"] = bag + bank + craft }
+			DolgubonSetCrafter.materialList[itemId] = {["Name"] = link ,["Amount"] = amount,["Current"] = currentAmount }
 		end
 		if DolgubonSetCrafter.materialList[itemId]["Amount"] <= 0 then
 			DolgubonSetCrafter.materialList[itemId] = nil
@@ -383,16 +366,22 @@ local function addToQueue(requestTable, craftMultiplier )
 				requestTableCopy["EnchantQuality"] =1
 			end
 
+			-- if styleIndex == LLC_FREE_STYLE_CHOICE then
+			-- 	local styleName = GetItemStyleName(styleItemIndex)
+			-- 	local styleItem = GetSmithingStyleItemInfo(styleItemIndex)
+			-- 	table.insert(styles,{styleItemIndex,styleName, styleItem, GetItemStyleMaterialLink(styleItemIndex, 0 )})
+			-- end
+
+
 			--LLC_CraftSmithingItemByLevel(self, patternIndex, isCP , level, styleIndex, traitIndex, useUniversalStyleItem, stationOverride, setIndex, quality, autocraft)
 			if isCP then
 				requestTableCopy["Level"][2] = "CP ".. requestTableCopy["Level"][2]
 			end
 			requestTableCopy["CraftRequestTable"] = CraftRequestTable
 			if enchantRequestTable then
-				requestTableCopy["Link"] = LazyCrafter.getItemLinkFromParticulars(setIndex,trait, pattern, station, CraftRequestTable[3], isCP,  quality, styleIndex,
-					enchantRequestTable.potencyItemID,enchantRequestTable.essenceItemID,  enchantRequestTable.aspectItemID)
+				requestTableCopy["Link"] = LazyCrafter:getItemLinkFromParticulars(pattern,  isCP, CraftRequestTable[3], styleIndex, trait, station, setIndex, quality, enchantRequestTable.potencyItemID,enchantRequestTable.essenceItemID,  enchantRequestTable.aspectItemID)
 			else
-				requestTableCopy["Link"] = LazyCrafter.getItemLinkFromParticulars(setIndex,trait, pattern, station, CraftRequestTable[3], isCP,  quality, styleIndex)
+				requestTableCopy["Link"] = LazyCrafter:getItemLinkFromParticulars(pattern,  isCP, CraftRequestTable[3], styleIndex, trait, station, setIndex, quality)
 			end
 			applyValidityFunctions(requestTableCopy)
 			if returnedTable then
@@ -595,36 +584,40 @@ local recipeItemTypes=
 	[ITEMTYPE_DRINK] = 1, [ITEMTYPE_FOOD] = 1, [ITEMTYPE_FURNISHING] = 1
 }
 
-local function verifyLinkIsValid(link)
+local function canItemLinkBeCrafted(link)
 	local itemType = GetItemLinkItemType(link)
 	if recipeItemTypes[itemType] then
 		if GetRecipeInfoFromItemId(GetItemLinkItemId(link)) then
+			-- it is craftable furniture or food
 			return true
 		end
 	end
 	local _,_,_,_,_,setIndex=GetItemLinkSetInfo(link)
 	if setIndex > 0 and not LibLazyCrafting.GetSetIndexes()[setIndex] then
+		-- Item is from a uncraftable set
 		return false
 	end
 	local itemType = GetItemLinkItemType(link)
 	if itemType ~= ITEMTYPE_ARMOR and itemType ~= ITEMTYPE_WEAPON then
+		-- jewelry still has item type of armor
 		return false
 	end
 	return true
 end
 
-DolgubonSetCrafter.verifyLinkIsValid = verifyLinkIsValid
+DolgubonSetCrafter.canItemLinkBeCrafted = canItemLinkBeCrafted
+DolgubonSetCrafter.verifyLinkIsValid = canItemLinkBeCrafted
 
 local function addByItemLinkToQueue(itemLink)
-	if not verifyLinkIsValid(itemLink) then
+	if not canItemLinkBeCrafted(itemLink) then
 		return
 	end
-	local itemType = GetItemLinkItemType(itemLink)
-	if recipeItemTypes[itemType] then
-		if GetRecipeInfoFromItemId(GetItemLinkItemId(itemLink)) then
-			return DolgubonSetCrafter.addFurnitureByLink(itemLink)
-		end
-	end
+	-- local itemType = GetItemLinkItemType(itemLink)
+	-- if recipeItemTypes[itemType] then
+	-- 	if GetRecipeInfoFromItemId(GetItemLinkItemId(itemLink)) then
+	-- 		return DolgubonSetCrafter.addFurnitureByLink(itemLink)
+	-- 	end
+	-- end
 
 	local requestTable = {}
 	
@@ -661,10 +654,11 @@ local function addByItemLinkToQueue(itemLink)
 
 	local styleIndex = GetItemLinkItemStyle(itemLink)
 	requestTable["Style"] = findMatchingSelected(DolgubonSetCrafter.styleNames, styleIndex)
-	if requestTable["Style"] == nil then
-		d("The item link is missing a style, and could not be added to the queue")
-		ZO_Alert(ERROR, SOUNDS.GENERAL_ALERT_ERROR ,"The item link is missing a style, and could not be added to the queue")
-		return
+	if requestTable["Style"] == nil and requestTable["Station"] ~= CRAFTING_TYPE_JEWELRYCRAFTING then
+		requestTable["Style"] = {LLC_FREE_STYLE_CHOICE, DolgubonSetCrafter.localizedStrings.UIStrings.variableStyleSelection, "Variable", "Variable Item"}
+		d(DolgubonSetCrafter.localizedStrings.UIStrings.defaultingToVariableStyle)
+		ZO_Alert(UI_ALERT_CATEGORY_ERROR, SOUNDS.GENERAL_ALERT_ERROR ,DolgubonSetCrafter.localizedStrings.UIStrings.defaultingToVariableStyle)
+		-- return
 	end
 
 	local traitIndex = GetItemLinkTraitInfo(itemLink)+1
@@ -700,7 +694,7 @@ local function InitializeItemLinkRightClick(link, button, a, b, linkType, ...)
 	if button ~= MOUSE_BUTTON_INDEX_RIGHT then
 		return
 	end
-	if not verifyLinkIsValid(link) then
+	if not canItemLinkBeCrafted(link) then
 		return
 	end
 	if linkType == ITEM_LINK_TYPE then
@@ -712,7 +706,7 @@ local function InitializeItemLinkRightClick(link, button, a, b, linkType, ...)
 			end, MENU_ADD_OPTION_LABEL)
 			--Show the context menu entries at the itemlink handler now
 			ShowMenu()
-		end, 50)
+		end, 0)
 	end
 end
 
@@ -752,14 +746,14 @@ function DolgubonSetCrafter.addFurniture()
 		end
 		local _,_,_,_,_,_, station = GetRecipeInfo(DolgubonSetCrafter.selectedRecipeListIndex, DolgubonSetCrafter.selectedRecipeIndex)
 		
-		requestTableCopy["Quality"]  = DolgubonSetCrafter.quality[GetItemLinkQuality(DolgubonSetCrafter.selectedFurnitureLink)]
+		requestTableCopy["Quality"]  = DolgubonSetCrafter.quality[GetItemLinkFunctionalQuality(DolgubonSetCrafter.selectedFurnitureLink)]
 		requestTableCopy["Name"] = {GetItemLinkName(DolgubonSetCrafter.selectedFurnitureLink), GetItemLinkName(DolgubonSetCrafter.selectedFurnitureLink)}
 		requestTableCopy["Station"] = {station, GetCraftingSkillName(station)}
 		requestTableCopy["isRecipe"] = true
 		requestTableCopy.typeId = 2
 		queue[#queue+1] = requestTableCopy
 	else
-		out("No item to craft was selected!")
+		out(DolgubonSetCrafter.localizedStrings.UIStrings.noItemSelected)
 	end
 end
 
@@ -782,7 +776,7 @@ function DolgubonSetCrafter.addFurnitureByLink(itemLink, quantity)
 	-- local _,_,_,_,_,_, station = GetRecipeInfo(recipeListIndex, recipeList)
 
 	requestTableCopy["Quantity"] = {quantity, quantity.."x"}
-	requestTableCopy["Quality"]  = DolgubonSetCrafter.quality[GetItemLinkQuality(itemLink)]
+	requestTableCopy["Quality"]  = DolgubonSetCrafter.quality[GetItemLinkFunctionalQuality(itemLink)]
 	requestTableCopy["Name"] = {GetItemLinkName(itemLink), GetItemLinkName(itemLink)}
 	requestTableCopy["Station"] = {station, GetCraftingSkillName(station)}
 	requestTableCopy["isRecipe"] = true
@@ -807,7 +801,6 @@ function DolgubonSetCrafter.craftConfirm()
 end
 
 function DolgubonSetCrafter.removeFromScroll(reference, removeFromLLC, resultTable)
-
 	local requestTable = LazyCrafter:findItemByReference(reference)[1] or resultTable
 
 	if requestTable then 
@@ -820,10 +813,9 @@ function DolgubonSetCrafter.removeFromScroll(reference, removeFromLLC, resultTab
 		reference = reference.Reference
 	end
 	
-
 	for k, v in pairs(queue) do
 		if v.Reference == reference then
-			if (v.Quantity and v.Quantity[1] or 1) >1 and not removeFromLLC then
+			if not removeFromLLC and (v.Quantity and v.Quantity[1] or 1) > ((resultTable and resultTable.quantity) or 1) then
 				v.Quantity[1] = v.Quantity[1] - 1
 				v.Quantity[2] = v.Quantity[1].."x"
 			else
@@ -858,7 +850,6 @@ function DolgubonSetCrafter.clearQueue()
 	for i = #queue, 1, -1 do
 		DolgubonSetCrafter.removeFromScroll(queue[i].Reference, true)
 	end
-
 end
 
 
@@ -866,7 +857,7 @@ end
 function DolgubonSetCrafter.initializeFunctions.initializeCrafting()
 	queue = DolgubonSetCrafter.savedvars.queue
 
-	LazyCrafter = LibLazyCrafting:AddRequestingAddon(DolgubonSetCrafter.name, false, LLCCraftCompleteHandler)
+	LazyCrafter = LibLazyCrafting:AddRequestingAddon(DolgubonSetCrafter.name, false, LLCCraftCompleteHandler, nil, 	 {true,true,true,true,true,true,true,true,true,true,[34] = true})
 	DolgubonSetCrafter.LazyCrafter = LazyCrafter
 	for k, v in pairs(queue) do 
 		if not v.doNotKeep then

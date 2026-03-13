@@ -66,8 +66,9 @@ Created by Dolgubon (Joseph Heinzle)
 			</OnResizeStop>
 			<OnMoveStop>DolgubonSetCrafter.onWindowMove(self) </OnMoveStop>
 			<Controls>
-				<Button name="$(parent)ToggleFurniture" alpha="1" clickSound="Default_Click" inherits="ZO_DefaultButton" text="Toggle Furniture">
+				<Button name="$(parent)ToggleFurniture" alpha="1" clickSound="Default_Click" inherits="ZO_DefaultButton" text="Furniture Crafting">
 					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="200" offsetY="20" />
+					<Dimensions x="170"  />
 					<OnClicked>
 						DolgubonSetCrafter.toggleFurnitureUI(self)
 					</OnClicked>
@@ -171,7 +172,7 @@ Created by Dolgubon (Joseph Heinzle)
 							</OnClicked>
 							<OnMouseEnter>
 								InitializeTooltip(InformationTooltip, self, TOP, 0, 0)
-								SetTooltipText(InformationTooltip,"Port to a publicly open crafting house")
+								SetTooltipText(InformationTooltip,DolgubonSetCrafter.localizedStrings.UIStrings.craftHousePort)
 							</OnMouseEnter>
 							<OnMouseExit>
 								ClearTooltip(InformationTooltip)
@@ -396,10 +397,6 @@ Created by Dolgubon (Joseph Heinzle)
 							<Anchor point="TOP" relativeTo="$(grandparent)Title" relativePoint="BOTTOM" offsetX="-180" offsetY="35" />
 							<Anchor point="BOTTOM" relativeTo="$(parent)Add" relativePoint="BOTTOM" offsetX="-180" offsetY="-35" />
 							<Controls>
-								<Label name="$(parent)Test" font="ZoFontWinH4" horizontalAlignment="CENTER" text="Furniture crafting is still new to this addon. More furniture features will be added later!">
-									<Dimensions x="350" />
-									<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="40" offsetY="20" />
-								</Label>
 								<Button name="$(parent)Food" inherits="PieceButtonTemplate">
 									<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="30" offsetY="40" />
 								</Button>
@@ -440,7 +437,7 @@ Created by Dolgubon (Joseph Heinzle)
 									<Controls>
 										<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" textType="TEXT_TYPE_ALL" text="" mouseEnabled="true">
 											<OnInitialized>
-												ZO_EditDefaultText_Initialize(self, "Search")
+												ZO_EditDefaultText_Initialize(self, DolgubonSetCrafter.localizedStrings.UIStrings.defaultSearchText)
 												--DolgubonSetCrafterWindowInputBox = self
 											</OnInitialized>
 											<OnTextChanged>
