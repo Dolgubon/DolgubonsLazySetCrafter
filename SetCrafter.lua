@@ -178,6 +178,8 @@ function DolgubonSetCrafter:Initialize()
 	if not ZO_IsConsoleOrGameCoreUI() then
 		DolgubonSetCrafter.initializeFunctions.setupUI()
 		DolgubonSetCrafter.initializeFunctions.InitializeFurnitureUI()
+	else
+		DolgubonSetCrafter.initializeFunctions.initializeAddItemsMenu()
 	end
 	
 	--DolgubonSetCrafter.initializeFeedbackWindow()

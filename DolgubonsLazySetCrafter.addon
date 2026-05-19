@@ -37,6 +37,8 @@ Keyboard/SetupPatternUI.lua
 Keyboard/SetupDropdowns.lua
 Keyboard/SetupScrollLists.lua
 
+Console/AddItemsMenu.lua
+
 ; Fully sets up the UI
 Keyboard/SetCrafterUI.lua
 
