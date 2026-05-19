@@ -175,8 +175,10 @@ function DolgubonSetCrafter:Initialize()
 	--if pcall(DolgubonSetCrafter.initializeFunctions.initializeCrafting) then else d("Dolgubon's Lazy Set Crafter: UCrafting not loaded") end
 	DolgubonSetCrafter.initializeFunctions.initializeCrafting()
 	--if pcall(DolgubonSetCrafter.initializeFunctions.setupUI) then else d("Dolgubon's Lazy Set Crafter: UI not loaded") end
-	DolgubonSetCrafter.initializeFunctions.setupUI()
-	DolgubonSetCrafter.initializeFunctions.InitializeFurnitureUI()
+	if not ZO_IsConsoleOrGameCoreUI() then
+		DolgubonSetCrafter.initializeFunctions.setupUI()
+		DolgubonSetCrafter.initializeFunctions.InitializeFurnitureUI()
+	end
 	
 	--DolgubonSetCrafter.initializeFeedbackWindow()
 	local buttonInfo = {0,25000,100000, "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7CZ3LW6E66NAU"}
@@ -186,12 +188,14 @@ function DolgubonSetCrafter:Initialize()
 		-- feedbackString = "If you found a bug, have a request or a suggestion, or simply wish to donate, send a mail. You can also check out my house, or donate through Paypal or on Patreon."
 	end
 
-	local LibFeedback = LibFeedback or LibStub:GetLibrary("LibFeedback")
-	local button, window = LibFeedback:initializeFeedbackWindow(DolgubonSetCrafter, "Dolgubon's Lazy Set Crafter",DolgubonSetCrafterWindow, "@Dolgubon", 
-		{TOPLEFT , DolgubonSetCrafterWindow , TOPLEFT , 10, 10}, 
-		buttonInfo, 
-		"If you found a bug, have a request or a suggestion, or wish to donate, you can send me a mail here.")
-	window:SetHidden(true)
+	if not ZO_IsConsoleOrGameCoreUI() then
+		local LibFeedback = LibFeedback or LibStub:GetLibrary("LibFeedback")
+		local button, window = LibFeedback:initializeFeedbackWindow(DolgubonSetCrafter, "Dolgubon's Lazy Set Crafter",DolgubonSetCrafterWindow, "@Dolgubon", 
+			{TOPLEFT , DolgubonSetCrafterWindow , TOPLEFT , 10, 10}, 
+			buttonInfo, 
+			"If you found a bug, have a request or a suggestion, or wish to donate, you can send me a mail here.")
+		window:SetHidden(true)
+	end
 
 	local currentAPIVersionOfAddon = 101049
 
@@ -213,7 +217,9 @@ function DolgubonSetCrafter:Initialize()
 		DolgubonSetCrafterWindowRightInputBox:SetText("@Dolgubonn")
 		DolgubonSetCrafter.updateList()
 	end
-	DolgubonSetCrafter.initializeMailButtons()
+	if not ZO_IsConsoleOrGameCoreUI() then
+		DolgubonSetCrafter.initializeMailButtons()
+	end
 
 	local updateString = ""
 	local showUpdate = false
@@ -224,7 +230,7 @@ function DolgubonSetCrafter:Initialize()
 			showUpdate = true
 		end
 	end
-	if showUpdate then
+	if showUpdate and not ZO_IsConsoleOrGameCoreUI() then
 		DolgubonSetCrafterUpdateInfo:SetHidden(false)
 		DolgubonSetCrafterUpdateInfoUpdateInfo:SetText(updateString)
 	end

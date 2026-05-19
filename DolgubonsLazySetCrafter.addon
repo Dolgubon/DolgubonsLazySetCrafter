@@ -23,8 +23,8 @@ Lang/en.lua
 Lang/$(language).lua
 
 ; Load the UI elements
-Templates.xml
-SetCrafterXMLUI.xml
+Keyboard/Templates.xml
+Keyboard/SetCrafterXMLUI.xml
 
 ; Load all the styles, traits, qualities, etc.
 ConstantSetup.lua
@@ -33,14 +33,14 @@ ConstantSetup.lua
 Toggle.lua
 
 ; These three files split up the UI code so there isn't one monstrous file
-SetupPatternUI.lua
-SetupDropdowns.lua
-SetupScrollLists.lua
+Keyboard/SetupPatternUI.lua
+Keyboard/SetupDropdowns.lua
+Keyboard/SetupScrollLists.lua
 
 ; Fully sets up the UI
-SetCrafterUI.lua
+Keyboard/SetCrafterUI.lua
 
-FurnitureUI.lua
+Keyboard/FurnitureUI.lua
 
 ; This file handles all the LLC crafting interaction
 Crafter.lua
