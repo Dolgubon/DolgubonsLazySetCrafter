@@ -380,9 +380,9 @@ local function addToQueue(requestTable, craftMultiplier )
 			end
 			requestTableCopy["CraftRequestTable"] = CraftRequestTable
 			if enchantRequestTable then
-				requestTableCopy["Link"] = LazyCrafter:getItemLinkFromParticulars(pattern,  isCP, CraftRequestTable[3], styleIndex, trait, station, setIndex, quality, enchantRequestTable.potencyItemID,enchantRequestTable.essenceItemID,  enchantRequestTable.aspectItemID)
+				requestTableCopy["Link"] = LazyCrafter.getItemLinkFromRequest(returnedTable)
 			else
-				requestTableCopy["Link"] = LazyCrafter:getItemLinkFromParticulars(pattern,  isCP, CraftRequestTable[3], styleIndex, trait, station, setIndex, quality)
+				requestTableCopy["Link"] = LazyCrafter.getItemLinkFromRequest(returnedTable)
 			end
 			applyValidityFunctions(requestTableCopy)
 			if returnedTable then
