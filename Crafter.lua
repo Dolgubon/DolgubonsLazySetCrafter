@@ -378,11 +378,8 @@ local function addToQueue(requestTable, craftMultiplier )
 				requestTableCopy["Level"][2] = "CP ".. requestTableCopy["Level"][2]
 			end
 			requestTableCopy["CraftRequestTable"] = CraftRequestTable
-			if enchantRequestTable then
-				requestTableCopy["Link"] = LazyCrafter.getItemLinkFromRequest(returnedTable)
-			else
-				requestTableCopy["Link"] = LazyCrafter.getItemLinkFromRequest(returnedTable)
-			end
+			requestTableCopy["Link"] = LazyCrafter.getItemLinkFromRequest(returnedTable)
+			
 			applyValidityFunctions(requestTableCopy)
 			if returnedTable then
 				addRequirements(returnedTable, true)
