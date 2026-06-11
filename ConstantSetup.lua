@@ -51,6 +51,14 @@ DolgubonSetCrafter.jewelryTraits =
 	
 
 
+local function GetSmithingStyleItemInfo(itemStyleId)
+    local styleItemLink = GetItemStyleMaterialLink(itemStyleId)
+    local alwaysHideIfLocked = GetItemStyleInfo(itemStyleId)
+    local name = GetItemLinkName(styleItemLink)
+    local icon, sellPrice, meetsUsageRequirement = GetItemLinkInfo(styleItemLink)
+    local displayQuality = GetItemLinkDisplayQuality(styleItemLink)
+    return name, icon, sellPrice, meetsUsageRequirement, itemStyleId, displayQuality, alwaysHideIfLocked
+end
 
 
 local styles = {}
