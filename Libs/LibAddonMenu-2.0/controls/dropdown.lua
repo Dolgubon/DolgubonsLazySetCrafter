@@ -383,7 +383,7 @@ function LAMCreateControl.dropdown(parent, dropdownData, controlName)
     end
     local comboboxCount = (countControl.comboboxCount or 0) + 1
     countControl.comboboxCount = comboboxCount
-    control.combobox = wm:CreateControlFromVirtual(zo_strjoin(nil, name, "Combobox", comboboxCount), control.container, dropdownData.scrollable and "ZO_ScrollableComboBox" or "ZO_ComboBox")
+    control.combobox = wm:CreateControlFromVirtual(zo_strjoin(nil, name, "Combobox", comboboxCount), control.container, "ZO_ComboBox")
 
     local combobox = control.combobox
     combobox:SetAnchor(TOPLEFT)

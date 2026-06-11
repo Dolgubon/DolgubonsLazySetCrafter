@@ -5,6 +5,18 @@ DolgubonSetCrafter.CategoryScrollList = CategoryScrollList
 
 DolgubonSetCrafter = DolgubonSetCrafter or {}
 DolgubonSetCrafter.initializeFunctions = DolgubonSetCrafter.initializeFunctions or {}
+local originalGameCoreUI = IsGameCoreUI
+local IsGameCoreUI = originalGameCoreUI
+if GetDisplayName() == "@Dolgubon" then
+	local originalGameCoreUI = IsGameCoreUI
+	IsGameCoreUI = function() if IsConsoleUI() then return true else return originalGameCoreUI() end end
+end
+DolgubonSetCrafter.IsGameCoreUI = IsGameCoreUI
+if IsGameCoreUI() then
+	DolgubonSetCrafter.initializeFunctions.InitializeFurnitureUI = function() end
+	DolgubonSetCrafter.isCurrentlyInFurniture = function() return false end
+	return
+end
 local createToggle = DolgubonSetCrafter.createToggle
 local colours = 
 {
@@ -219,8 +231,11 @@ function RecipeScrollList:New(control)
 	}
 	
  	self.masterList = {}
-	
- 	ZO_ScrollList_AddDataType(self.list, 1, "ZO_ProvisionerNavigationEntry", 23.4, function(control, data) self:SetupEntry(control, data) end)
+	if IsGameCoreUI() then
+		ZO_ScrollList_AddDataType(self.list, 1, "DSC_ProvisionerNavigationEntry", 23.4, function(control, data) self:SetupEntry(control, data) end)
+	else
+	 	ZO_ScrollList_AddDataType(self.list, 1, "ZO_ProvisionerNavigationEntry", 23.4, function(control, data) self:SetupEntry(control, data) end)
+	 end
  	ZO_ScrollList_EnableHighlight(self.list, "ZO_ThinListHighlight")
 	
 	self.currentSortKey = "name"

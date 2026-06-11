@@ -304,6 +304,7 @@ function MaterialScroll:SetupEntry(control, data)
 
 		end
 	end
+	self.automaticallyColorRows = false
 	ZO_SortFilterList.SetupRow(self, control, data)
 end
 

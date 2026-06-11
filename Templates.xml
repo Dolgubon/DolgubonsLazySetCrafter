@@ -1,7 +1,13 @@
 <GuiXml>
 	<Controls>
 		<!-- This button template is used as a template for all the piece toggle buttons.-->
-
+		<Control name="DSC_FontSwapper" virtual="true">
+			<OnInitialized>
+				if DolgubonSetCrafter.IsGameCoreUI() and self.SetFont then
+					self:SetFont("ZoFontGamepad27")
+				end
+			</OnInitialized>
+		</Control>
 		<Button name="PieceButtonTemplate" virtual="true" alpha="1"><!--inherits="ToggleButton">-->
 			<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
 			<Dimensions x="48" y="48" />
@@ -40,7 +46,7 @@
 						self:toggle()
 					</OnClicked>
 					<Controls>
-						<Label name="$(parent)Label" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Auto Craft" mouseEnabled="true">
+						<Label name="$(parent)Label" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Auto Craft" mouseEnabled="true" inherits="DSC_FontSwapper">
 							<Anchor point="LEFT" relativeTo="$(parent)Checkbox" relativePoint="RIGHT" />
 							<OnMouseEnter>
 								--d("1")
@@ -61,18 +67,25 @@
 			<Dimensions x="48" y="48" />
 		</Control>
 		<!-- This template is used for all the scrolling comboboxes which have a large amount of options (e.g. style, set)-->
-		<Label name="ScrollComboboxTemplate" virtual="true">
+		<Label name="ScrollComboboxTemplate" virtual="true" inherits="DSC_FontSwapper">
 			<Dimensions x="250" y="30" />
 			<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="20" />
 			<Controls>
 
-				<Label name="$(parent)Name" font="ZoFontGame" verticalAlignment="CENTER">
+				<Label name="$(parent)Name" font="ZoFontGame" verticalAlignment="CENTER" inherits="DSC_FontSwapper">
 					<Dimensions x="250" y="48" />
 					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
 				</Label>
-				<Control name="$(parent)ComboBox" inherits="ZO_ScrollableComboBox" mouseEnabled="true"><!--ZO_ScrollableComboBox-->
+				<Control name="$(parent)ComboBox" inherits="ZO_ComboBox" mouseEnabled="true">
 					<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" offsetY="0" />
 					<Dimensions x="175" y="30" />
+					<OnInitialized>
+						ZO_ComboBox:New(self)
+						DolgubonSetCrafter.fontSwapper(self)
+						DolgubonSetCrafter.fontSwapper(self:GetNamedChild("SelectedItemText"))
+						DolgubonSetCrafter.fontSwapper(self:GetNamedChild("OpenDropdown"))
+						self.m_comboBox.m_font = "ZoFontGamepad27"
+					</OnInitialized>
 				</Control>
 			</Controls>
 		</Label>
@@ -82,18 +95,25 @@
 
 			<Controls>
 
-				<Label name="$(parent)Name" font="ZoFontGame" verticalAlignment="CENTER">
+				<Label name="$(parent)Name" font="ZoFontGame" verticalAlignment="CENTER" inherits="DSC_FontSwapper">
 					<Dimensions x="250" y="48" />
 					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
 				</Label>
 				<Control name="$(parent)ComboBox" inherits="ZO_ComboBox" mouseEnabled="true">
 					<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" offsetY="0" />
 					<Dimensions x="175" y="30" />
+					<OnInitialized>
+						ZO_ComboBox:New(self)
+						DolgubonSetCrafter.fontSwapper(self)
+						DolgubonSetCrafter.fontSwapper(self:GetNamedChild("SelectedItemText"))
+						DolgubonSetCrafter.fontSwapper(self:GetNamedChild("OpenDropdown"))
+						self.m_comboBox.m_font = "ZoFontGamepad27"
+					</OnInitialized>
 				</Control>
 			</Controls>
 		</Label>
 		<!-- These templates are the labels in the crafting queue. It handles the tooltip + colour. -->
-		<Label name="QueueRowLabelTemplate" font="ZoFontGame" verticalAlignment="CENTER" virtual="true" mouseEnabled="true">
+		<Label name="QueueRowLabelTemplate" font="ZoFontGame" verticalAlignment="CENTER" virtual="true" mouseEnabled="true" inherits="DSC_FontSwapper">
 			<OnInitialized>
 				local original = self.SetColor
 				self.ApplyColour = function(self, isKnown)
@@ -119,6 +139,7 @@
 				end
 				
 				self.SetColor = function(self,...)  end
+				DolgubonSetCrafter.fontSwapper(self)
 			</OnInitialized>
 			<OnMouseEnter>
 				if self.isKnown == false then
@@ -160,6 +181,7 @@
 					InitializeTooltip(ItemTooltip, self, TOP, 0, 20)
 					ItemTooltip:SetLink(self.data[1].Name)
 				end
+				DolgubonSetCrafter.fontSwapper(self)
 			</OnMouseEnter>
 			<OnMouseExit>
 				ClearTooltip(ItemTooltip)
@@ -207,7 +229,7 @@
 			<Dimensions x="220" y="30" />
 			<Controls>
 
-				<Label name="$(parent)Name" font="ZoFontGame" verticalAlignment="CENTER" color="76BCC3" mouseEnabled="false" wrapMode="TEXT_WRAP_MODE_TRUNCATE">
+				<Label name="$(parent)Name" font="ZoFontGame" verticalAlignment="CENTER" color="76BCC3" mouseEnabled="false" wrapMode="TEXT_WRAP_MODE_TRUNCATE" inherits="DSC_FontSwapper">
 
 					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" />
 				</Label>
@@ -232,10 +254,10 @@
 						self:GetParent():GetNamedChild("Name"):SetHidden(true)
 					</OnClicked>
 				</Button>
-				<EditBox name="$(parent)EditName" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" textType="number" hidden="true">
+				<EditBox name="$(parent)EditName" inherits="ZO_DefaultEditForBackdrop" textType="number" hidden="true">
 
 					<OnInitialized>
-						ZO_EditDefaultText_Initialize(self, "")
+						self:SetDefaultText("")
 					</OnInitialized>
 					<OnFocusLost>
 						self:SetHidden(true)

@@ -32,19 +32,19 @@ Created by Dolgubon (Joseph Heinzle)
 			<Dimensions x="600" y="200" />
 			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
 			<Controls>
-				<Label name="$(parent)Title" scale="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Dolgubon's Lazy Set Crafter Update Info">
+				<Label name="$(parent)Title" scale="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Dolgubon's Lazy Set Crafter Update Info" inherits="DSC_FontSwapper">
 
 					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="10" />
 					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" offsetY="10" />
 				</Label>
-				<Label name="$(parent)UpdateInfo" scale="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="LEFT">
+				<Label name="$(parent)UpdateInfo" scale="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="LEFT" inherits="DSC_FontSwapper">
 
 					<Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="TOPLEFT" offsetX="0" offsetY="10" />
 				</Label>
 				<Backdrop name="$(parent)Backdrop" alpha="1" inherits="ZO_DefaultBackdrop" centerColor="666666">
 					<AnchorFill />
 				</Backdrop>
-				<Button name="$(parent)ResetPatterns" alpha="1" text="Close" inherits="ZO_DefaultButton">
+				<Button name="$(parent)ResetPatterns" alpha="1" text="Close" inherits="ZO_DefaultButton DSC_FontSwapper">
 
 					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-20" />
 					<OnClicked>
@@ -72,6 +72,9 @@ Created by Dolgubon (Joseph Heinzle)
 					<OnClicked>
 						DolgubonSetCrafter.toggleFurnitureUI(self)
 					</OnClicked>
+					<OnInitialized>
+						if DolgubonSetCrafter.IsGameCoreUI() then self:SetHidden(true) end
+					</OnInitialized>
 				</Button>
 				<Control name="$(parent)Favourites" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false">
 					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="2" offsetY="0" />
@@ -89,7 +92,7 @@ Created by Dolgubon (Joseph Heinzle)
 								ShowMenu(dscont)
 							</OnClicked>
 						</Button>
-						<Label name="$(parent)Title" scale="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Favourites">
+						<Label name="$(parent)Title" scale="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Favourites" inherits="DSC_FontSwapper">
 
 							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="10" />
 							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="10" />
@@ -148,18 +151,18 @@ Created by Dolgubon (Joseph Heinzle)
 					<Controls>
 						<!--Setting up the window -->
 
-						<Label name="$(grandparent)Title" scale="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Dolgubon's Lazy Set Crafter">
+						<Label name="$(grandparent)Title" scale="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Dolgubon's Lazy Set Crafter" inherits="DSC_FontSwapper">
 
 							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="10" />
 							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="10" />
 						</Label>
-						<Label name="$(grandparent)Output" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="">
+						<Label name="$(grandparent)Output" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="" inherits="DSC_FontSwapper">
 							<Dimensions x="25" />
 
 							<Anchor point="TOPLEFT" relativeTo="$(grandparent)Title" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="5" />
 							<Anchor point="TOPRIGHT" relativeTo="$(grandparent)Title" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="5" />
 						</Label>
-						<Button name="$(grandparent)CraftHousePort" alpha="1" clickSound="Default_Click" text="Crafting House" inherits="ZO_DefaultButton">
+						<Button name="$(grandparent)CraftHousePort" alpha="1" clickSound="Default_Click" text="Crafting House" inherits="ZO_DefaultButton DSC_FontSwapper">
 							<Textures
 								normal="/esoui/art/lfg/lfg_indexicon_homeshow_up.dds"
 								pressed="/esoui/art/lfg/lfg_indexicon_homeshow_down.dds"
@@ -167,6 +170,12 @@ Created by Dolgubon (Joseph Heinzle)
 							/>
 							<Anchor point="LEFT" relativeTo="$(grandparent)Title" relativePoint="LEFT" offsetX="50" offsetY="15" />
 							<Dimensions x="65" y="55" />
+							<OnInitialized>
+								DolgubonSetCrafter.fontSwapper(self)
+								if DolgubonSetCrafter.IsGameCoreUI() then
+									self:SetWidth(180)
+								end
+							</OnInitialized>
 							<OnClicked>
 								DolgubonSetCrafter.portToCraftingHouse()
 							</OnClicked>
@@ -201,7 +210,7 @@ Created by Dolgubon (Joseph Heinzle)
 
 									<Anchor point="TOPLEFT" relativeTo="$(parent)Armour" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
 								</Control>
-								<Button name="$(grandparent)ResetPatterns" alpha="1" text="Clear Patterns" inherits="ZO_DefaultButton">
+								<Button name="$(grandparent)ResetPatterns" alpha="1" text="Clear Patterns" inherits="ZO_DefaultButton DSC_FontSwapper">
 
 									<Anchor point="LEFT" relativeTo="$(parent)Weapons" relativePoint="RIGHT" offsetX="15" />
 									<Dimensions x="150" y="28" />
@@ -215,7 +224,7 @@ Created by Dolgubon (Joseph Heinzle)
 							<Anchor point="TOPRIGHT" relativeTo="$(grandparent)Output" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
 						</Control>
 						<!-- Creating the holder for the comboboxes/-->
-						<Label name="$(grandparent)Comboboxes" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Attributes" resizeToFitDescendents="false">
+						<Label name="$(grandparent)Comboboxes" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Attributes" resizeToFitDescendents="false" inherits="DSC_FontSwapper">
 
 							<Dimensions x="800" y="105" />
 							<Anchor point="TOPLEFT" relativeTo="$(grandparent)PatternInput" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="5" />
@@ -251,7 +260,7 @@ Created by Dolgubon (Joseph Heinzle)
 									<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" />
 									<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="CENTER" />
 								</Control>
-								<Button name="$(grandparent)ResetSelections" alpha="1" text="Reset to Default" inherits="ZO_DefaultButton">
+								<Button name="$(grandparent)ResetSelections" alpha="1" text="Reset to Default" inherits="ZO_DefaultButton DSC_FontSwapper">
 
 									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)PositionRight" relativePoint="BOTTOMRIGHT" />
 									<Anchor point="BOTTOMLEFT" relativeTo="$(parent)PositionRight" relativePoint="BOTTOM" />
@@ -261,7 +270,7 @@ Created by Dolgubon (Joseph Heinzle)
 										DolgubonSetCrafter.resetChoices()
 									</OnClicked>
 								</Button>
-								<Button name="$(grandparent)Add" alpha="1" clickSound="Default_Click" text="Add To Queue" inherits="ZO_DefaultButton">
+								<Button name="$(grandparent)Add" alpha="1" clickSound="Default_Click" text="Add To Queue" inherits="ZO_DefaultButton DSC_FontSwapper">
 									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)PositionLeft" relativePoint="BOTTOMRIGHT" />
 									<Anchor point="BOTTOMLEFT" relativeTo="$(parent)PositionLeft" relativePoint="BOTTOM" />
 									<Dimensions x="200" y="28" />
@@ -270,7 +279,7 @@ Created by Dolgubon (Joseph Heinzle)
 										DolgubonSetCrafter.craft()
 									</OnClicked>
 								</Button>
-								<Button name="$(grandparent)ClearQueue" alpha="1" text="Clear Queue" inherits="ZO_DefaultButton">
+								<Button name="$(grandparent)ClearQueue" alpha="1" text="Clear Queue" inherits="ZO_DefaultButton DSC_FontSwapper"> 
 
 									<Anchor point="BOTTOMLEFT" relativeTo="$(parent)PositionLeft" relativePoint="BOTTOMLEFT" />
 									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)PositionLeft" relativePoint="BOTTOM" />
@@ -279,7 +288,7 @@ Created by Dolgubon (Joseph Heinzle)
 										DolgubonSetCrafter.clearQueue()
 									</OnClicked>
 								</Button>
-								<Button name="$(grandparent)Craft" hidden="false" clickSound="Default_Click" text="Craft" inherits="ZO_DefaultButton">
+								<Button name="$(grandparent)Craft" hidden="false" clickSound="Default_Click" text="Craft" inherits="ZO_DefaultButton DSC_FontSwapper">
 
 									<Anchor point="BOTTOMLEFT" relativeTo="$(parent)PositionRight" relativePoint="BOTTOMLEFT" />
 									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)PositionRight" relativePoint="BOTTOM" />
@@ -301,10 +310,10 @@ Created by Dolgubon (Joseph Heinzle)
 							<Anchor point="TOPLEFT" relativeTo="$(parent)InteractionButtons" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
 							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="-20" />
 							<Controls>
-								<Label name="$(parent)Label" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Crafting Requests">
+								<Label name="$(parent)Label" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Crafting Requests" inherits="DSC_FontSwapper">
 									<Anchor point="TOP" relativeTo="$(parent)Backdrop" relativePoint="TOP" offsetX="0" offsetY="0" />
 								</Label>
-								<Label name="$(parent)Counter" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="">
+								<Label name="$(parent)Counter" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="" inherits="DSC_FontSwapper">
 									<Anchor point="LEFT" relativeTo="$(parent)Label" relativePoint="RIGHT" offsetX="0" offsetY="0" />
 								</Label>
 								<Control name="$(parent)List" inherits="ZO_ScrollList">
@@ -326,11 +335,12 @@ Created by Dolgubon (Joseph Heinzle)
 									<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" offsetY="0" />
 									<Dimensions x="50" />
 									<Controls>
-										<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" textType="NUMERIC_UNSIGNED_INT">
+										<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_DefaultEdit DSC_FontSwapper" textType="NUMERIC_UNSIGNED_INT">
 
 											<OnInitialized>
-												ZO_EditDefaultText_Initialize(self, "")
+												self:SetDefaultText("")
 												--DolgubonSetCrafterWindowInputBox = self
+												DolgubonSetCrafter.fontSwapper(self)
 											</OnInitialized>
 											<OnTextChanged>
 												DolgubonSetCrafter.savedvars["level"] = self:GetText()
@@ -347,11 +357,11 @@ Created by Dolgubon (Joseph Heinzle)
 									</OnClicked>
 								</Button>
 
-								<Label name="$(parent)CPLabel" alpha="1" text="CP" color="FFFFFF" font="ZoFontGameLargeBold" hidden="true">
+								<Label name="$(parent)CPLabel" alpha="1" text="CP" color="FFFFFF" font="ZoFontGameLargeBold" hidden="true" inherits="DSC_FontSwapper">
 									<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)ToggleChampion" offsetX="-15" />
 
 								</Label>
-								<Label name="$(parent)LevelLabel" alpha="1" text="Level:" color="FFFFFF" font="ZoFontGameLargeBold">
+								<Label name="$(parent)LevelLabel" alpha="1" text="Level:" color="FFFFFF" font="ZoFontGameLargeBold" inherits="DSC_FontSwapper">
 									<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" />
 
 								</Label>
@@ -372,11 +382,12 @@ Created by Dolgubon (Joseph Heinzle)
 									<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" offsetY="0" />
 									<Dimensions x="150" />
 									<Controls>
-										<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" textType="NUMERIC_UNSIGNED_INT" text="1">
+										<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_DefaultEdit DSC_FontSwapper" textType="NUMERIC_UNSIGNED_INT" text="1">
 
 											<OnInitialized>
-												ZO_EditDefaultText_Initialize(self, "")
+												self:SetDefaultText("")
 												--DolgubonSetCrafterWindowInputBox = self
+												DolgubonSetCrafter.fontSwapper(self)
 											</OnInitialized>
 											<OnTextChanged>
 												DolgubonSetCrafter.savedvars["multiplier"] = self:GetText()
@@ -385,7 +396,7 @@ Created by Dolgubon (Joseph Heinzle)
 									</Controls>
 								</Backdrop>
 
-								<Label name="$(parent)Label" alpha="1" text="Multiplier:" color="FFFFFF" font="ZoFontGameLargeBold">
+								<Label name="$(parent)Label" alpha="1" text="Multiplier:" color="FFFFFF" font="ZoFontGameLargeBold" inherits="DSC_FontSwapper">
 									<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" />
 
 								</Label>
@@ -406,7 +417,7 @@ Created by Dolgubon (Joseph Heinzle)
 								<Button name="$(parent)Furniture" inherits="PieceButtonTemplate">
 									<Anchor point="LEFT" relativeTo="$(parent)Drinks" relativePoint="RIGHT" offsetX="10" offsetY="0" />
 								</Button>
-								<Label name="$(parent)SelectedItem" font="ZoFontWinH4" horizontalAlignment="LEFT" text="" inherits="DSC_ItemLinkMouseOverLabel">
+								<Label name="$(parent)SelectedItem" font="ZoFontWinH4" horizontalAlignment="LEFT" text="" inherits="DSC_ItemLinkMouseOverLabel DSC_FontSwapper" >
 									<Dimensions x="350" />
 									<Anchor point="TOPLEFT" relativeTo="$(parent)Food" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
 								</Label>
@@ -435,10 +446,11 @@ Created by Dolgubon (Joseph Heinzle)
 									<Anchor point="LEFT" relativeTo="$(parent)Furniture" relativePoint="RIGHT" offsetX="10" offsetY="0" />
 									<Dimensions x="150" />
 									<Controls>
-										<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" textType="TEXT_TYPE_ALL" text="" mouseEnabled="true">
+										<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_DefaultEdit" textType="TEXT_TYPE_ALL" text="" mouseEnabled="true">
 											<OnInitialized>
-												ZO_EditDefaultText_Initialize(self, DolgubonSetCrafter.localizedStrings.UIStrings.defaultSearchText)
+												self:SetDefaultText( DolgubonSetCrafter.localizedStrings.UIStrings.defaultSearchText)
 												--DolgubonSetCrafterWindowInputBox = self
+												DolgubonSetCrafter.fontSwapper(self)
 											</OnInitialized>
 											<OnTextChanged>
 												DolgubonSetCrafter:RefreshRecipeList()
@@ -459,7 +471,7 @@ Created by Dolgubon (Joseph Heinzle)
 						self.GetName = function() return DolgubonSetCrafterWindow:GetName() end
 					</OnInitialized>
 					<Controls>
-						<Button name="$(parent)RefreshMaterials" alpha="1" clickSound="Default_Click" inheritAlpha="false">
+						<Button name="$(parent)RefreshMaterials" alpha="1" clickSound="Default_Click" inheritAlpha="false" inherits="DSC_FontSwapper">
 							<Textures
 								normal="esoui/art/help/help_tabicon_feedback_up.dds"
 								pressed="esoui/art/hud/gamepad/gp_radialicon_trade_down.dds"
@@ -472,15 +484,15 @@ Created by Dolgubon (Joseph Heinzle)
 							</OnClicked>
 						</Button>
 
-						<Label name="$(parent)Label" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Material Requirements" inheritAlpha="false">
+						<Label name="$(parent)Label" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Material Requirements" inheritAlpha="false" inherits="DSC_FontSwapper">
 							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="10" />
 							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="10" />
 						</Label>
-						<Label name="$(parent)Cost" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Total Cost:" inheritAlpha="false">
+						<Label name="$(parent)Cost" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Total Cost:" inheritAlpha="false" inherits="DSC_FontSwapper">
 							<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Label" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="20" />
 							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Label" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="20" />
 						</Label>
-						<Button name="$(parent)PriceHelp" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="" inheritAlpha="false">
+						<Button name="$(parent)PriceHelp" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="" inheritAlpha="false" inherits="DSC_FontSwapper">
 							<Anchor point="LEFT" relativeTo="$(parent)Cost" relativePoint="RIGHT" offsetX="-60" offsetY="0" />
 							<Dimensions x="27" y="27" />
 							<Textures normal="/esoui/art/menubar/menubar_help_up.dds" mouseOver="/esoui/art/menubar/menubar_help_down.dds" />
@@ -500,11 +512,12 @@ Created by Dolgubon (Joseph Heinzle)
 							</OnClicked>
 						</Button>
 
-						<Button name="$(parent)ShowFavourites" alpha="1" clickSound="Default_Click" text="Show Favourites" inherits="ZO_DefaultButton" inheritAlpha="false">
+						<Button name="$(parent)ShowFavourites" alpha="1" clickSound="Default_Click" text="Show Favourites" inherits="ZO_DefaultButton DSC_FontSwapper"  inheritAlpha="false">
 							<Anchor point="BOTTOM" relativeTo="$(parent)Cost" relativePoint="BOTTOM" offsetX="0" offsetY="28" />
 							<Dimensions x="200" y="24" />
 							<OnInitialized>
 		      					self:SetText(DolgubonSetCrafter.localizedStrings.UIStrings.showFavourites)
+		      					DolgubonSetCrafter.fontSwapper(self)
 		      				</OnInitialized>
 							<OnClicked>
 								DolgubonSetCrafter:GetSettings().showFavourites = not DolgubonSetCrafter:GetSettings().showFavourites
@@ -526,7 +539,7 @@ Created by Dolgubon (Joseph Heinzle)
 							</Controls>
 
 						</Control>
-						<Button name="$(parent)MailRequirements" alpha="1" clickSound="Default_Click" text="Requirements To Mail" inherits="ZO_DefaultButton" inheritAlpha="false">
+						<Button name="$(parent)MailRequirements" alpha="1" clickSound="Default_Click" text="Requirements To Mail" inherits="ZO_DefaultButton DSC_FontSwapper" inheritAlpha="false">
 							<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-10" />
 							<Dimensions x="200" y="28" />
 							<OnClicked>
@@ -535,7 +548,7 @@ Created by Dolgubon (Joseph Heinzle)
 								
 							</OnClicked>
 						</Button>
-						<Button name="$(parent)MailQueue" alpha="1" text="Mail Request" inherits="ZO_DefaultButton" inheritAlpha="false">
+						<Button name="$(parent)MailQueue" alpha="1" text="Mail Request" inherits="ZO_DefaultButton DSC_FontSwapper" inheritAlpha="false">
 							<Anchor point="BOTTOM" relativeTo="$(parent)MailRequirements" relativePoint="TOP" offsetX="0" offsetY="-5" />
 							<Dimensions x="200" y="28" />
 							<OnClicked>
@@ -547,12 +560,14 @@ Created by Dolgubon (Joseph Heinzle)
 							<Anchor point="BOTTOM" relativeTo="$(parent)MailQueue" relativePoint="TOP" offsetX="0" offsetY="-5" />
 							<Dimensions x="200" />
 							<Controls>
-								<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText">
+								<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_DefaultEdit DSC_FontSwapper">
 
 									<OnInitialized>
 										--DolgubonSetCrafterWindowRightInputBox:SetText( DolgubonSetCrafter.localizedStrings.UIStrings.defaultUserId)
-										ZO_EditDefaultText_Initialize(self, DolgubonSetCrafter.localizedStrings.UIStrings.defaultUserId)
+										self:SetDefaultText(DolgubonSetCrafter.localizedStrings.UIStrings.defaultUserId)
+										
 										local editControlGroup = ZO_EditControlGroup:New()
+										DolgubonSetCrafter.fontSwapper(self)
 										<!-- 
 											- -Add new recipient and new subject into an edit group and add autocomplete for the recipient name
 									        local editControlGroup = ZO_EditControlGroup:New()
@@ -563,18 +578,18 @@ Created by Dolgubon (Joseph Heinzle)
 									</OnInitialized>
 									<OnTextChanged>
 										if self:GetText() ~= "" then
-										ZO_EditDefaultText_Initialize(self, "")
+										self:SetDefaultText("")
 											--DolgubonSetCrafterWindowRightInputBox:SetText( DolgubonSetCrafter.localizedStrings.UIStrings.defaultUserId)
 										else
 											--DolgubonSetCrafterWindowRightInputBox:SetText("")
-											ZO_EditDefaultText_Initialize(self, DolgubonSetCrafter.localizedStrings.UIStrings.defaultUserId)
+											self:SetDefaultText( DolgubonSetCrafter.localizedStrings.UIStrings.defaultUserId)
 										end
 										
 									</OnTextChanged>
 								</EditBox>
 							</Controls>
 						</Backdrop>
-						<Button name="$(parent)OutputRequirements" alpha="1" text="Requirements To Chat" inherits="ZO_DefaultButton" inheritAlpha="false">
+						<Button name="$(parent)OutputRequirements" alpha="1" text="Requirements To Chat" inherits="ZO_DefaultButton DSC_FontSwapper" inheritAlpha="false">
 							<Anchor point="BOTTOM" relativeTo="$(parent)Input" relativePoint="TOP" offsetX="0" offsetY="-5" />
 							<Dimensions x="200" y="28" />
 							<OnClicked>
@@ -583,7 +598,7 @@ Created by Dolgubon (Joseph Heinzle)
 								
 							</OnClicked>
 						</Button>
-						<Button name="$(parent)OutputRequest" alpha="1" text="Request To Chat" inherits="ZO_DefaultButton" inheritAlpha="false">
+						<Button name="$(parent)OutputRequest" alpha="1" text="Request To Chat" inherits="ZO_DefaultButton DSC_FontSwapper" inheritAlpha="false">
 							<Anchor point="BOTTOM" relativeTo="$(parent)OutputRequirements" relativePoint="TOP" offsetX="0" offsetY="-5" />
 							<Dimensions x="200" y="28" />
 							<OnClicked>

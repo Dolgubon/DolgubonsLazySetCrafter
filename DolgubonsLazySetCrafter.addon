@@ -18,6 +18,9 @@
 Libs/LibFeedback/libs/LibStub.lua
 Libs/LibFeedback/feedback.lua
 
+Namespace.lua
+TemplateAliases.xml
+
 ; Localization files - Default (en) first
 Lang/en.lua
 Lang/$(language).lua

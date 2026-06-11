@@ -48,6 +48,8 @@ local newFeatureInfo =
 	['homeStation'] = "· Dolgubon's Lazy Set Crafter now has integration with Home Station Marker!\n You can check it out on ESOUI or Minion",
 	['priceSwitch'] = "· You can now switch between different pricing sources in Dolgubon's Lazy\n Set Crafter by clicking the question mark on the materials list",
 }
+local originalIsConsole = IsConsoleUI
+local IsConsoleUI = function() if GetDisplayName() == "@Dolgubon"  then return false else return originalIsConsole() end end
 
 
 DolgubonSetCrafter.version = 5

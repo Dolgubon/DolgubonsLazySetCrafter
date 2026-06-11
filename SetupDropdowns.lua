@@ -266,8 +266,14 @@ local function makeDropdownSelections(comboBoxContainer, tableInfo , text , x, y
 		self.comboBox.m_comboBox:SelectItem(self.idSelectors[id])
 	end
 	--make the selection
-	comboBox.m_comboBox:SetSelectedItemFont("ZoFontGameMedium")
-	comboBox.m_comboBox:SetDropdownFont("ZoFontGameMedium")
+	if DolgubonSetCrafter.IsGameCoreUI() then
+		comboBox.m_comboBox:SetSelectedItemFont("ZoFontGamepad27")
+		comboBox.m_comboBox:SetDropdownFont("ZoFontGamepad27")
+	else
+		comboBox.m_comboBox:SetSelectedItemFont("ZoFontGameMedium")
+		comboBox.m_comboBox:SetDropdownFont("ZoFontGameMedium")
+	end
+
 	DolgubonSetCrafterWindowComboboxes:adduiElement(comboBoxContainer)
 end
 

@@ -28,7 +28,7 @@ local function removeFromScroll()
 end
 
 local function getItemLinkFromItemId(itemId) 
-	return string.format("|H0:item:%d:%d:50:0:0:0:0:0:0:0:0:0:0:0:0:%d:%d:0:0:%d:0|h|h", itemId, 0, ITEMSTYLE_NONE, 0, 10000) 
+	return string.format("|H0:item:%d:%d:50:0:0:0:0:0:0:0:0:0:0:0:0:%d:%d:0:0:%d:0|h|h", itemId, 0, 0, 0, 10000) 
 end
 
 local LazyCrafter

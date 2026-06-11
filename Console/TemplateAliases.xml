@@ -1,0 +1,19 @@
+<GuiXml>
+	<Controls>
+		<Label name="DSC_ProvisionerNavigationEntry" virtual="true" font="ZoFontHeader" maxLineCount="2" inherits="ZO_SelectableLabel">
+            <Dimensions x="450"/>
+            <OnInitialized>
+                ZO_SelectableLabel_OnInitialized(self, ZO_ProvisionerRow_GetTextColor)
+            </OnInitialized>
+            <OnMouseUp>
+                ZO_TreeEntry_OnMouseUp(self, upInside)
+            </OnMouseUp>
+            <OnMouseEnter>
+                ZO_ProvisionerNavigationEntry_OnMouseEnter(self)
+            </OnMouseEnter>
+            <OnMouseExit>
+                ZO_ProvisionerNavigationEntry_OnMouseExit(self)
+            </OnMouseExit>
+        </Label>
+	</Controls>
+</GuiXml>
