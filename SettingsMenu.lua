@@ -42,9 +42,11 @@ local options =
 		width = "full"
 	},
 	{
-		type = "checkbox",
+		type = "dropdown",
 		name = SettingsStrings.showAtStation,
-		tooltip =SettingsStrings.showAtStationTooltip,
+		tooltip =SettingsStrings.showAtStationTooltipNew,
+		choices = SettingsStrings.showAtSationChoices,
+		choicesValues = {false, true, "sets"},
 		getFunc = function() return DolgubonSetCrafter:GetSettings().OpenAtCraftStation end,
 		setFunc = function(value) 
 			DolgubonSetCrafter:GetSettings().OpenAtCraftStation = value

@@ -93,8 +93,8 @@ DolgubonSetCrafter.localizedStrings.SettingsStrings.nowEditing                  
 DolgubonSetCrafter.localizedStrings.SettingsStrings.accountWide                  = "Account Wide"
 DolgubonSetCrafter.localizedStrings.SettingsStrings.characterSpecific            = "Character Specific"
 
-DolgubonSetCrafter.localizedStrings.SettingsStrings.showAtStation 				= "Show at Station"
-DolgubonSetCrafter.localizedStrings.SettingsStrings.showAtStationTooltip			= "Always show the Set Crafter UI at crafting stations"
+DolgubonSetCrafter.localizedStrings.SettingsStrings.showAtStation 				= "Show at Station" 
+-- DolgubonSetCrafter.localizedStrings.SettingsStrings.showAtStationTooltip			= "Always show the Set Crafter UI at crafting stations" -- DEPRECATED
 DolgubonSetCrafter.localizedStrings.SettingsStrings.saveLastChoice				= "Save Choices"
 DolgubonSetCrafter.localizedStrings.SettingsStrings.saveLastChoiceTooltip		= "Save the last selected choices"
 DolgubonSetCrafter.localizedStrings.SettingsStrings.closeOnExit                  = "Close on Station Exit"
@@ -103,6 +103,8 @@ DolgubonSetCrafter.localizedStrings.SettingsStrings.useCharacterSettings        
 DolgubonSetCrafter.localizedStrings.SettingsStrings.useCharacterSettingsTooltip  = "Use character specific settings on this character only"
 DolgubonSetCrafter.localizedStrings.SettingsStrings.showToggleButton              = "Always show toggle button"
 DolgubonSetCrafter.localizedStrings.SettingsStrings.showToggleButtonTooltip       = "Show the UI toggle button at all times"
+DolgubonSetCrafter.localizedStrings.SettingsStrings.showAtStationTooltipNew				= "Always show the Set Crafter UI at crafting stations\n - Only show at set stations will show the UI at stations where crafted sets can be made"
+DolgubonSetCrafter.localizedStrings.SettingsStrings.showAtSationChoices			= {"Don't Show","Show at all stations","Only show at set stations"}
 DolgubonSetCrafter.localizedMatScrollWidth 											= 250
 
 

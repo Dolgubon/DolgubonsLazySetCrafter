@@ -164,7 +164,7 @@ function DolgubonSetCrafter:Initialize()
 			DolgubonSetCrafter.savedvars.notifyWiped = false
 		end end)]]
 
-	LLC, version = LibLazyCrafting, LibLazyCrafting.version
+	local LLC, version = LibLazyCrafting, LibLazyCrafting.version
 	if version <2.96 then
 		out("Your version of LibLazyCrafting is incompatible with this version of Dolgubon's Lazy Set Crafter. Please update the library.")
 		out = function() end
@@ -193,7 +193,7 @@ function DolgubonSetCrafter:Initialize()
 		"If you found a bug, have a request or a suggestion, or wish to donate, you can send me a mail here.")
 	window:SetHidden(true)
 
-	local currentAPIVersionOfAddon = 101049
+	local currentAPIVersionOfAddon = 101050
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" then 
 		d("Update your addons!") 
@@ -257,7 +257,10 @@ EVENT_MANAGER:RegisterForEvent(DolgubonSetCrafter.name, EVENT_CRAFTING_STATION_I
 			if not DolgubonSetCrafter:GetAutocraft() then
 				DolgubonSetCrafter.toggleCraftButton(true)
 			end
-			if DolgubonSetCrafter:GetSettings().OpenAtCraftStation then 
+			local currentSetStation = DolgubonSetCrafter.LazyCrafter:GetCurrentSetInteractionIndex() or 0
+			if DolgubonSetCrafter:GetSettings().OpenAtCraftStation == "sets" and (GetNumUnlockedConsolidatedSmithingSets()>0 or currentSetStation > 0) then
+				closeWindow(false) 
+			elseif DolgubonSetCrafter:GetSettings().OpenAtCraftStation == true then
 				closeWindow(false) 
 			else
 				DolgubonSetCrafterToggle:SetHidden(false )
