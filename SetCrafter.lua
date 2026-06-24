@@ -38,8 +38,8 @@ DolgubonSetCrafter.default = {
 	['currentPriceChoice'] = 1,
 	['notifyNewFeatures'] = 
 	{
-		['homeStation'] = false,
-		['priceSwitch'] = false,
+		['homeStation'] = true,
+		['priceSwitch'] = true,
 	},
 	["initialFurniture"] = false,
 }
@@ -48,12 +48,13 @@ local newFeatureInfo =
 	['homeStation'] = "· Dolgubon's Lazy Set Crafter now has integration with Home Station Marker!\n You can check it out on ESOUI or Minion",
 	['priceSwitch'] = "· You can now switch between different pricing sources in Dolgubon's Lazy\n Set Crafter by clicking the question mark on the materials list",
 }
+if IsConsoleUI() then
+	newFeatureInfo.xbpaOnly = "This addon does NOT support physical consoles, it ONLY supports Xbox Play Anywhere."
+	DolgubonSetCrafter.default.notifyNewFeatures.xbpaOnly = false
+end
 local originalIsConsole = IsConsoleUI
-local IsConsoleUI = function() if GetDisplayName() == "@Dolgubon"  then return false else return originalIsConsole() end end
+local IsConsoleUI = function() if GetDisplayName() == "@Dolgubon" and DolgubonSetCrafter.useFakeGameCore then return false else return originalIsConsole() end end
 
-
-DolgubonSetCrafter.version = 5
-DolgubonSetCrafter.name = "DolgubonsLazySetCrafter"
 
 
 local out = DolgubonSetCrafter.out
@@ -145,8 +146,25 @@ function DolgubonSetCrafter:GetSettings()
 	end
 end
 
+local testingWhitelist = -- worried there's a whitelist? temporary, and you cannot pay to get on it. 
+{
+	["@code65536"] = true,
+	["@mehve"] = true,
+	["@Dolgubon"] =true,
+	["@SavageTSC"] = true,
+	["@JC Kit"] = true,
+	['@Dashiel20'] = true,
+	['@Arcanist Rob'] = true,
+	['@ArcanistRob'] = true,
+}
+
 
 function DolgubonSetCrafter:Initialize()
+	if IsConsoleUI() then
+		d("WARNING: This addon does NOT support physical consoles, it ONLY supports Xbox Play Anywhere.")
+		return
+	end
+	
 	--[[LAM = LibStub:GetLibrary("LibAddonMenu-2.0")
 	LAM:RegisterAddonPanel("DolgubonsWritCrafter", DolgubonSetCrafter.settings["panel"])
 	DolgubonSetCrafter.settings["options"] = DolgubonSetCrafter.langOptions()
@@ -185,14 +203,18 @@ function DolgubonSetCrafter:Initialize()
 	end
 	
 	--DolgubonSetCrafter.initializeFeedbackWindow()
-	local buttonInfo = {0,25000,100000, "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7CZ3LW6E66NAU"}
+	local buttonInfo = {0,25000,100000, {"https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7CZ3LW6E66NAU", "Donate $$", false}}
 	if GetWorldName() == "NA Megaserver" then
 		buttonInfo[#buttonInfo+1] = { function()JumpToSpecificHouse( "@Dolgubon", 36) end, "Visit Maze 1"}
 		buttonInfo[#buttonInfo+1] = { function()JumpToSpecificHouse( "@Dolgubon", 9) end, "Visit Maze 2"}
 		-- feedbackString = "If you found a bug, have a request or a suggestion, or simply wish to donate, send a mail. You can also check out my house, or donate through Paypal or on Patreon."
 	end
+	if DolgubonSetCrafter.IsGameCoreUI() then
+		buttonInfo = {{"https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7CZ3LW6E66NAU", "Donate $$", false},{"https://www.esoui.com/downloads/info1697-DolgubonsLazySetCrafter.html","Feedback/Report Bugs",false},}
+	end
 
-	if not ZO_IsConsoleOrGameCoreUI() then
+
+	if not IsConsoleUI() then
 		local LibFeedback = LibFeedback or LibStub:GetLibrary("LibFeedback")
 		local button, window = LibFeedback:initializeFeedbackWindow(DolgubonSetCrafter, "Dolgubon's Lazy Set Crafter",DolgubonSetCrafterWindow, "@Dolgubon", 
 			{TOPLEFT , DolgubonSetCrafterWindow , TOPLEFT , 10, 10}, 

@@ -45,10 +45,23 @@ parentControl, -- The parent control to anchor the feedback button(s) + label(s)
 
 
 local libLoaded
-local LIB_NAME, VERSION = "LibFeedback", 1.21
-local LibFeedback, oldminor = LibStub:NewLibrary(LIB_NAME, VERSION)
-if not LibFeedback then return end
-LibFeedback.debug = false
+local LIB_NAME, VERSION = "LibFeedback", 1.32
+local lib, oldminor
+if LibStub then 
+	lib, oldminor = LibStub:NewLibrary(LIB_NAME, VERSION)
+else
+	lib = {}
+	LibFeedback = lib
+end
+if not lib then return end
+LibFeedback = lib
+lib.debug = false
+lib.version = VERSION
+if GetDisplayName() == "@Dolgubon" then
+	local originalGameCoreUI = IsGameCoreUI
+	IsGameCoreUI = function() if IsConsoleUI() then return true else return originalGameCoreUI() end end
+end
+local fontToUse = IsGameCoreUI() and "ZoFontGamepad22" or "ZoFontGame"
 
 local function SendNote(self)
 
@@ -75,6 +88,7 @@ local function createFeedbackButton(name, owningWindow, feedbackWindowButtonWidt
 	b:SetDimensions(feedbackWindowButtonWidth, feedbackWindowButtonHeight)
 	b:SetHandler("OnClicked",function()SendNote(b) end)
 	b:SetAnchor(BOTTOMLEFT,owningWindow, BOTTOMLEFT,5,5)
+	b:SetFont(fontToUse)
 	return button
 end
 
@@ -84,7 +98,7 @@ local function createShowFeedbackWindow(owningWindow)
 	b:SetDimensions(34, 34)
 	b:SetNormalTexture("ESOUI/art/chatwindow/chat_mail_up.dds")
 	b:SetMouseOverTexture("ESOUI/art/chatwindow/chat_mail_over.dds")
-	b:SetHandler("OnClicked", function(self) self.feedbackWindow:ToggleHidden() end )
+	b:SetHandler("OnClicked", function(self) self.feedbackWindow:ToggleHidden() self.feedbackWindow:BringWindowToTop() end )
 	return showButton
 end
 
@@ -98,7 +112,7 @@ local function createFeedbackWindow(owningWindow, messageText, feedbackWindowWid
 
 	WINDOW_MANAGER:CreateControlFromVirtual(c:GetName().."BG", c, "ZO_DefaultBackdrop"):SetAnchorFill(c)
 	local l = WINDOW_MANAGER:CreateControl(c:GetName().."Label", c, CT_LABEL)
-	l:SetFont("ZoFontGame")
+	l:SetFont(fontToUse)
 	l:SetAnchor(TOP, c,TOP, 0, 5)
 	l:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
 	l:SetColor(0.83, 0.76, 0.16)
@@ -114,12 +128,12 @@ local function createFeedbackWindow(owningWindow, messageText, feedbackWindowWid
     n:SetText(messageText)
     --n:SetAnchorFill()
 	n:SetColor(1, 1, 1)
-	n:SetFont("ZoFontGame")
+	n:SetFont(fontToUse)
 	n:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
 	return feedbackWindow
 end
 
-function LibFeedback:initializeFeedbackWindow(parentAddonNameSpace, parentAddonName, parentControl, mailDestination,  mailButtonPosition, buttonInfo,  messageText, feedbackWindowWidth, feedbackWindowHeight, feedbackWindowButtonWidth, feedbackWindowButtonHeight)
+function lib:initializeFeedbackWindow(parentAddonNameSpace, parentAddonName, parentControl, mailDestination,  mailButtonPosition, buttonInfo,  messageText, feedbackWindowWidth, feedbackWindowHeight, feedbackWindowButtonWidth, feedbackWindowButtonHeight)
 	-- Create Default settings
 	if parentAddonNameSpace == nil or parentAddonNameSpace == "" then
 		d("|cFF0000[LibFeedback] - ERROR:|r Obligatory addon namespace is missing!")
@@ -192,7 +206,7 @@ function LibFeedback:initializeFeedbackWindow(parentAddonNameSpace, parentAddonN
             local isString = (not isButtonInfoDeep and (type(buttonData) == "string") or (isButtonInfoDeep and type(buttonData[1]) == "string")) or false
             local sendGold = (not isButtonInfoDeep and (type(buttonData) == "number" and buttonData > 0) or (isButtonInfoDeep and buttonData[3])) or false
 
-            if LibFeedback.debug then
+            if lib.debug then
                 d(zo_strformat("|cFF0000[LibFeedback]|r <<1>> - Button <<2>>: isButtonInfoDeep: <<3>>, isString: <<4>>, sendGold: <<5>>,", tostring(parentAddonName), tostring(i), tostring(isButtonInfoDeep), tostring(isString), tostring(sendGold)))
                 if isButtonInfoDeep then
                     d(zo_strformat("> Param1: <<1>>, Param2: <<2>>, Param3: <<3>>,", tostring(buttonData[1]), tostring(buttonData[2]), tostring(buttonData[3])))
@@ -227,6 +241,10 @@ function LibFeedback:initializeFeedbackWindow(parentAddonNameSpace, parentAddonN
                             buttonText = buttonData[2]
                             amount = buttonData[1]
                         end
+                        if type(buttonData[1])=="function" then
+                        	buttonText = buttonData[2]
+                            amount = buttonData[1]
+                        end
                     else
                         if buttonData == 0 or  buttonData == "" then
                             buttonText = "Send note"
@@ -251,12 +269,15 @@ function LibFeedback:initializeFeedbackWindow(parentAddonNameSpace, parentAddonN
 	showButton.feedbackWindow = feedbackWindow
 	showButton:SetAnchor(unpack(mailButtonPosition))
 	showButton:SetDimensions(40,40)
-	showButton.ToggleWindow = function(self) self.feedbackWindow:ToggleHidden() end
-	feedbackWindow:SetHidden(true)
+	showButton.ToggleWindow = function(self) self.feedbackWindow:ToggleHidden() feedbackWindow:BringWindowToTop() end
+
 	return showButton, feedbackWindow
 end
 
-function LibFeedback:setDebug(debugValue)
+function lib:setDebug(debugValue)
     debugValue = debugValue or false
-    LibFeedback.debug = debugValue
+    lib.debug = debugValue
 end
+
+LibFeedback = lib
+

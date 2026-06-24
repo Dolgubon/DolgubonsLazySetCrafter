@@ -1,10 +1,22 @@
 <GuiXml>
 	<Controls>
+    	<TopLevelControl name="DSC_gamepadTooltipsTLC" inherits="TooltipTopLevel">
+            <Controls>
+            	<!-- 
+                <Tooltip name="ItemTwoltip" inherits="ZOs_ItemIconTooltip">
+                    <OnHide>
+                        ComparativeTooltip1:SetHidden(true)
+                        ComparativeTooltip2:SetHidden(true)
+                    </OnHide>
+                </Tooltip> -->
+                <Control name="DSC_gamepadTooltips" inherits="ZO_ResizingFloatingScrollTooltip_Gamepad" hidden="true"/>
+            </Controls>
+        </TopLevelControl>
 		<!-- This button template is used as a template for all the piece toggle buttons.-->
 		<Control name="DSC_FontSwapper" virtual="true">
 			<OnInitialized>
 				if DolgubonSetCrafter.IsGameCoreUI() and self.SetFont then
-					self:SetFont("ZoFontGamepad27")
+					self:SetFont("ZoFontGamepad22")
 				end
 			</OnInitialized>
 		</Control>
@@ -27,11 +39,10 @@
 		<Label name="DSC_ItemLinkMouseOverLabel" virtual="true" alpha="1" mouseEnabled="true"><!--inherits="ToggleButton">-->
 			<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
 			<OnMouseEnter>
-				InitializeTooltip(ItemTooltip, self , TOP, 0, 20)
-				ItemTooltip:SetLink(self.itemLink)
+				DolgubonSetCrafter.showLinkTooltip(self , TOP, 0, 20, self.itemLink)
 			</OnMouseEnter>
 			<OnMouseExit>
-				ClearTooltip(ItemTooltip)
+				DolgubonSetCrafter.clearTooltip()
 			</OnMouseExit>
 		</Label>
 		<Control name="BehaviourToggleTemplate" virtual="true" alpha="1" tier="HIGH" resizeToFitDescendents="true"><!--inherits="ToggleButton">-->
@@ -162,7 +173,7 @@
 			</OnMouseUp>
 			<OnMouseExit>
 				ClearTooltip(InformationTooltip)
-				ClearTooltip(ItemTooltip)
+				DolgubonSetCrafter.clearTooltip()
 				DolgubonSetCrafter.scroll:Row_OnMouseExit(self:GetParent())
 			</OnMouseExit>
 		</Label>
@@ -175,16 +186,14 @@
 					return
 				end
 				if not self.isKnown then
-					InitializeTooltip(ItemTooltip, self , TOP, 0, 20)
-					ItemTooltip:SetLink(self.data[1].Name)
+					DolgubonSetCrafter.showLinkTooltip(self , TOP, 0, 20, self.data[1].Name)
 				else
-					InitializeTooltip(ItemTooltip, self, TOP, 0, 20)
-					ItemTooltip:SetLink(self.data[1].Name)
+					DolgubonSetCrafter.showLinkTooltip(self , TOP, 0, 20, self.data[1].Name)
 				end
 				DolgubonSetCrafter.fontSwapper(self)
 			</OnMouseEnter>
 			<OnMouseExit>
-				ClearTooltip(ItemTooltip)
+				DolgubonSetCrafter.clearTooltip()
 			</OnMouseExit>
 			<OnInitialized>
 				self.errorTooltip = DolgubonSetCrafter.localizedStrings.UIStrings.notEnoughSpecificMat
@@ -284,20 +293,23 @@
 				end
 				InformationTooltip:AddLine(self.qualityString)
 				if self.data[1].Link ~= nil then
-					InitializeTooltip(ItemTooltip, self, RIGHT, 0, -40)
-					ItemTooltip:SetLink(self.data[1].Link)
+					DolgubonSetCrafter.showLinkTooltip(self , RIGHT, 0, -40, self.data[1].Link)
 				end
 			</OnMouseEnter>
 
 			<OnMouseExit>
-				ClearTooltip(ItemTooltip)
+				DolgubonSetCrafter.clearTooltip()
 				ClearTooltip(InformationTooltip)
 				
 				DolgubonSetCrafter.scroll:Row_OnMouseExit(self)
 			</OnMouseExit>
 			<OnClicked>
-				local prevText = ZO_ChatWindowTextEntryEditBox:GetText()
-				StartChatInput(prevText..self.data[1].Link)
+				local prevText = ZO_GetChatSystem().textEntry:GetText()
+				SharedChatSystem.StartTextEntry(ZO_GetChatSystem(),prevText..self.data[1].Link)
+				if IsGameCoreUI() then
+					ZO_GetChatSystem():SetHUDEnabled(true)
+					ZO_GetChatSystem().textEntry:GetEditControl():TakeFocus()
+				end
 				-- Get Reference
 				-- Refer to LLC to find the request Table
 				-- Get the mat requirements
@@ -402,13 +414,12 @@
 				if not parameters[2] then
 				end
 				if self.data[1].Link ~= nil then
-					InitializeTooltip(ItemTooltip, self, RIGHT, 0, -40)
-					ItemTooltip:SetLink(self.data[1].Link)
+					DolgubonSetCrafter.showLinkTooltip(self , RIGHT, 0, -40, self.data[1].Link)
 				end
 			</OnMouseEnter>
 
 			<OnMouseExit>
-				ClearTooltip(ItemTooltip)
+				DolgubonSetCrafter.clearTooltip()
 				ClearTooltip(InformationTooltip)
 				
 				DolgubonSetCrafter.scroll:Row_OnMouseExit(self)

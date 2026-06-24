@@ -141,6 +141,16 @@ local function importRequestFromMail()
 	end
 end
 DolgubonSetCrafter.importRequestFromMail = importRequestFromMail
+
+function DolgubonSetCrafter.importRequestFromText(text)
+	for link in string.gmatch(text, "(|H%d:item:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+|h|h)") do
+		if DolgubonSetCrafter.verifyLinkIsValid(link) then
+			DolgubonSetCrafter.addByItemLinkToQueue(link)
+			d("Added "..link.." to the Set Crafter queue")
+		end
+	end
+end
+
 local function isThereAValidLinkInText(text)
 	for link in string.gmatch(text, "(|H%d:item:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+:%d+|h|h)") do
 		if DolgubonSetCrafter.verifyLinkIsValid(link) then

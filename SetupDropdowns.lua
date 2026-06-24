@@ -86,8 +86,8 @@ local function findFirstArmourSelected(traitsToUse)
 end
 
 local function showPreviewItemLink(control, comboBoxParent, overrideData)
-	if overrideData or control.dataEntry.data.info then
-		local info = overrideData or control.dataEntry.data.info[1]
+	if overrideData or control.dataEntry.dataSource.info then
+		local info = overrideData or control.dataEntry.dataSource.info[1]
 
 		local level, isCP = DolgubonSetCrafter:GetLevel()
 		if not level or level=="" then
@@ -123,9 +123,11 @@ local function showPreviewItemLink(control, comboBoxParent, overrideData)
 			ClearTooltip(ItemTooltip)
 			return
 		end
-		InitializeTooltip(ItemTooltip, comboBoxParent , LEFT, 10,0 )
-		--setId, trait, pattern, station,level, isCP, quality,style,  potencyId, essenceId , aspectId
-		ItemTooltip:SetLink(link)
+		local tooltipPoint = LEFT
+		-- if DolgubonSetCrafter.IsGameCoreUI() then
+		-- 	tooltipPoint = RIGHT
+		-- end
+		DolgubonSetCrafter.showLinkTooltip(control , tooltipPoint, 25,0, link)
 	end
 end
 
@@ -133,35 +135,19 @@ local hooked = false
 local currentParent
 local function tooltipForCombobox(comboBoxContainer)
 
-	local function showTooltipForComboboxes(control, parentControl)
-		if control.menuIndex == 1 then -- unselected option
+
+	local function showTooltipForComboboxes(comboBoxObject, rowControl)
+		if comboBoxObject.menuIndex == 1 then -- unselected option
 			return
 		end
-		local info =currentParent:GetChild(2).m_comboBox.m_sortedItems[control.menuIndex].info[1]
+		local info =rowControl.dataEntry.dataSource.info and rowControl.dataEntry.dataSource.info[1]
 
 		if info then
-			showPreviewItemLink(control,currentParent, info)
+			showPreviewItemLink(rowControl, comboBoxObject.m_container:GetParent(), info)
 		end
 	end
 
-	ZO_PreHook("ZO_Menu_EnterItem",function(s)if currentParent then showTooltipForComboboxes(s) end end )
-	ZO_PreHook("ZO_Menu_ExitItem", function() if currentParent then ClearTooltip(ItemTooltip) end end)
-	ZO_PreHook(ZO_ComboBox_ObjectFromContainer(comboBoxContainer.comboBox), "ShowDropdownInternal", function(comboBox)
-		currentParent = comboBoxContainer
-        if(not hooked) then
-            hooked = true
-        end
-    end)
-
-    ZO_PreHook(ZO_ComboBox_ObjectFromContainer(comboBoxContainer.comboBox), "HideDropdownInternal", function(comboBox)
-    	if currentParent == comboBoxContainer then
-    		currentParent = nil
-    	end
-        if(hooked) then
-            hooked = false
-            ClearTooltip(ItemTooltip)
-        end
-    end)
+	comboBoxContainer.comboBox.m_comboBox:SetEntryMouseOverCallbacks(showTooltipForComboboxes,DolgubonSetCrafter.clearTooltip)
 
 end
 
@@ -284,17 +270,6 @@ function DolgubonSetCrafter.setupComboBoxes()
 	-- Note: Could be combined into a loop or something, but left like this for clarity
 	DolgubonSetCrafter.ComboBox = {}
 
-	-- DolgubonSetCrafter.ComboBox.ArmourEnchant = WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_ArmourEnchant", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
-	-- DolgubonSetCrafter.ComboBox.EnchantQuality = WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_EnchantQuality", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
-	-- DolgubonSetCrafter.ComboBox.WeaponEnchant = WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_WeaponEnchant", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
-	-- DolgubonSetCrafter.ComboBox.JewelEnchant = WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_JewelEnchant", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
-	-- DolgubonSetCrafter.ComboBox.Set			= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Set", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
-	-- DolgubonSetCrafter.ComboBox.Jewelry		= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Jewelry_Trait", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
-	-- DolgubonSetCrafter.ComboBox.Quality		= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Quality", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
-	-- DolgubonSetCrafter.ComboBox.Weapon 		= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Weapon_Trait", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
-	-- DolgubonSetCrafter.ComboBox.Armour 		= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Armour_Trait", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
-	-- DolgubonSetCrafter.ComboBox.Style 		= WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_Style", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
-
 	DolgubonSetCrafter.ComboBox.ArmourEnchant = WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_ArmourEnchant", DolgubonSetCrafterWindowComboboxes, "ComboboxTemplate")
 	DolgubonSetCrafter.ComboBox.EnchantQuality = WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_EnchantQuality", DolgubonSetCrafterWindowComboboxes, "ComboboxTemplate")
 	DolgubonSetCrafter.ComboBox.WeaponEnchant = WINDOW_MANAGER:CreateControlFromVirtual("Dolgubons_Set_Crafter_WeaponEnchant", DolgubonSetCrafterWindowComboboxes, "ScrollComboboxTemplate")
@@ -318,6 +293,7 @@ function DolgubonSetCrafter.setupComboBoxes()
 	Dolgubons_Set_Crafter_Armour_Trait.previewDataPosition = function(params, newValue) params[3] = 8 params[2] = newValue end
 	Dolgubons_Set_Crafter_Armour_Trait.enchants = DolgubonSetCrafter.ComboBox.ArmourEnchant
 	Dolgubons_Set_Crafter_Quality.previewDataPosition = function(params, newValue) params[7] = newValue end
+	Dolgubons_Set_Crafter_ArmourEnchant.showPreview = true
 	Dolgubons_Set_Crafter_ArmourEnchant.previewDataPosition = function(params, newValue, isCP, level)
 		local potencyId, essenceId, aspectId = LibLazyCrafting.EnchantAttributesToGlyphIds(isCP, level,newValue , DolgubonSetCrafter.ComboBox.EnchantQuality.selected[1])
 		params[9] = potencyId 
@@ -348,7 +324,7 @@ function DolgubonSetCrafter.setupComboBoxes()
 		params[10] = essenceId 
 		params[11] = aspectId 
 	end
-	
+
 	
 	for k, v in pairs(DolgubonSetCrafter.ComboBox) do
 		v.name = k
@@ -375,28 +351,28 @@ function DolgubonSetCrafter.setupComboBoxes()
 	DolgubonSetCrafter.ComboBox.ArmourEnchant.isGlyph = true
 	DolgubonSetCrafter.ComboBox.EnchantQuality.isGlyphQuality = true
 	--DolgubonSetCrafterWindowComboboxes:anchoruiElements()
-	local originalScrollEnter = ZO_ScrollableComboBox_Entry_OnMouseEnter
-	ZO_ScrollableComboBox_Entry_OnMouseEnter = 
-	function(...) 
-		originalScrollEnter(...)
-		local params = {...}
-		local self = params[1]
-		if self:GetParent():GetParent():GetParent():GetParent():GetParent().showPreview then
-			-- d(self.dataEntry)
-			showPreviewItemLink(self, self:GetParent():GetParent():GetParent():GetParent():GetParent())
-		end
-	end
-	local originalScrollExit = ZO_ScrollableComboBox_Entry_OnMouseExit
-	ZO_ScrollableComboBox_Entry_OnMouseExit = 
-	function(...)
-		originalScrollExit(...)
-		local params = {...}
-		local self = params[1]
-		if self:GetParent():GetParent():GetParent():GetParent():GetParent().showPreview then
-			ClearTooltip(ItemTooltip)
-		end
-	end
 
+	local function longComboboxEntry(...)
+		local params = {...}
+		local self = params[1]
+		local control = params[2]
+
+		if self.m_container:GetParent().showPreview then
+			showPreviewItemLink(control, self.m_container:GetParent())
+		end
+	end
+	local function longComboboxExit(...)
+		local params = {...}
+		local self = params[1]
+		if self.m_container:GetParent().showPreview then
+			DolgubonSetCrafter.clearTooltip()
+		end
+	end
+	DolgubonSetCrafter.ComboBox.Style.comboBox.m_comboBox:SetEntryMouseOverCallbacks(longComboboxEntry, longComboboxExit)
+	DolgubonSetCrafter.ComboBox.WeaponEnchant.comboBox.m_comboBox:SetEntryMouseOverCallbacks(longComboboxEntry, longComboboxExit)
+	DolgubonSetCrafter.ComboBox.JewelEnchant.comboBox.m_comboBox:SetEntryMouseOverCallbacks(longComboboxEntry, longComboboxExit)
+	DolgubonSetCrafter.ComboBox.ArmourEnchant.comboBox.m_comboBox:SetEntryMouseOverCallbacks(longComboboxEntry, longComboboxExit)
+	DolgubonSetCrafter.ComboBox.Set.comboBox.m_comboBox:SetEntryMouseOverCallbacks(longComboboxEntry, longComboboxExit)
 end
 
 

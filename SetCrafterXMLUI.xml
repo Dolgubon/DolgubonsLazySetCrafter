@@ -8,6 +8,41 @@ Created by Dolgubon (Joseph Heinzle)
 
 <GuiXml>
 	<Controls>
+		<TopLevelControl name="DolgubonSetCrafterImport" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true">
+			<Dimensions x="430" y="300" />
+			<Controls>
+				<Backdrop name="$(parent)Backdrop" alpha="1" inherits="ZO_DefaultBackdrop" centerColor="666666">
+					<AnchorFill />
+				</Backdrop>
+				<Button name="$(parent)Close" alpha="1" clickSound="Default_Click" inherits="ZO_DefaultButton">
+					<Textures normal="/esoui/art/hud/radialicon_cancel_up.dds" mouseOver="/esoui/art/hud/radialicon_cancel_over.dds" pressed="/esoui/art/hud/radialicon_cancel_disabled.dds" />
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-20" offsetY="20" />
+					<Dimensions x="60" y="48" />
+					<OnClicked>
+						self:GetParent():SetHidden(true)
+					</OnClicked>
+				</Button>
+				<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_DefaultEdit DSC_FontSwapper" multiLine="true" maxInputCharacters="29900">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="20" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-20" offsetY="-30" />
+					<OnInitialized>
+						self:SetDefaultText("")
+						DolgubonSetCrafter.fontSwapper(self)
+						self:GetParent().editBox = self
+					</OnInitialized>
+				</EditBox>
+				<Button name="$(parent)Add" alpha="1" text="Import" inherits="ZO_DefaultButton DSC_FontSwapper"> 
+
+					<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetY="-10" />
+					<Dimensions x="200" y="28" />
+					<OnClicked>
+						DolgubonSetCrafter.importRequestFromText(self:GetParent().editBox:GetText())
+						self:GetParent().editBox:SetText("Imported!")
+					</OnClicked>
+				</Button>
+
+			</Controls>
+		</TopLevelControl>
 		<TopLevelControl name="DolgubonSetCrafterToggle" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false" resizeToFitDescendents="true">
 			<Dimensions x="75" y="75" />
 
@@ -605,6 +640,14 @@ Created by Dolgubon (Joseph Heinzle)
 								local text = DolgubonSetCrafter.outputRequest()
 								--StartChatInput("Requires: "..text)
 								
+							</OnClicked>
+						</Button>
+
+						<Button name="$(parent)Import" alpha="1" text="Import LInks" inherits="ZO_DefaultButton DSC_FontSwapper" inheritAlpha="false">
+							<Anchor point="BOTTOM" relativeTo="$(parent)OutputRequest" relativePoint="TOP" offsetX="0" offsetY="-5" />
+							<Dimensions x="200" y="28" />
+							<OnClicked>
+								DolgubonSetCrafterImport:SetHidden(not DolgubonSetCrafterImport:IsHidden())
 							</OnClicked>
 						</Button>
 

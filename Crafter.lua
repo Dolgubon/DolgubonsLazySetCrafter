@@ -15,7 +15,7 @@ end
 
 local originalD = d
 local function d(...)
-	if GetDisplayName()=="@Dolgubon" then 
+	if GetDisplayName()=="@Dolgubon" then
 		originalD(...)
 	end
 end
@@ -569,7 +569,7 @@ function GetEnchantQuality(itemLink)
 		if not quality then
 			-- Create a fake itemLink to get the quality from built-in function
 			local itemLink = string.format("|H1:item:%i:%i:50:0:0:0:0:0:0:0:0:0:0:0:0:1:1:0:0:10000:0|h|h", itemId, enchantSub)
-			quality = GetItemLinkQuality(itemLink)
+			quality = GetItemLinkFunctionalQuality(itemLink)
 			subIdToQuality[enchantSub] = quality
 		end
 		return quality
@@ -668,7 +668,7 @@ local function addByItemLinkToQueue(itemLink)
 	local _,_,_,_,_,setIndex = GetItemLinkSetInfo(itemLink)
 	requestTable["Set"] = findMatchingSelected(DolgubonSetCrafter.setIndexes, setIndex)
 
-	local quality = GetItemLinkQuality(itemLink)
+	local quality = GetItemLinkFunctionalQuality(itemLink)
 	requestTable["Quality"] = findMatchingSelected(DolgubonSetCrafter.quality, quality)
 
 	local enchantId = GetItemLinkAppliedEnchantId(itemLink)
@@ -838,7 +838,7 @@ local function LLCCraftCompleteHandler(event, station, resultTable)
 		if resultTable.type == "improvement" then 
 			resultTable.station = GetRearchLineInfoFromRetraitItem(BAG_BACKPACK, resultTable.ItemSlotID) 
 		end
-		DolgubonSetCrafter.removeFromScroll(resultTable.reference,false, resultTable)
+		DolgubonSetCrafter.removeFromScroll(resultTable.reference or resultTable.Reference,false, resultTable)
 	elseif event == LLC_INITIAL_CRAFT_SUCCESS or event == LLC_CRAFT_PARTIAL_IMPROVEMENT then
 		DolgubonSetCrafter.updateList()
 	end
@@ -854,7 +854,7 @@ end
 
 function DolgubonSetCrafter.initializeFunctions.initializeCrafting()
 	queue = DolgubonSetCrafter.savedvars.queue
-
+	-- styles 1-10, and imperial
 	LazyCrafter = LibLazyCrafting:AddRequestingAddon(DolgubonSetCrafter.name, false, LLCCraftCompleteHandler, nil, 	 {true,true,true,true,true,true,true,true,true,true,[34] = true})
 	DolgubonSetCrafter.LazyCrafter = LazyCrafter
 	for k, v in pairs(queue) do 
